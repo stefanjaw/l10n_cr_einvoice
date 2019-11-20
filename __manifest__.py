@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Electronic Invoice Costa Rica Version 4.3",
+    'name': "Electronic Invoice Costa Rica Version 4.3 l10n_cr_einvoice",
 
     'summary': """
         Module to generate Electronic Invoices from Costa Rica
