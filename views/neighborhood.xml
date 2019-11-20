@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_neighborhood_tree" model="ir.ui.view">
+        <field name="name">client.neighborhood.tree</field>
+        <field name="model">client.neighborhood</field>
+        <field name="arch" type="xml">
+            <tree string="Neighborhood">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="district_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_neighborhood_form" model="ir.ui.view">
+        <field name="name">client.neighborhood.form</field>
+        <field name="model">client.neighborhood</field>
+        <field name="arch" type="xml">
+            <form string="Neighborhood">
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" required="1"/>
+                        <field name="code"/>
+                        <field name="district_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_neighborhood" model="ir.actions.act_window">
+        <field name="name">Neighborhood</field>
+        <field name="res_model">client.neighborhood</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="menu_neighborhood_root"
+        parent="contacts.menu_localisation"
+        action="action_neighborhood"
+        sequence="10"
+    />
+</odoo>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+<record id="factelec_43_invoice_supplier" model="ir.ui.view">
+  <field name="name">factelec_43.invoice.supplier.form</field>
+  <field name="model">account.invoice</field>
+  <field name="inherit_id" ref="account.invoice_supplier_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="//sheet/div/h1" position="after">
+        <field name="current_country_code" invisible="1"/>
+        <h3><field name="fe_clave" readonly="1"/></h3>
+        <h3><field name="fe_clave" invisible ="1"/></h3>
+    </xpath>
+     <field name="partner_id" position = "before">
+       <field name="fe_in_invoice_type" widget="radio"/>
+     </field>
+     <field name="reference" position="after">
+        <field name = "fe_activity_code_id"  domain="[('company_id', '=', company_id)]"/>
+        <field name="journal_id" string="Tipo de Documento"/>
+        <field name="payment_term_id" required="1"/>
+        <field name = "fe_payment_type" required="1"/>
+        <field name = "fe_receipt_status" required="1"/>
+     </field>
+     <group>
+       <!-- 1570054332 -->
+        <field name = "fe_xml_supplier_xslt" readonly="1"/>
+        <field name = "fe_xml_supplier_xslt" invisible="1"/>
+     </group>
+    <field name="currency_id" position="after">
+       <field name="fe_server_state"/>
+       <!-- 1569524296 -->
+       <field name="fe_xml_supplier" filename="fe_xml_supplier_name" string="Subir XML Proveedor" attrs="{'invisible':[('fe_in_invoice_type','=','FE')]}" />
+       <field name="fe_xml_supplier_name" invisible="1"/>
+       <!--1569524732-->
+       <field name="fe_xml_supplier_hacienda" filename="fe_xml_supplier_hacienda_name" string="Subir XML Hacienda Proveedor" attrs="{'invisible':[('fe_in_invoice_type','=','FE')]}"/>
+       <field name="fe_xml_supplier_hacienda_name" invisible="1" attrs="{'invisible':[('fe_in_invoice_type','=','FE')]}"/>
+      <!--1570034790-->
+       <field name="fe_xml_hacienda" filename="fe_name_xml_hacienda" string="Mensaje Hacienda Respuesta"/>
+       <field name="fe_name_xml_hacienda" invisible="1"/>
+       <!--1570035130-->
+       <field name = "fe_msg_type" attrs="{'invisible':[('fe_in_invoice_type','=','FE')]}" />
+       <!--1570035143-->
+       <field name = "fe_detail_msg" attrs="{'invisible':[('fe_in_invoice_type','=','FE')]}" />
+          <button name='confirm_bill' string="Enviar a Hacienda"  type="object" class="oe_highlight" />
+          <button name='validacion' string="log"  type="object" class="oe_highlight" />
+    </field>
+  </field>
+</record>
+<!-- Inherit Form view -->
+<record id="factelec_43_invoice" model="ir.ui.view">
+  <field name="name">factelec_43.invoice.form</field>
+  <field name="model">account.invoice</field>
+  <field name="inherit_id" ref="account.invoice_form"/>
+  <field name="arch" type="xml">
+
+  <field name="journal_id" position="replace"/>
+  <field name="payment_term_id" position="after">
+     <field name="journal_id" string="Tipo de Documento"/>
+  </field>
+    <xpath expr="//page[last()]" position="after">
+      <page string="Facturacion electrónica">
+        <form>
+          <group>
+            <button name='get_invoice' string="consultar"  type="object" class="oe_highlight" />
+          </group>
+          <group>
+            <button name='confirm_bill' string="Enviar a Hacienda"  type="object" class="oe_highlight" />
+          </group>
+          <group>
+            <field name="fe_name_xml_sign" invisible='1'/>
+            <field name="fe_name_xml_hacienda" invisible='1'/>
+            <field name="fe_xml_sign" filename='fe_name_xml_sign' options="{'filename': 'fe_name_xml_sign'}"/>
+            <field name="fe_xml_hacienda" filename='fe_name_xml_hacienda' options="{'filename': 'fe_name_xml_hacienda'}"/>
+          </group>
+        </form>
+      </page>
+    </xpath>
+    <xpath expr="//sheet/h1" position="after">
+        <field name="current_country_code" invisible="1"/>
+        <h3><field name="fe_clave" readonly="1"/></h3>
+    </xpath>
+    <field name="user_id" position="after">
+      <field name = "fe_payment_type" required="1"/>
+      <field name = "fe_receipt_status" required="1"/>
+      <field name = "fe_activity_code_id"  domain="[('company_id', '=', company_id)]"/>
+    </field>
+    <field name="payment_term_id" required="1" position="after">
+      <group>
+        <field name="fe_server_state"/>
+      </group>
+    </field>
+    <field name="move_id" position="after">
+        <field name="fe_informacion_referencia_codigo"/>
+    </field>
+  </field>
+</record>
+<!--**************popup*****************-->
+  <!--#1570130107-->
+  <record model="ir.ui.view" id="confirm_wizard">
+        <field name="name">Confirmar</field>
+        <field name="model">confirm.message</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+    <group>
+     <span>La factura contiene lineas con valor 0, ¿Desea continuar?</span>
+    </group>
+                <footer>
+                    <button string="Edit" special="cancel" class="oe_highlight"/>
+                    <button name="continuar" string="Continuar" type="object" class="oe_highlight" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,15 @@
+<odoo>
+<record id="view_tax_form_inherited" model="ir.ui.view">
+    <field name="name">account.tax.form.inherited.localization</field>
+    <field name="model">account.tax</field>
+    <field name="inherit_id" ref="account.view_tax_form"/>
+    <field name="arch" type="xml">
+        <field name="type_tax_use" position="after">
+          <field name="type" required='1'  widget="radio"/>
+          <field name="codigo_impuesto" attrs="{'invisible':[('type', '!=', 'TAX')]}" />
+          <field name="tarifa_impuesto" attrs="{'invisible':[('type', '!=', 'TAX')]}" />
+          <field name="tipo_documento" attrs="{'invisible':[('type', '!=', 'OTHER')]}" />
+        </field>
+    </field>
+</record>
+</odoo>

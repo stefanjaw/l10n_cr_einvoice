@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_conton_tree" model="ir.ui.view">
+        <field name="name">client.canton.tree</field>
+        <field name="model">client.canton</field>
+        <field name="arch" type="xml">
+            <tree string="Canton">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="state_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_conton_form" model="ir.ui.view">
+        <field name="name">client.canton.form</field>
+        <field name="model">client.canton</field>
+        <field name="arch" type="xml">
+            <form string="Canton">
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" required="1"/>
+                        <field name="code"/>
+                        <field name="state_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_canton" model="ir.actions.act_window">
+        <field name="name">Canton</field>
+        <field name="res_model">client.canton</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="menu_canton_root"
+        parent="contacts.menu_localisation"
+        action="action_canton"
+        sequence="5"
+    />
+</odoo>

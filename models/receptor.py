@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+import logging
+
+log = logging.getLogger(__name__)
 
 class Receptor(models.Model):
     _inherit = "res.partner"

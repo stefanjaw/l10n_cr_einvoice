@@ -1,34 +1,46 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "l10n_cr_einvoice/",
+    'name': "Electronic Invoice Costa Rica Version 4.3",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Module to generate Electronic Invoices from Costa Rica
+        """,
 
     'description': """
-        Long description of module's purpose
+        Configuration:
+        --> Journals with Type Sale:
+            Enable Credit Notes with Own Sequence Numbers
+            Enable Debit Notes with Own Sequence Numbers
+
+            For each Journal - Sequence:
+               Disable 'Use subsequences per date_range	'
+               Sequence Size: 10 Digits
+               Prefix has the format: CompanyID(001) + TerminalID(00001) + Doc Type(01)
     """,
 
-    'author': "My Company",
-    'website': "http://www.yourcompany.com",
+    'author': "Avalantec",
+    'website': "http://www.avalantec.com",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
-    'category': 'Uncategorized',
-    'version': '0.1',
+    'category': 'Localization',
+    'version': '20190811.1424',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base','contacts','account_accountant'],
 
-    # always loaded
+
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+        'views/canton.xml',
+        'views/cron.xml',
+        'views/district.xml',
+        'views/invoice.xml',
+        'views/neighborhood.xml',
+        'views/partner.xml',
+        'views/payment_term.xml',
+        'views/product.xml'
+        'views/provincia.xml',
+        'views/report.xml',
+        'views/tax.xml',
     ],
-    # only loaded in demonstration mode
+
     'demo': [
         'demo/demo.xml',
     ],

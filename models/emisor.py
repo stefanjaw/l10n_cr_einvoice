@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+import logging
+
+log = logging.getLogger(__name__)
+
 class Emisor(models.Model):
     _inherit = "res.company"
 

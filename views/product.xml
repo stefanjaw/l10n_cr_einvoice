@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Product Template -->
+
+    <record id="view_product_form_inherited" model="ir.ui.view">
+        <field name="name">product.template.form.inherited.localization</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="default_code" position="after">
+                <field name="fe_codigo_comercial_tipo"/>
+                <field name="fe_codigo_comercial_codigo"/>
+                <field name="fe_unidad_medida_comercial"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Product -->
+
+    <record id="view_product_product_form_inherited" model="ir.ui.view">
+        <field name="name">product.product.form.inherited.localization</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <field name="default_code" position="after">
+                <field name="fe_codigo_comercial_tipo"/>
+                <field name="fe_codigo_comercial_codigo"/>
+                <field name="fe_unidad_medida_comercial"/>
+            </field>
+        </field>
+    </record>
+</odoo>

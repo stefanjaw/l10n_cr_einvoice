@@ -1,0 +1,111 @@
+<odoo>
+    <template id="report_invoice_document_inherit_client" inherit_id="account.report_invoice_document">
+       <xpath expr="//div[@name='invoice_address']" position="replace">
+         <div name="invoice_address" class="col-xs-6 col-xs-offset-7">
+            <div name = 'info' class = 'col-xs-6'>
+                <div t-if="o.partner_id.name" class="mt8">
+                  <span><strong>Nombre</strong></span>: <span t-field="o.partner_id.name"/>
+                </div>
+                <div t-if="o.partner_id.vat" class="mt8">
+                  <span><strong>Identificacion</strong></span>: <span t-field="o.partner_id.vat"/>
+                </div>
+                <div t-if="o.partner_id.email" class="mt8">
+                  <span><strong>E-mail</strong></span>: <span t-field="o.partner_id.email"/>
+                </div>
+                <div t-if="o.partner_id.phone" class="mt8">
+                  <span><strong>Telefono</strong></span>: <span t-field="o.partner_id.phone"/>
+                </div>
+                <div t-if="o.partner_id.fe_fax_number" class="mt8">
+                  <span><strong>Fax</strong></span>: <span t-field="o.partner_id.fe_fax_number"/>
+                </div>
+            </div>
+            <div name ='address' class = 'col-xs-6'>
+                <div t-if="o.partner_id.state_id" class="mt8">
+                  <span><strong>Provincia</strong></span>: <span t-field="o.partner_id.state_id"/>
+                </div>
+                <div t-if="o.partner_id.fe_canton_id" class="mt8">
+                  <span><strong>Canton</strong></span>: <span t-field="o.partner_id.fe_canton_id"/>
+                </div>
+                <div t-if="o.partner_id.fe_district_id" class="mt8">
+                  <span><strong>Distrito</strong></span>: <span t-field="o.partner_id.fe_district_id"/>
+                </div>
+                <div t-if="o.partner_id.fe_neighborhood_id" class="mt8">
+                  <span><strong>Barrio</strong></span>: <span t-field="o.partner_id.fe_neighborhood_id"/>
+                </div>
+                <div t-if="o.partner_id.fe_other_signs" class="mt8">
+                  <span><strong>Otras Señas</strong></span>: <span t-field="o.partner_id.fe_other_signs"/>
+                </div>
+            </div>
+         </div>
+         <div class='col-xs-4'>
+         </div>
+       </xpath>
+
+        <h2 position="after">
+            <span t-field="o.fe_clave"/>
+        </h2>
+
+        <div class="clearfix" position="before">
+            <div class="row">
+               <div class="col-xs-4 pull-right">
+              <table class="table table-condensed" style="min-width: 250px;max-width: 400px;">
+                                      <tr>
+                                          <td><strong>Total servicios gravados</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_servicio_gravados" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total servicios exentos</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_servicio_exentos" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total mercancias gravados</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_mercancias_gravadas" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total mercancias exentas</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_mercancias_exentas" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total gravado</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_gravado" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total exento</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_exento" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total venta</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_venta" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total descuento</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.fe_total_descuento" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+                                      <tr>
+                                          <td><strong>Total venta neta</strong></td>
+                                          <td class="text-right">
+                                              <span t-field="o.amount_untaxed" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                                          </td>
+                                      </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+    </template>
+</odoo>

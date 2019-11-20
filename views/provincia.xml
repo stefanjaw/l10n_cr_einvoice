@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+<!-- Inherit Form view -->
+<record id="factelec_43_state_form" model="ir.ui.view">
+  <field name="name">factelec43.state.form</field>
+  <field name="model">res.country.state</field>
+  <field name="inherit_id" ref="base.view_country_state_form"/>
+  <field name="arch" type="xml">
+    <field name="code" position="after">
+       <field name="fe_code"  required='1'/>
+    </field>
+  </field>
+</record>
+
+<record id="factelec_43_state_tree" model="ir.ui.view">
+  <field name="name">factelec43.state.tree</field>
+  <field name="model">res.country.state</field>
+  <field name="inherit_id" ref="base.view_country_state_tree"/>
+  <field name="arch" type="xml">
+    <field name="code" position="after">
+       <field name="fe_code" required='1'/>
+    </field>
+  </field>
+</record>
+
+</odoo>
