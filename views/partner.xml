@@ -42,8 +42,8 @@
                              <field name="fe_url_server" string="Server URL"/>
                              <field name="fe_activity_code_ids">
                              <tree editable="1">
-                                  <field name="code"/>
-                                  <field name="description"/>
+                                  <field name="code" required='1'/>
+                                  <field name="description" required='1'/>
                              </tree>
                             </field>
                          </group>
