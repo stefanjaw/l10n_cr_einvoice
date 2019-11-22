@@ -71,7 +71,7 @@ class Emisor(models.Model):
                 raise ValidationError("El Server URL debe de terminar con un slash /")
 
 
-    @api.multi
+    '''@api.multi
     @api.constrains("phone","fe_fax_number")
     def _check_phone_fe_fax_number(self):
         log.info('--> _check_phone_fe_fax_number')
@@ -84,4 +84,4 @@ class Emisor(models.Model):
 
             if s.fe_fax_number :
                 if not re.match(pattern,s.fe_fax_number):
-                    raise ValidationError("el campo Fax solo debe de contener numeros y Maximo de 20 digitos")
+                    raise ValidationError("el campo Fax solo debe de contener numeros y Maximo de 20 digitos")'''
