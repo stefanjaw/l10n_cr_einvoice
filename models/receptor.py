@@ -51,7 +51,7 @@ class Receptor(models.Model):
                 if not re.match(pattern, s.email):
                     raise ValidationError("El correo electronico no tiene un formato valido")
 
-
+    '''
     @api.multi
     @api.constrains("phone","fe_fax_number")
     def _check_field(self):
@@ -63,4 +63,4 @@ class Receptor(models.Model):
                     raise ValidationError("el campo telefono solo debe de contener numeros y un maximo de 20 digitos")
             if s.fe_fax_number :
                 if not re.match(pattern,s.fe_fax_number):
-                    raise ValidationError("el campo Fax solo debe de contener numeros")
+                    raise ValidationError("el campo Fax solo debe de contener numeros")'''
