@@ -150,14 +150,14 @@ class Invoice(models.Model):
 
 
     @api.multi
-    @api.depends("fe_total_servicio_exentos", "fe_total_mercancias_exentas", )
+    @api.depends("fe_total_servicio_exentos", "fe_total_mercancias_exentas" )
     def _compute_total_exento(self):
         log.info('--> factelec/_compute_total_exento')
         for s in self:
             s.fe_total_exento = s.fe_total_servicio_exentos + s.fe_total_mercancias_exentas
 
     @api.multi
-    @api.depends("fe_total_servicio_gravados", "fe_total_mercancias_gravadas", )
+    @api.depends("fe_total_servicio_gravados", "fe_total_mercancias_gravadas" )
     def _compute_total_gravado(self):
         log.info('--> factelec/_compute_total_gravado')
         for s in self:
@@ -215,7 +215,7 @@ class Invoice(models.Model):
 
 
     @api.multi
-    @api.depends("fe_total_mercancias_exentas",)
+    @api.depends("fe_total_mercancias_exentas")
     def _compute_total_mercancias_exentas(self):
         log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO2')
         total_mercancias_exentas = 0

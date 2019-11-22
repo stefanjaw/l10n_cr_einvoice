@@ -80,19 +80,8 @@ class Emisor(models.Model):
             if s.phone :
                 if not re.match(pattern,s.phone):
                     raise ValidationError("el campo telefono solo debe de contener numeros y Maximo de 20 digitos")
-            #else:
-            #        raise ValidationError("el campo telefono es requerido")
+
 
             if s.fe_fax_number :
                 if not re.match(pattern,s.fe_fax_number):
                     raise ValidationError("el campo Fax solo debe de contener numeros y Maximo de 20 digitos")
-
-    @api.multi
-    @api.constrains("fe_code")
-    def _check_fe_code(self):
-        log.info('--> _check_phone_fe_code')
-        pattern = r"^[0-9]{3}$"
-        for s in self:
-            if s.fe_code :
-                if not re.match(pattern,s.fe_code):
-                    raise ValidationError("el codigo de la compañia debe estar formado por 3 digitos!!")
