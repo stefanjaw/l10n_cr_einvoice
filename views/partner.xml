@@ -40,7 +40,15 @@
                       <sheet>
                          <group>
                              <field name="fe_url_server" string="Server URL"/>
-                             <field name="fe_activity_code_ids">
+                             <field name="fe_certificate_name" invisible = "1"/>
+                             <field name="fe_certificate" filename='fe_certificate_name'/>
+                             <field name="fe_password_certificate" password='1' required='1'/>
+                             <field name="fe_user_name"/>
+                             <field name="fe_user_password" password='1' required='1'/>
+                          </group>
+                          <button name='update_credentials_server_side' string="Actualizar"  type="object" class="oe_highlight" />
+                          <group>
+                            <field name="fe_activity_code_ids">
                              <tree editable="1">
                                   <field name="code" required='1'/>
                                   <field name="description" required='1'/>

@@ -8,7 +8,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-class Receptor(models.Model):
+class resPartner(models.Model):
     _inherit = "res.partner"
 
     log.info('--> Class Receptor')

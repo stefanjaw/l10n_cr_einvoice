@@ -4,14 +4,22 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 import re
+import json
+import requests
 import logging
 
 log = logging.getLogger(__name__)
 
-class Emisor(models.Model):
+class resCompany(models.Model):
     _inherit = "res.company"
 
     log.info('--> Class Emisor')
+    fe_certificate = fields.Binary(string="Upload Certificate")
+    fe_certificate_name = fields.Char(string="Certificate name")
+    fe_password_certificate = fields.Char(string="Contraseña Certificado", )
+    fe_user_name = fields.Char(string="Nombre usuario hacienda")
+    fe_user_password = fields.Char(string="Contraseña hacienda", )
+
     vat = fields.Char(size = 12, required=False)
     name = fields.Char(size = 100, )
     email = fields.Char(size=160,required=False )
@@ -32,6 +40,33 @@ class Emisor(models.Model):
         inverse_name="company_id",
     )
     fe_url_server = fields.Char(string="Url del server para facturar", )
+
+    @api.multi
+    def update_credentials_server_side(self):
+        log.info('--->1574963401')
+        json_string = {
+                          'token_user_password':self.fe_user_password,
+                          'certificate_password':self.fe_password_certificate,
+                          }
+        json_to_send = json.dumps(json_string)
+        url = self.fe_url_server+'credential/update/'+self.vat
+        log.info('--->url %s',url)
+        header = {'Content-Type':'application/json'}
+        response = requests.post(url, headers = header, data = json_to_send)
+        log.info('--->response %s',response.text)
+        json_response = json.loads(response.text)
+
+        if "result" in json_response.keys():
+            result = json_response['result']
+            if "status" in result.keys():
+                if result['status'] == "200":
+                    log.info('====== Exito \n')
+                    raise ValidationError("Actualizado con éxito")
+
+            elif "validation" in  result.keys():
+                result = json_response['result']['validation']
+                raise ValidationError(result)
+
 
     @api.onchange("country_id")
     def _onchange_field(self):

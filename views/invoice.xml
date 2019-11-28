@@ -43,7 +43,7 @@
        <field name = "fe_detail_msg" attrs="{'invisible':[('fe_in_invoice_type','=','FE')]}" />
           <group>
              <button name='confirm_bill' string="Enviar a Hacienda"  type="object" class="oe_highlight" />
-              <button name='get_invoice' string="consultar"  type="object" class="oe_highlight" />
+             <button name='get_invoice' string="consultar"  type="object" class="oe_highlight" />
           </group>
 
     </field>

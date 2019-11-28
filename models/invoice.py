@@ -347,11 +347,16 @@ class Invoice(models.Model):
     def _cr_post_server_side(self):
         log.info('--> factelec-Invoice-_cr_post_server_side')
         self._cr_xml_factura_electronica()
-        json_string = json.dumps(self.invoice)
+        json_string = {
+                      'invoice':self.invoice,
+                      'certificate':base64.b64encode(self.company_id.fe_certificate).decode('utf-8'),
+                      'token_user_name':self.company_id.fe_user_name,
+                      }
+        json_to_send = json.dumps(json_string)
         log.info('========== json to send : \n%s\n', json_string)
         header = {'Content-Type':'application/json'}
         url = self.env.user.company_id.fe_url_server
-        response = requests.post(url, headers = header, data = json_string)
+        response = requests.post(url, headers = header, data = json_to_send)
         try:
            log.info('===340==== Response : \n  %s',response.text )
            '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
@@ -1365,8 +1370,7 @@ class Invoice(models.Model):
         log.info('--> factelec-Invoice-_send_invoice')
 
         self._cr_xml_factura_electronica()
-
-        json_string = json.dumps(invoice)
+        json_string = json.dumps(inv)
         header = {'Content-Type':'application/json'}
         url = self.env.user.company_id.fe_url_server
         log.info('XXXX JSON STRING \n%s\n',json_string)
