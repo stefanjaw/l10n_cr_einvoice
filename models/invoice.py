@@ -847,7 +847,7 @@ class Invoice(models.Model):
         validation['CondicionVenta']['Tipo'] = 'String'
         validation['CondicionVenta']['Tamano'] = {'Min':2,'Max':2}
         validation['CondicionVenta']['Patron'] = ''
-        validation['CondicionVenta']['Mensaje'] = 'La condición de venta'
+        validation['CondicionVenta']['Mensaje'] = 'Tipo de pago o configuración en plazos de pago el tipo de pago'
 
         '''plazo credito'''
         validation['MedioPago'] = {}
