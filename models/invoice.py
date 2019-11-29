@@ -485,7 +485,9 @@ class Invoice(models.Model):
         if not self.company_id.fe_url_server:
             error = True
             msg += "Configure el URL del Servidor en Settings/User & Companies/ TAB: Factura Electronica -> URL\n"
-
+        if not self.company_id.fe_activity_code_ids:
+            error = True
+            msg += "Falta agregar codigo de actividad en la compañia\n"
         if error:
             raise exceptions.Warning((msg))
 
