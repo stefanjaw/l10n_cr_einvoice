@@ -887,25 +887,25 @@ class Invoice(models.Model):
 
     @api.multi
     def action_invoice_open(self,validate = True):
-        if validate:
-            log.info('--> 1570130084')
-            for item in self.invoice_line_ids:
-                if item.price_subtotal == False:
-                    return {
-                            'type': 'ir.actions.act_window',
-                            'name': '¡Alerta!',
-                            'res_model': 'confirm.message',
-                            'view_type': 'form',
-                            'view_mode': 'form',
-                            'views': [(False, 'form')],
-                            'target': 'new',
-                            'context': {'invoice': self.id}
-                        }
 
         log.info('--> action_invoice_open')
 
         if self.company_id.country_id.code == 'CR':
-            log.info('--> Factura Electronica Costa Rica')
+            if validate:
+                    log.info('--> 1570130084')
+                    for item in self.invoice_line_ids:
+                        if item.price_subtotal == False:
+                            return {
+                                    'type': 'ir.actions.act_window',
+                                    'name': '¡Alerta!',
+                                    'res_model': 'confirm.message',
+                                    'view_type': 'form',
+                                    'view_mode': 'form',
+                                    'views': [(False, 'form')],
+                                    'target': 'new',
+                                    'context': {'invoice': self.id}
+                                }
+            log.info('--> 1575061615')
             res = super(Invoice, self).action_invoice_open()
             tz = pytz.timezone('America/Costa_Rica')
             self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
@@ -916,7 +916,7 @@ class Invoice(models.Model):
             self.validacion()
             self._validate_invoice_line()
         else:
-            log.info('--> Factura común')
+            log.info('--> 1575061637')
             res = super(Invoice, self).action_invoice_open()
 
 
