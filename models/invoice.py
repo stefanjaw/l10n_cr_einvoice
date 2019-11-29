@@ -713,7 +713,7 @@ class Invoice(models.Model):
         validation['Emisor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Emisor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-Provincia']['Patron'] = ''
-        validation['Emisor-Ubicacion-Provincia']['Mensaje'] = 'Falta configurar el codigo de factura electronica en la provincia '+emisor_str
+        validation['Emisor-Ubicacion-Provincia']['Mensaje'] = 'Configurar el codigo de factura electronica en la provincia '+emisor_str
 
         validation['Emisor-Ubicacion-Canton'] = {}
         validation['Emisor-Ubicacion-Canton']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
