@@ -448,7 +448,8 @@ class Invoice(models.Model):
     def _get_current_company(self):
         log.info('--> factelec-Invoice-_get_current_company')
         for s in self:
-            current_country_code = s.company_id.partner_id.country_id.code
+            #current_country_code = s.company_id.partner_id.country_id.code
+            current_country_code = s.company_id.country_id.code
 
 
     def _get_date(self, date):
@@ -903,8 +904,8 @@ class Invoice(models.Model):
 
         log.info('--> action_invoice_open')
 
-        if self.company_id.partner_id.country_id.code == 'CR':
-
+        if self.company_id.country_id.code == 'CR':
+            log.info('--> Factura Electronica Costa Rica')
             res = super(Invoice, self).action_invoice_open()
             tz = pytz.timezone('America/Costa_Rica')
             self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
@@ -914,6 +915,10 @@ class Invoice(models.Model):
             log.info('--->Clave %s',self.fe_clave)
             self.validacion()
             self._validate_invoice_line()
+        else:
+            log.info('--> Factura común')
+            res = super(Invoice, self).action_invoice_open()
+
 
     @api.multi
     def get_invoice(self):
