@@ -24,7 +24,7 @@
     'category': 'Localization',
     'version': '20190811.1424',
 
-    'depends': ['base','contacts','account_accountant'],
+    'depends': ['base','contacts','account_accountant','l10n_cr'],
 
 
     'data': [
