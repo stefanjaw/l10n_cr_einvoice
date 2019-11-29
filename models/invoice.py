@@ -487,7 +487,7 @@ class Invoice(models.Model):
             msg += "Configure el URL del Servidor en Settings/User & Companies/ TAB: Factura Electronica -> URL\n"
         if not self.company_id.fe_activity_code_ids:
             error = True
-            msg += "Falta agregar codigo de actividad en la compañia\n"
+            msg += "Falta agregar codigo de actividad en Settings/User & Companies/TAB: Factura Electronica\n"
         if error:
             raise exceptions.Warning((msg))
 
@@ -664,7 +664,7 @@ class Invoice(models.Model):
         validation['CodigoActividad']['Tipo'] = 'String'
         validation['CodigoActividad']['Tamano'] = {'Min':6,'Max':6}
         validation['CodigoActividad']['Patron'] = ''
-        validation['CodigoActividad']['Mensaje'] = 'El codigo actividad'
+        validation['CodigoActividad']['Mensaje'] = 'Seleccione la actividad económica'
 
         validation['Clave'] = {}
         validation['Clave']['CondicionCampo'] =  {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -713,7 +713,7 @@ class Invoice(models.Model):
         validation['Emisor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Emisor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-Provincia']['Patron'] = ''
-        validation['Emisor-Ubicacion-Provincia']['Mensaje'] = 'La provincia del '+emisor_str
+        validation['Emisor-Ubicacion-Provincia']['Mensaje'] = 'Falta configurar el codigo de factura electronica en la provincia '+emisor_str
 
         validation['Emisor-Ubicacion-Canton'] = {}
         validation['Emisor-Ubicacion-Canton']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -786,21 +786,21 @@ class Invoice(models.Model):
         validation['Receptor-NumeroIdentifacion']['Mensaje'] = 'El numero de identificacion del '+receptor_str
 
         validation['Receptor-Ubicacion-Provincia'] = {}
-        validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'2','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Receptor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Receptor-Ubicacion-Provincia']['Patron'] = ''
         validation['Receptor-Ubicacion-Provincia']['Mensaje'] = 'La provincia del '+receptor_str
 
         validation['Receptor-Ubicacion-Canton'] = {}
-        validation['Receptor-Ubicacion-Canton']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-Ubicacion-Canton']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Canton']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Canton']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-Ubicacion-Canton']['Patron'] = ''
         validation['Receptor-Ubicacion-Canton']['Mensaje'] = 'El canton del '+receptor_str
 
         validation['Receptor-Ubicacion-Distrito'] = {}
-        validation['Receptor-Ubicacion-Distrito']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-Ubicacion-Distrito']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Distrito']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Distrito']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-Ubicacion-Distrito']['Patron'] = ''
@@ -814,7 +814,7 @@ class Invoice(models.Model):
         validation['Receptor-Ubicacion-Barrio']['Mensaje'] = 'El barrio del '+receptor_str
 
         validation['Receptor-Ubicacion-OtrasSenas'] = {}
-        validation['Receptor-Ubicacion-OtrasSenas']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-Ubicacion-OtrasSenas']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-OtrasSenas']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-OtrasSenas']['Tamano'] = {'Min':1,'Max':250}
         validation['Receptor-Ubicacion-OtrasSenas']['Patron'] = ''
