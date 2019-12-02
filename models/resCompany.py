@@ -103,7 +103,7 @@ class resCompany(models.Model):
         log.info('--> _check_email')
         pattern = r"\s*\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s*"
         for s in self:
-            if s.company_id.country_id.code == 'CR':
+            if s.country_id.code == 'CR':
                 if s.email:
                     if not re.match(pattern, s.email):
                         raise ValidationError("El correo electronico no tiene un formato valido")
@@ -112,7 +112,7 @@ class resCompany(models.Model):
     def _check_fe_url_server(self):
         log.info('--> _check_fe_url_server')
         for s in self:
-            if s.company_id.country_id.code == 'CR':
+            if s.country_id.code == 'CR':
                 if not s.fe_url_server[int(len(s.fe_url_server)-1):int(len( s.fe_url_server))] == "/" :
                     raise ValidationError("El Server URL debe de terminar con un slash /")
 
