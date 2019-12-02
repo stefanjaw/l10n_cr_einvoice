@@ -41,6 +41,15 @@ class resCompany(models.Model):
     )
     fe_url_server = fields.Char(string="Url del server para facturar", )
 
+    fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
+
+    @api.multi
+    @api.depends('country_id')
+    def _get_country_code(self):
+        log.info('--> 1575319718')
+        for s in self:
+            s.fe_current_country_company_code = s.country_id.code
+
     @api.multi
     def update_credentials_server_side(self):
         log.info('--->1574963401')

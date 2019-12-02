@@ -41,6 +41,15 @@ class resPartner(models.Model):
     #debajo movil
     fe_fax_number = fields.Char(string="Fax",size = 20 )
 
+    fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
+
+    @api.multi
+    @api.depends('company_id')
+    def _get_country_code(self):
+        log.info('--> 1575319718')
+        for s in self:
+            s.fe_current_country_company_code = s.company_id.country_id.code
+
     @api.multi
     @api.constrains("email")
     def _check_field(self):

@@ -59,8 +59,6 @@ class Invoice(models.Model):
             ],
     )
 
-    current_country_code = fields.Char(string="country code", compute='_get_current_company')
-
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )
     fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda", )
@@ -107,6 +105,16 @@ class Invoice(models.Model):
         ],
         default="FE",
     )
+
+    fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
+
+    @api.multi
+    @api.depends('company_id')
+    def _get_country_code(self):
+        log.info('--> 1575319718')
+        for s in self:
+            s.fe_current_country_company_code = s.company_id.country_id.code
+
 
     @api.onchange("fe_in_invoice_type",)
     def _onchange_fe_in_invoice_type(self):
@@ -442,14 +450,6 @@ class Invoice(models.Model):
             transform = ET.XSLT(ET.parse('/home/odoo/addons/factelec_43/static/src/fe.xslt'))
         nuevodom = transform(dom)
         return ET.tostring(nuevodom, pretty_print=True)
-
-    @api.multi
-    @api.depends()
-    def _get_current_company(self):
-        log.info('--> factelec-Invoice-_get_current_company')
-        for s in self:
-            #current_country_code = s.company_id.partner_id.country_id.code
-            current_country_code = s.company_id.country_id.code
 
 
     def _get_date(self, date):
