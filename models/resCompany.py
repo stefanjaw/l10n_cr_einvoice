@@ -122,7 +122,7 @@ class resCompany(models.Model):
     def _check_country_id(self):
         log.info('--> _check_country')
         for s in self:
-            if not s.country_id.code:
+            if not s.country_id:
                 raise ValidationError("Seleccione el país de la compañia")
 
 
