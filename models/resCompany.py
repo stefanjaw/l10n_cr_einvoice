@@ -115,6 +115,15 @@ class resCompany(models.Model):
             if s.country_id.code == 'CR':
                 if not s.fe_url_server[int(len(s.fe_url_server)-1):int(len( s.fe_url_server))] == "/" :
                     raise ValidationError("El Server URL debe de terminar con un slash /")
+                    
+    
+    @api.multi
+    @api.constrains("country_id")
+    def _check_country_id(self):
+        log.info('--> _check_country')
+        for s in self:
+            if not s.country_id.code:
+                raise ValidationError("Seleccione el país de la compañia")
 
 
     '''@api.multi
