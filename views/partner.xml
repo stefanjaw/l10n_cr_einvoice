@@ -7,6 +7,7 @@
   <field name="inherit_id" ref="base.view_partner_form"/>
   <field name="arch" type="xml">
    <field name="vat" position="before">
+     <div attrs="{'invisible': [('country_id', '!=', 50)]}">
        <field name="fe_canton_id" options="{'no_create': True, 'no_create_edit': True}"
            domain="[('state_id', '=',state_id)]" string = "Canton" required="0"/>
        <field name="fe_district_id" options="{'no_create': True, 'no_create_edit': True}"
@@ -15,6 +16,7 @@
            domain="[('district_id', '=', fe_district_id)]" string = "Barrio"/>
        <field name = "fe_other_signs" required="0"/>
        <field name = "fe_receptor_otras_senas_extranjero"/>
+     </div>
    </field>
     <field name = "vat" position = "before">
         <!--<field name = "fe_activity_code"/>-->
@@ -35,7 +37,7 @@
   <field name="inherit_id" ref="base.view_company_form"/>
   <field name="arch" type="xml">
             <xpath expr="//page" position="after">
-               <page name="" string="Facturacion electronica">
+               <page name="" string="Facturacion electronica" attrs="{'invisible': [('country_id', '!=', 50)]}">
                   <form>
                       <sheet>
                          <group>
