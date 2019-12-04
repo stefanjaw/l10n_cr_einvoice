@@ -30,6 +30,7 @@
     'data': [
         'security/res_partner_security.xml',
         'security/activity_code_security.xml',
+        'security/invoice_security.xml',
         'views/canton.xml',
         'views/cron.xml',
         'views/district.xml',
