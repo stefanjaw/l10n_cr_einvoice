@@ -59,6 +59,9 @@
                   </form>
                </page>
             </xpath>
+            <field name="country_id" position="replace">
+              <field name="country_id" required="1"/>
+            </field>
             <field name="vat" position="before">
                 <field name = "fe_comercial_name" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
                 <field name="fe_identification_type" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')],'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>

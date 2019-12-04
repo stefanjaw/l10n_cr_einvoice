@@ -117,27 +117,4 @@ class resCompany(models.Model):
                     raise ValidationError("El Server URL debe de terminar con un slash /")
                     
     
-    @api.multi
-    @api.constrains("country_id")
-    def _check_country_id(self):
-        log.info('--> _check_country')
-        for s in self:
-            log.info('--->country %s %s',s.country_id, s.country_id.code)
-            if not s.country_id:
-                raise ValidationError("Seleccione el país de la compañia")
-
-
-    '''@api.multi
-    @api.constrains("phone","fe_fax_number")
-    def _check_phone_fe_fax_number(self):
-        log.info('--> _check_phone_fe_fax_number')
-        pattern = r"^[0-9]{1,20}$"
-        for s in self:
-            if s.phone :
-                if not re.match(pattern,s.phone):
-                    raise ValidationError("el campo telefono solo debe de contener numeros y Maximo de 20 digitos")
-
-
-            if s.fe_fax_number :
-                if not re.match(pattern,s.fe_fax_number):
-                    raise ValidationError("el campo Fax solo debe de contener numeros y Maximo de 20 digitos")'''
+    
