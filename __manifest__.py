@@ -28,6 +28,7 @@
 
 
     'data': [
+        'security/ir.model.access.csv',
         'views/canton.xml',
         'views/cron.xml',
         'views/district.xml',
