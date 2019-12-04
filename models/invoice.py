@@ -602,7 +602,7 @@ class Invoice(models.Model):
     def _validate_size_type_pattern(self,obj,validation,key):
 
         if len(obj) < validation[key]['Tamano']['Min'] or len(obj) > validation[key]['Tamano']['Max']:
-            mensaje_validacion += validation[key]['Mensaje']+" debe ser como minimo "+str(validation[key]['Tamano']['Min'])+" y como máximo "+str(validation[key]['Tamano']['Max'])
+            self.mensaje_validacion += validation[key]['Mensaje']+" debe ser como minimo "+str(validation[key]['Tamano']['Min'])+" y como máximo "+str(validation[key]['Tamano']['Max'])
         if validation[key]['Tipo'] == 'Integer':
             if not self._try_parse_int(obj):
                 self.mensaje_validacion += validation[key]['Mensaje'] +" debe ser un numero entero"+'\n'
