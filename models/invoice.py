@@ -612,18 +612,22 @@ class Invoice(models.Model):
 
     def validacion(self):
         tipo = self.number[8:10]
-
-        emisor_str = "Emisor"
-        receptor_str = "Receptor"
-        if tipo =='01' or tipo =='02' or tipo =='03' or tipo =='09':
-
-            emisor = "company_id"
-            receptor = "partner_id"
-
-        elif tipo  == '05' or tipo  =='08':
-
-            emisor = "partner_id"
-            receptor = "company_id"
+        emisor_str = ""
+        receptor_str = ""
+        if self.type == 'out_invoice':
+            if tipo =='01' or tipo =='02' or tipo =='03' or tipo =='09':
+                emisor_str = "Compañia"
+                receptor_str = "Cliente"
+                emisor = "company_id"
+                receptor = "partner_id"
+                
+        elif  self.type == 'in_invoice':   
+            if tipo  == '05' or tipo  =='08':
+                emisor_str = "Proveedor"
+                receptor_str = "Compañia" 
+                emisor = "partner_id"
+                receptor = "company_id"
+            
 
         translate = {}
         translate['CodigoActividad'] = 'fe_activity_code_id.code'
@@ -665,6 +669,7 @@ class Invoice(models.Model):
         validation['CodigoActividad']['Tamano'] = {'Min':6,'Max':6}
         validation['CodigoActividad']['Patron'] = ''
         validation['CodigoActividad']['Mensaje'] = 'Seleccione la actividad económica'
+        validation['CodigoActividad']['Padre'] = ''
 
         validation['Clave'] = {}
         validation['Clave']['CondicionCampo'] =  {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -672,6 +677,7 @@ class Invoice(models.Model):
         validation['Clave']['Tamano']  = {'Min':50,'Max':50}
         validation['Clave']['Patron'] = ''
         validation['Clave']['Mensaje'] = 'La clave'
+        validation['Clave']['Padre'] = ''
 
         validation['NumeroConsecutivo'] = {}
         validation['NumeroConsecutivo']['CondicionCampo'] =  {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -679,6 +685,7 @@ class Invoice(models.Model):
         validation['NumeroConsecutivo']['Tamano'] = {'Min':20,'Max':20}
         validation['NumeroConsecutivo']['Patron'] = ''
         validation['NumeroConsecutivo']['Mensaje'] = 'El numero consecutivo'
+        validation['NumeroConsecutivo']['Padre'] = ''
 
         validation['FechaEmision'] = {}
         validation['FechaEmision']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -686,6 +693,7 @@ class Invoice(models.Model):
         validation['FechaEmision']['Tamano'] = {'Min':1,'Max':100}
         validation['FechaEmision']['Patron'] = ''
         validation['FechaEmision']['Mensaje'] = 'La fecha emisión'
+        validation['FechaEmision']['Padre'] = ''
 
         validation['Emisor-Nombre'] = {}
         validation['Emisor-Nombre']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'01','03':'1','02':'1'}
@@ -693,6 +701,7 @@ class Invoice(models.Model):
         validation['Emisor-Nombre']['Tamano'] = {'Min':1,'Max':100}
         validation['Emisor-Nombre']['Patron'] = ''
         validation['Emisor-Nombre']['Mensaje'] = 'El nombre del ' + emisor_str
+        validation['Emisor-Nombre']['Padre'] = ''
 
         validation['Emisor-Identifacion-Tipo'] = {}
         validation['Emisor-Identifacion-Tipo']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -700,70 +709,79 @@ class Invoice(models.Model):
         validation['Emisor-Identifacion-Tipo']['Tamano'] = {'Min':2,'Max':2}
         validation['Emisor-Identifacion-Tipo']['Patron'] = ''
         validation['Emisor-Identifacion-Tipo']['Mensaje'] = 'El tipo de identificación del '+emisor_str
-
+        validation['Emisor-Identifacion-Tipo']['Padre'] = ''
+        
         validation['Emisor-Identifacion-Numero'] = {}
         validation['Emisor-Identifacion-Numero']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Emisor-Identifacion-Numero']['Tipo'] = 'String'
         validation['Emisor-Identifacion-Numero']['Tamano'] = {'Min':9,'Max':12}
         validation['Emisor-Identifacion-Numero']['Patron'] = ''
         validation['Emisor-Identifacion-Numero']['Mensaje'] = 'El numero de identificación del '+emisor_str
-
+        validation['Emisor-Identifacion-Numero']['Padre'] = ''
+        
         validation['Emisor-Ubicacion-Provincia'] = {}
         validation['Emisor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Emisor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Emisor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-Provincia']['Patron'] = ''
-        validation['Emisor-Ubicacion-Provincia']['Mensaje'] = 'Configurar el codigo de factura electronica en la provincia '+emisor_str
-
+        validation['Emisor-Ubicacion-Provincia']['Mensaje'] = 'Seleccionar provincia o configurar el codigo de factura electronica en la provincia '+emisor_str
+        validation['Emisor-Ubicacion-Provincia']['Padre'] = ''
+        
         validation['Emisor-Ubicacion-Canton'] = {}
         validation['Emisor-Ubicacion-Canton']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Emisor-Ubicacion-Canton']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-Canton']['Tamano'] = {'Min':2,'Max':2}
         validation['Emisor-Ubicacion-Canton']['Patron'] = ''
         validation['Emisor-Ubicacion-Canton']['Mensaje'] = 'El canton del '+emisor_str
-
+        validation['Emisor-Ubicacion-Canton']['Padre'] = ''
+        
         validation['Emisor-Ubicacion-Distrito'] = {}
         validation['Emisor-Ubicacion-Distrito']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Emisor-Ubicacion-Distrito']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-Distrito']['Tamano'] = {'Min':2,'Max':2}
         validation['Emisor-Ubicacion-Distrito']['Patron'] = ''
         validation['Emisor-Ubicacion-Distrito']['Mensaje'] = 'El distrito del '+emisor_str
-
+        validation['Emisor-Ubicacion-Distrito']['Padre'] = ''
+        
         validation['Emisor-Ubicacion-Barrio'] = {}
         validation['Emisor-Ubicacion-Barrio']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Emisor-Ubicacion-Barrio']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-Barrio']['Tamano'] = {'Min':2,'Max':2}
         validation['Emisor-Ubicacion-Barrio']['Patron'] = ''
         validation['Emisor-Ubicacion-Barrio']['Mensaje'] = 'El barrio del '+emisor_str
-
+        validation['Emisor-Ubicacion-Barrio']['Padre'] = ''
+        
         validation['Emisor-Ubicacion-OtrasSenas'] = {}
         validation['Emisor-Ubicacion-OtrasSenas']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Emisor-Ubicacion-OtrasSenas']['Tipo'] = 'String'
         validation['Emisor-Ubicacion-OtrasSenas']['Tamano'] = {'Min':1,'Max':250}
         validation['Emisor-Ubicacion-OtrasSenas']['Patron'] = ''
         validation['Emisor-Ubicacion-OtrasSenas']['Mensaje'] = 'Las otras señas del '+emisor_str
-
+        validation['Emisor-Ubicacion-OtrasSenas']['Padre'] = ''
+        
         validation['Emisor-Telefono-NumTelefono'] = {}
         validation['Emisor-Telefono-NumTelefono']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Emisor-Telefono-NumTelefono']['Tipo'] = 'Integer'
         validation['Emisor-Telefono-NumTelefono']['Tamano'] = {'Min':8,'Max':20}
         validation['Emisor-Telefono-NumTelefono']['Patron'] = ''
         validation['Emisor-Telefono-NumTelefono']['Mensaje'] = 'El numero de telefono del '+emisor_str
-
+        validation['Emisor-Telefono-NumTelefono']['Padre'] = ''
+        
         validation['Emisor-Fax-NumTelefono'] = {}
         validation['Emisor-Fax-NumTelefono']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Emisor-Fax-NumTelefono']['Tipo'] = 'Integer'
         validation['Emisor-Fax-NumTelefono']['Tamano'] = {'Min':8,'Max':20}
         validation['Emisor-Fax-NumTelefono']['Patron'] = ''
         validation['Emisor-Fax-NumTelefono']['Mensaje'] = 'El numero de fax del '+emisor_str
-
+        validation['Emisor-Fax-NumTelefono']['Padre'] = ''
+        
         validation['Emisor-CorreoElectronico'] = {}
         validation['Emisor-CorreoElectronico']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Emisor-CorreoElectronico']['Tipo'] = 'String'
         validation['Emisor-CorreoElectronico']['Tamano'] = {'Min':1,'Max':160}
         validation['Emisor-CorreoElectronico']['Patron'] = ''
         validation['Emisor-CorreoElectronico']['Mensaje'] = 'El correo electronico del '+emisor_str
-
+        validation['Emisor-CorreoElectronico']['Padre'] = ''
         #Receptor
         #validation['Receptor-Nombre'] = {}
         #validation['Receptor-Nombre']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -777,70 +795,79 @@ class Invoice(models.Model):
         validation['Receptor-TipoIdentifacion']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-TipoIdentifacion']['Patron'] = ''
         validation['Receptor-TipoIdentifacion']['Mensaje'] = 'El tipo de identificacion del '+receptor_str
-
+        validation['Receptor-TipoIdentifacion']['Padre'] = ''
+        
         validation['Receptor-NumeroIdentifacion'] = {}
         validation['Receptor-NumeroIdentifacion']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Receptor-NumeroIdentifacion']['Tipo'] = 'String'
         validation['Receptor-NumeroIdentifacion']['Tamano'] = {'Min':9,'Max':12}
         validation['Receptor-NumeroIdentifacion']['Patron'] = ''
         validation['Receptor-NumeroIdentifacion']['Mensaje'] = 'El numero de identificacion del '+receptor_str
-
+        validation['Receptor-NumeroIdentifacion']['Padre'] = ''
+        
         validation['Receptor-Ubicacion-Provincia'] = {}
         validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'2','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Receptor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Receptor-Ubicacion-Provincia']['Patron'] = ''
         validation['Receptor-Ubicacion-Provincia']['Mensaje'] = 'La provincia del '+receptor_str
-
+        validation['Receptor-Ubicacion-Provincia']['Padre'] = ''
+        
         validation['Receptor-Ubicacion-Canton'] = {}
         validation['Receptor-Ubicacion-Canton']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Canton']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Canton']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-Ubicacion-Canton']['Patron'] = ''
         validation['Receptor-Ubicacion-Canton']['Mensaje'] = 'El canton del '+receptor_str
-
+        validation['Receptor-Ubicacion-Canton']['Padre'] = 'Receptor-Ubicacion-Provincia'
+        
         validation['Receptor-Ubicacion-Distrito'] = {}
         validation['Receptor-Ubicacion-Distrito']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Distrito']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Distrito']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-Ubicacion-Distrito']['Patron'] = ''
         validation['Receptor-Ubicacion-Distrito']['Mensaje'] = 'El distrito del '+receptor_str
-
+        validation['Receptor-Ubicacion-Distrito']['Padre'] = 'Receptor-Ubicacion-Provincia'
+        
         validation['Receptor-Ubicacion-Barrio'] = {}
         validation['Receptor-Ubicacion-Barrio']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Barrio']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Barrio']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-Ubicacion-Barrio']['Patron'] = ''
         validation['Receptor-Ubicacion-Barrio']['Mensaje'] = 'El barrio del '+receptor_str
-
+        validation['Receptor-Ubicacion-Barrio']['Padre'] = ''
+        
         validation['Receptor-Ubicacion-OtrasSenas'] = {}
         validation['Receptor-Ubicacion-OtrasSenas']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Ubicacion-OtrasSenas']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-OtrasSenas']['Tamano'] = {'Min':1,'Max':250}
         validation['Receptor-Ubicacion-OtrasSenas']['Patron'] = ''
         validation['Receptor-Ubicacion-OtrasSenas']['Mensaje'] = 'Las otras señas del '+receptor_str
-
+        validation['Receptor-Ubicacion-OtrasSenas']['Padre'] = 'Receptor-Ubicacion-Provincia'
+        
         validation['Receptor-Telefono-NumTelefono'] = {}
         validation['Receptor-Telefono-NumTelefono']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Telefono-NumTelefono']['Tipo'] = 'Integer'
         validation['Receptor-Telefono-NumTelefono']['Tamano'] = {'Min':8,'Max':20}
         validation['Receptor-Telefono-NumTelefono']['Patron'] = ''
         validation['Receptor-Telefono-NumTelefono']['Mensaje'] = 'El numero de telefono del '+receptor_str
-
+        validation['Receptor-Telefono-NumTelefono']['Padre'] = ''
+        
         validation['Receptor-Fax-NumTelefono'] = {}
         validation['Receptor-Fax-NumTelefono']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
         validation['Receptor-Fax-NumTelefono']['Tipo'] = 'Integer'
         validation['Receptor-Fax-NumTelefono']['Tamano'] = {'Min':8,'Max':20}
         validation['Receptor-Fax-NumTelefono']['Patron'] = ''
         validation['Receptor-Fax-NumTelefono']['Mensaje'] = 'El numero de fax del '+receptor_str
-
+        validation['Receptor-Fax-NumTelefono']['Padre'] = ''
+        
         validation['Receptor-CorreoElectronico'] = {}
         validation['Receptor-CorreoElectronico']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
         validation['Receptor-CorreoElectronico']['Tipo'] = 'String'
         validation['Receptor-CorreoElectronico']['Tamano'] = {'Min':1,'Max':160}
         validation['Receptor-CorreoElectronico']['Patron'] = ''
         validation['Receptor-CorreoElectronico']['Mensaje'] = 'El correo electronico del '+receptor_str
-
+        validation['Receptor-CorreoElectronico']['Padre'] = ''
 
         validation['CondicionVenta'] = {}
         validation['CondicionVenta']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
@@ -848,7 +875,7 @@ class Invoice(models.Model):
         validation['CondicionVenta']['Tamano'] = {'Min':2,'Max':2}
         validation['CondicionVenta']['Patron'] = ''
         validation['CondicionVenta']['Mensaje'] = 'Tipo de pago o configuración en plazos de pago el tipo de pago'
-
+        validation['CondicionVenta']['Padre'] = ''
         '''plazo credito'''
         validation['MedioPago'] = {}
         validation['MedioPago']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'2','02':'2'}
@@ -856,6 +883,7 @@ class Invoice(models.Model):
         validation['MedioPago']['Tamano'] = {'Min':2,'Max':2}
         validation['MedioPago']['Patron'] = ''
         validation['MedioPago']['Mensaje'] = 'El medio de pago'
+        validation['MedioPago']['Padre'] = ''
 
         for key in validation:
             if validation[key]['CondicionCampo'][tipo] == "1":
@@ -867,10 +895,21 @@ class Invoice(models.Model):
                     self.mensaje_validacion += 'Falta '+validation[key]['Mensaje']+'\n'
 
             elif validation[key]['CondicionCampo'][tipo] == "2":
-                translate_key = translate[key]
-                obj = self._getField(translate_key)
-                if obj:
-                    self._validate_size_type_pattern(obj,validation,key)
+                if validation[key]['Padre'] != '':
+                    padre_translate_key = translate[ validation[key]['Padre']  ]
+                    obj_padre = self._getField(padre_translate_key)
+                    if obj_padre:
+                        translate_key = translate[key]
+                        obj = self._getField(translate_key)
+                        if obj:
+                            self._validate_size_type_pattern(obj,validation,key)
+                        else:
+                            self.mensaje_validacion += 'Falta '+validation[key]['Mensaje']+'\n'
+                else:
+                    translate_key = translate[key]
+                    obj = self._getField(translate_key)
+                    if obj:
+                        self._validate_size_type_pattern(obj,validation,key)
 
         if self.mensaje_validacion != '':
             raise ValidationError(self.mensaje_validacion)
@@ -881,6 +920,8 @@ class Invoice(models.Model):
         if self.fe_doc_type != "MensajeReceptor":
            country_code = self.company_id.country_id.phone_code
            vat = self.company_id.vat or ''
+           vat = vat.replace('-','')
+           vat = vat.replace(' ','')
            vat_complete = "0" * (12 - len(vat)) + vat
            clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
               + str(vat_complete) + str(self.number) + str(self.fe_receipt_status) \
@@ -969,8 +1010,8 @@ class Invoice(models.Model):
 
 
     @api.model
-    def get_server_bills(self):
-        log.info('--> get_server_bills')
+    def cron_get_server_bills(self):
+        log.info('--> cron_get_server_bills')
         list = self.env['account.invoice'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','open'),
         ('fe_server_state','!=','pendiente enviar')])
 
@@ -1040,7 +1081,7 @@ class Invoice(models.Model):
         self.invoice[self.fe_doc_type]['Emisor'].update({
            'Identificacion':{
               'Tipo': self.env.user.company_id.fe_identification_type or None,
-              'Numero':self.env.user.company_id.vat,
+              'Numero':self.env.user.company_id.vat.replace('-','').replace(' ',''),
            },
         })
 
@@ -1061,7 +1102,7 @@ class Invoice(models.Model):
         if self.company_id.phone:
            self.invoice[self.fe_doc_type]['Emisor'].update({'Telefono':{
               'CodigoPais':str(self.company_id.country_id.phone_code),
-              'NumTelefono':self.company_id.phone,
+              'NumTelefono':self.company_id.phone.replace('-','').replace(' ',''),
            }})
         if self.env.user.company_id.fe_fax_number:
            self.invoice[self.fe_doc_type]['Emisor'].update({'Fax':{
@@ -1370,45 +1411,11 @@ class Invoice(models.Model):
 
         self.invoice[self.fe_doc_type].update({'PDF':self._get_pdf_bill(self.id)})
 
-
-
-    @api.multi
-    def _send_invoice(self,inv):
-        log.info('--> factelec-Invoice-_send_invoice')
-
-        self._cr_xml_factura_electronica()
-        json_string = json.dumps(inv)
-        header = {'Content-Type':'application/json'}
-        url = self.env.user.company_id.fe_url_server
-        log.info('XXXX JSON STRING \n%s\n',json_string)
-        response = requests.post(url, headers = header, data = json_string)
-
-
-
-        try:
-            log.info('\n ====853=== Response : %s\n',response.text )
-            '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
-            json_response = json.loads(response.text)
-
-            if "result" in json_response.keys():
-                result = json_response['result']
-                if "status" in result.keys():
-                    if result['status'] == "200":
-                        log.info('\n ========== exito : %s\n')
-                        inv.update({'fe_server_state':'enviado a procesar'})
-
-                elif "error" in  result.keys():
-                    result = json_response['result']['error']
-                    body = "Error3 "+result
-                    inv.write_chatter(body)
-
-        except Exception as e:
-            body = "Error4 "+str(e)  #DEBUG
-            inv.write_chatter(body)
-
     @api.model
-    def build_json(self):
+    def cron_send_json(self):
         log.info('--> factelec-Invoice-build_json')
-        inv_list = self.env['account.invoice'].search([('fe_server_state','=','pendiente enviar'),('state','=','open')])
-        for inv in inv_list:
-            self._send_invoice(inv)
+        invoice_list = self.env['account.invoice'].search([('fe_server_state','=',''),('state','=','open')])
+        log.info('-->lista a enviar %s',invoice_list)
+        for invoice in invoice_list:
+            if invoice.company_id.country_id.code == 'CR':
+                invoice._cr_post_server_side()
