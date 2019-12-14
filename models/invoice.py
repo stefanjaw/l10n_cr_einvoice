@@ -632,7 +632,7 @@ class Invoice(models.Model):
         translate = {}
         translate['CodigoActividad'] = 'fe_activity_code_id.code'
         translate['Clave'] = 'fe_clave'
-        translate['PlazoCredito'] = 'payment_term_id'
+        translate['PlazoCredito'] = 'payment_term_id.name'
         translate['NumeroConsecutivo'] = 'number'
         translate['FechaEmision'] = 'fe_fecha_emision'
         translate['Emisor-Nombre'] = emisor+'.name'
