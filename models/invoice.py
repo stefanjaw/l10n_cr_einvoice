@@ -615,14 +615,14 @@ class Invoice(models.Model):
         emisor_str = ""
         receptor_str = ""
         log.info('tipo --> %s',tipo)
-        if self.type == 'out_invoice':
+        if self.type == 'out_invoice' or self.type == 'out_refund':
             if tipo =='01' or tipo =='02' or tipo =='03' or tipo =='09':
                 emisor_str = "Compañia"
                 receptor_str = "Cliente"
                 emisor = "company_id"
                 receptor = "partner_id"
                 
-        elif  self.type == 'in_invoice':   
+        elif  self.type == 'in_invoice' or self.type == 'in_refund':   
             if tipo  == '05' or tipo  =='08':
                 emisor_str = "Proveedor"
                 receptor_str = "Compañia" 
