@@ -12,3 +12,4 @@ from . import product
 from . import provincia
 from . import resPartner
 from . import tax
+from . import accountInvoiceRefund

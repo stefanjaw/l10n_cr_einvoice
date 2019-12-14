@@ -30,6 +30,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/res_partner_security.xml',
+        'views/accountRefundPopUp.xml',
         'views/canton.xml',
         'views/cron.xml',
         'views/district.xml',

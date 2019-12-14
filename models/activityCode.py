@@ -18,7 +18,12 @@ class activityCode(models.Model):
         comodel_name="account.invoice",
         inverse_name="fe_activity_code_id",
     )
-
+    invoice_refund_ids = fields.One2many(
+            string="Invoice",
+            comodel_name="account.invoice.refund",
+            inverse_name="fe_activity_code_id",
+    )
+   
     @api.multi
     @api.depends()
     def compute_name(self):
