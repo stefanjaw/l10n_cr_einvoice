@@ -34,6 +34,7 @@
         'views/cron.xml',
         'views/district.xml',
         'views/invoice.xml',
+        'views/journal.xml',
         'views/neighborhood.xml',
         'views/partner.xml',
         'views/payment_term.xml',

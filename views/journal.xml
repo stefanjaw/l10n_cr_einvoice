@@ -1,0 +1,11 @@
+<!-- Inherit Form view -->
+<record id="account_journal_form_inherit" model="ir.ui.view">
+  <field name="name">account.journal.form</field>
+  <field name="model">account.journal</field>
+  <field name="inherit_id" ref="account.view_account_journal_form"/>
+  <field name="arch" type="xml">
+    <field name="refund_sequence_number_next" position="replace">
+      <field name="refund_sequence_number_next" readonly="0"/>
+    </field>
+  </field>
+</record>
