@@ -1019,11 +1019,12 @@ class Invoice(models.Model):
         dic = {}
 
         for item in list:
-            if item.fe_clave:
-               if item.type == 'in_invoice' and item.fe_clave:   #CAMBIO se agrego and item.fe_clave
-                  array.append(item.fe_clave+'-'+item.number)
-               else:
-                  array.append(item.fe_clave)
+            if item.company_id.country_id.code == 'CR':
+                if item.fe_clave:
+                   if item.type == 'in_invoice' and item.fe_clave:   #CAMBIO se agrego and item.fe_clave
+                      array.append(item.fe_clave+'-'+item.number)
+                   else:
+                      array.append(item.fe_clave)
 
 
         dic['ids'] = array
@@ -1081,7 +1082,7 @@ class Invoice(models.Model):
         self.invoice[self.fe_doc_type]['Emisor'].update({
            'Identificacion':{
               'Tipo': self.env.user.company_id.fe_identification_type or None,
-              'Numero':self.env.user.company_id.vat.replace('-','').replace(' ',''),
+              'Numero':self.env.user.company_id.vat.replace('-','').replace(' ','') or None,
            },
         })
 
@@ -1119,7 +1120,7 @@ class Invoice(models.Model):
         if self.partner_id.vat:
            self.invoice[self.fe_doc_type]['Receptor'].update({'Identificacion':{
               'Tipo':self.partner_id.fe_identification_type,
-              'Numero':self.partner_id.vat,
+              'Numero':self.partner_id.vat.replace('-','').replace(' ','') or None,
         }})
 
         if self.partner_id.fe_receptor_identificacion_extranjero:
@@ -1145,7 +1146,7 @@ class Invoice(models.Model):
         if self.partner_id.phone:
            self.invoice[self.fe_doc_type]['Receptor'].update({'Telefono':{
               'CodigoPais':str(self.company_id.country_id.phone_code),
-              'NumTelefono':self.partner_id.phone or None,
+              'NumTelefono':self.partner_id.phone.replace('-','').replace(' ','') or None,
            }})
 
         if self.partner_id.fe_fax_number:
@@ -1414,8 +1415,9 @@ class Invoice(models.Model):
     @api.model
     def cron_send_json(self):
         log.info('--> factelec-Invoice-build_json')
-        invoice_list = self.env['account.invoice'].search([('fe_server_state','=',''),('state','=','open')])
-        log.info('-->lista a enviar %s',invoice_list)
+        invoice_list = self.env['account.invoice'].search([('fe_server_state','=',False),('state','=','open')])
         for invoice in invoice_list:
             if invoice.company_id.country_id.code == 'CR':
-                invoice._cr_post_server_side()
+                log.info('-->consecutivo %s',invoice.number)
+                #invoice._cr_post_server_side()
+                invoice.confirm_bill()
