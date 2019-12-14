@@ -5,8 +5,8 @@
   <field name="model">account.journal</field>
   <field name="inherit_id" ref="account.view_account_journal_form"/>
   <field name="arch" type="xml">
-    <field name="refund_sequence_number_next" position="replace">
-      <field name="refund_sequence_number_next" readonly="0"/>
+    <field name="refund_sequence_id" position="replace">
+      <field name="refund_sequence_id" readonly="0"/>
     </field>
   </field>
 </record>
