@@ -632,6 +632,7 @@ class Invoice(models.Model):
         translate = {}
         translate['CodigoActividad'] = 'fe_activity_code_id.code'
         translate['Clave'] = 'fe_clave'
+        translate['PlazoCredito'] = 'payment_term_id'
         translate['NumeroConsecutivo'] = 'number'
         translate['FechaEmision'] = 'fe_fecha_emision'
         translate['Emisor-Nombre'] = emisor+'.name'
@@ -678,6 +679,15 @@ class Invoice(models.Model):
         validation['Clave']['Patron'] = ''
         validation['Clave']['Mensaje'] = 'La clave'
         validation['Clave']['Padre'] = ''
+        
+        
+        validation['PlazoCredito'] = {}
+        validation['PlazoCredito']['CondicionCampo'] =  {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['PlazoCredito']['Tipo'] = 'String'
+        validation['PlazoCredito']['Tamano']  = {'Min':1,'Max':10}
+        validation['PlazoCredito']['Patron'] = ''
+        validation['PlazoCredito']['Mensaje'] = 'El nombre plazo pago'
+        validation['PlazoCredito']['Padre'] = ''
 
         validation['NumeroConsecutivo'] = {}
         validation['NumeroConsecutivo']['CondicionCampo'] =  {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
