@@ -602,7 +602,7 @@ class Invoice(models.Model):
     def _validate_size_type_pattern(self,obj,validation,key):
 
         if len(obj) < validation[key]['Tamano']['Min'] or len(obj) > validation[key]['Tamano']['Max']:
-            self.mensaje_validacion += validation[key]['Mensaje']+" debe ser como minimo "+str(validation[key]['Tamano']['Min'])+" y como máximo "+str(validation[key]['Tamano']['Max'])
+            self.mensaje_validacion += validation[key]['Mensaje']+" debe ser como minimo "+str(validation[key]['Tamano']['Min'])+" y como máximo "+str(validation[key]['Tamano']['Max'])+'\n'
         if validation[key]['Tipo'] == 'Integer':
             if not self._try_parse_int(obj):
                 self.mensaje_validacion += validation[key]['Mensaje'] +" debe ser un numero entero"+'\n'
@@ -669,7 +669,7 @@ class Invoice(models.Model):
         validation['CodigoActividad']['Tipo'] = 'String'
         validation['CodigoActividad']['Tamano'] = {'Min':6,'Max':6}
         validation['CodigoActividad']['Patron'] = ''
-        validation['CodigoActividad']['Mensaje'] = 'Seleccione la actividad económica'
+        validation['CodigoActividad']['Mensaje'] = 'Seleccionar la actividad económica'
         validation['CodigoActividad']['Padre'] = ''
 
         validation['Clave'] = {}
