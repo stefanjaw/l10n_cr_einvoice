@@ -614,6 +614,7 @@ class Invoice(models.Model):
         tipo = self.number[8:10]
         emisor_str = ""
         receptor_str = ""
+        log.info('tipo --> %s',tipo)
         if self.type == 'out_invoice':
             if tipo =='01' or tipo =='02' or tipo =='03' or tipo =='09':
                 emisor_str = "Compañia"
