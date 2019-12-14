@@ -16,6 +16,13 @@ import logging
 
 log = logging.getLogger(__name__)
 
+TYPE2REFUND = {
+    'out_invoice': 'out_refund',        # Customer Invoice
+    'in_invoice': 'in_refund',          # Vendor Bill
+    'out_refund': 'out_invoice',        # Customer Credit Note
+    'in_refund': 'in_invoice',          # Vendor Credit Note
+}
+
 class Invoice(models.Model):
     _inherit = "account.invoice"
 
@@ -817,7 +824,7 @@ class Invoice(models.Model):
         validation['Receptor-NumeroIdentifacion']['Padre'] = ''
         
         validation['Receptor-Ubicacion-Provincia'] = {}
-        validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'2','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'2','09':'1','08':'1','04':'1','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Receptor-Ubicacion-Provincia']['Patron'] = ''
@@ -1436,7 +1443,7 @@ class Invoice(models.Model):
                 
     #metodo original heredado            
     @api.model
-    def _prepare_refund(self, invoice, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None):
+    def _prepare_refund(self, invoice, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None):
             """ Prepare the dict of values to create the new credit note from the invoice.
                 This method may be overridden to implement custom
                 credit note generation (making sure to call super() to establish
@@ -1479,6 +1486,7 @@ class Invoice(models.Model):
             values['fe_payment_type'] = fe_payment_type
             values['payment_term_id'] = payment_term_id
             values['fe_activity_code_id'] = fe_activity_code_id
+            values['fe_receipt_status'] = fe_receipt_status
     
             if date:
                 values['date'] = date
@@ -1489,12 +1497,12 @@ class Invoice(models.Model):
     #metodo original heredado          
     @api.multi
     @api.returns('self')
-    def refund(self, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None):
+    def refund(self, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None):
             new_invoices = self.browse()
             for invoice in self:
                 # create the new invoice
                 values = self._prepare_refund(invoice, date_invoice=date_invoice, date=date,
-                                        description=description, journal_id=journal_id,fe_payment_type=fe_payment_type,payment_term_id=payment_term_id,fe_activity_code_id=fe_activity_code_id)
+                                        description=description, journal_id=journal_id,fe_payment_type=fe_payment_type,payment_term_id=payment_term_id,fe_activity_code_id=fe_activity_code_id,fe_receipt_status=fe_receipt_status)
                 refund_invoice = self.create(values)
                 invoice_type = {'out_invoice': ('customer invoices credit note'),
                     'in_invoice': ('vendor bill credit note')}

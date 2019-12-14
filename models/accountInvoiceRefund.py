@@ -14,11 +14,13 @@ class accountInvoiceRefund(models.TransientModel):
             ('99', ' Otros'),
     ], string="Tipo de pago", track_visibility='onchange',required=False,) 
     
-    payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms', oldname='payment_term',
-        readonly=True, states={'draft': [('readonly', False)]},
-        help="If you use payment terms, the due date will be computed automatically at the generation "
-             "of accounting entries. If you keep the payment terms and the due date empty, it means direct payment. "
-             "The payment terms may compute several due dates, for example 50% now, 50% in one month.")
+    payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms',)
+    
+    fe_receipt_status = fields.Selection([
+               ('1', 'Normal'),
+               ('2', 'Contingencia'),
+               ('3', 'Sin Internet'),
+    ], string="Situación del comprobante", track_visibility='onchange',required=False,)
     
     fe_activity_code_id = fields.Many2one(
         string="Actividad económica",
@@ -46,7 +48,7 @@ class accountInvoiceRefund(models.TransientModel):
 
                 date = form.date or False
                 description = form.description or inv.name
-                refund = inv.refund(form.date_invoice, date, description, inv.journal_id.id,form.fe_payment_type,form.payment_term_id.id,form.fe_activity_code_id.id)
+                refund = inv.refund(form.date_invoice, date, description, inv.journal_id.id,form.fe_payment_type,form.payment_term_id.id,form.fe_activity_code_id.id,form.fe_receipt_status)
 
                 created_inv.append(refund.id)
                 if mode in ('cancel', 'modify'):

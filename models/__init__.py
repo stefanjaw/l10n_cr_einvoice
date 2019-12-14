@@ -13,3 +13,4 @@ from . import provincia
 from . import resPartner
 from . import tax
 from . import accountInvoiceRefund
+from . import accountPaymentTerm
