@@ -14,3 +14,5 @@ from . import resPartner
 from . import tax
 from . import accountInvoiceRefund
 from . import accountPaymentTerm
+from . import currency
+from . import currencyRate
