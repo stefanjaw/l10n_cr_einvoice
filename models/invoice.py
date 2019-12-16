@@ -778,7 +778,7 @@ class Invoice(models.Model):
         validation['Emisor-Ubicacion-OtrasSenas']['Padre'] = ''
         
         validation['Emisor-Telefono-NumTelefono'] = {}
-        validation['Emisor-Telefono-NumTelefono']['CondicionCampo'] = {'01':'2','09':'2','08':'2','04':'2','03':'2','02':'2'}
+        validation['Emisor-Telefono-NumTelefono']['CondicionCampo'] = {'01':'1','09':'1','08':'2','04':'2','03':'2','02':'2'}
         validation['Emisor-Telefono-NumTelefono']['Tipo'] = 'Integer'
         validation['Emisor-Telefono-NumTelefono']['Tamano'] = {'Min':8,'Max':20}
         validation['Emisor-Telefono-NumTelefono']['Patron'] = ''
@@ -808,7 +808,7 @@ class Invoice(models.Model):
         #validation['Receptor-Nombre']['Patron'] = ''
 
         validation['Receptor-TipoIdentifacion'] = {}
-        validation['Receptor-TipoIdentifacion']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-TipoIdentifacion']['CondicionCampo'] = {'01':'1','09':'2','08':'1','04':'1','03':'1','02':'1'}
         validation['Receptor-TipoIdentifacion']['Tipo'] = 'String'
         validation['Receptor-TipoIdentifacion']['Tamano'] = {'Min':2,'Max':2}
         validation['Receptor-TipoIdentifacion']['Patron'] = ''
@@ -816,7 +816,7 @@ class Invoice(models.Model):
         validation['Receptor-TipoIdentifacion']['Padre'] = ''
         
         validation['Receptor-NumeroIdentifacion'] = {}
-        validation['Receptor-NumeroIdentifacion']['CondicionCampo'] = {'01':'1','09':'1','08':'1','04':'1','03':'1','02':'1'}
+        validation['Receptor-NumeroIdentifacion']['CondicionCampo'] = {'01':'1','09':'2','08':'1','04':'1','03':'1','02':'1'}
         validation['Receptor-NumeroIdentifacion']['Tipo'] = 'String'
         validation['Receptor-NumeroIdentifacion']['Tamano'] = {'Min':9,'Max':12}
         validation['Receptor-NumeroIdentifacion']['Patron'] = ''
@@ -824,7 +824,7 @@ class Invoice(models.Model):
         validation['Receptor-NumeroIdentifacion']['Padre'] = ''
         
         validation['Receptor-Ubicacion-Provincia'] = {}
-        validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'2','09':'1','08':'1','04':'1','03':'2','02':'2'}
+        validation['Receptor-Ubicacion-Provincia']['CondicionCampo'] = {'01':'2','09':'2','08':'1','04':'1','03':'2','02':'2'}
         validation['Receptor-Ubicacion-Provincia']['Tipo'] = 'String'
         validation['Receptor-Ubicacion-Provincia']['Tamano'] = {'Min':1,'Max':1}
         validation['Receptor-Ubicacion-Provincia']['Patron'] = ''
@@ -1222,7 +1222,7 @@ class Invoice(models.Model):
             LineaCantidad = round(i.quantity,3)
             inv_lines[arrayCount]['Cantidad'] = '{0:.3f}'.format(LineaCantidad)
 
-            inv_lines[arrayCount]['UnidadMedida'] = i.product_id.uom_id.name
+            inv_lines[arrayCount]['UnidadMedida'] = i.uom_id.name
 
             if i.product_id.fe_unidad_medida_comercial:
                inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
@@ -1327,7 +1327,7 @@ class Invoice(models.Model):
             {'ResumenFactura':{
                    'CodigoTipoMoneda':{
                       'CodigoMoneda':self.currency_id.name,
-                      'TipoCambio':'{0:.5f}'.format(self.currency_id.rate),
+                      'TipoCambio':'{0:.2f}'.format((1/self.currency_id.rate) or None),
                    }
             }})
 
