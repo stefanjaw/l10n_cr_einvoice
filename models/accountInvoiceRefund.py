@@ -27,6 +27,27 @@ class accountInvoiceRefund(models.TransientModel):
         comodel_name="activity.code",
         ondelete="set null",
     )
+    
+    fe_tipo_documento_referencia = fields.Selection(
+        string="Tipo documento de referencia",
+        selection=[                
+                ('01','Factura electrónica'),
+                ('02','Nota de débito electrónica'),
+                ('03','Nota de crédito electrónica'),
+	            ('04','Tiquete electrónico'),
+                ('05','Nota de despacho'),
+	            ('06','Contrato'),
+                ('07','Procedimiento'),
+                ('08','Comprobante emitido en contingencia'),
+                ('09','Devolución mercadería'),
+                ('10','Sustituye factura rechazada por el Ministerio de Hacienda'),
+	            ('11','Sustituye factura rechazada por el Receptor del comprobante'),
+                ('12','Sustituye Factura de exportación'),
+                ('13','Facturación mes vencido'),
+                ('99','Otros'),
+        ],
+    )
+
              
     @api.multi
     def compute_refund(self, mode='refund'):

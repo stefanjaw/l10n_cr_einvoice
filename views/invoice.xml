@@ -11,6 +11,9 @@
         <h3><field name="fe_clave" readonly="1"/></h3>
         <h3><field name="fe_clave" invisible ="1"/></h3>
     </xpath>
+    <field name="sequence_number_next" position="replace">
+      <field name="sequence_number_next" attrs="{'invisible': [('sequence_number_next', '=', '0')]}"/>
+    </field>
      <field name="partner_id" position = "before">
        <field name="fe_in_invoice_type" widget="radio" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
      </field>
@@ -20,12 +23,13 @@
         <field name="payment_term_id" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
         <field name = "fe_payment_type" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
         <field name = "fe_receipt_status" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
+        <field name = "fe_condicion_impuesto" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
      </field>
-     <field name="date_due" position="after">
+     <notebook position="before">
          <!-- 1570054332 -->
          <field name = "fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
          <field name = "fe_xml_supplier_xslt" invisible="1"/>
-     </field>
+     </notebook>
     <field name="currency_id" position="after">
        <field name="fe_server_state" readonly='1' attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
        <!-- 1569524296 -->

@@ -32,6 +32,7 @@
         'security/res_partner_security.xml',
         'views/accountRefundPopUp.xml',
         'views/canton.xml',
+        'views/creditNote.xml',
         'views/cron.xml',
         'views/district.xml',
         'views/invoice.xml',
