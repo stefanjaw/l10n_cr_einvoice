@@ -47,8 +47,30 @@ class accountInvoiceRefund(models.TransientModel):
                 ('99','Otros'),
         ],
     )
+    
+    fe_informacion_referencia_codigo = fields.Selection([
+            ('01', 'Anula Documento de Referencia'),
+            ('02', 'Corrige monto'),
+            ('04', 'Referencia a otro documento'),
+            ('05', 'Sustituye comprobante provisional por contingencia.'),
+            ('99', 'Otros'),
+    ], string="Codigo de Referencia", track_visibility='onchange')
+    
+    fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
 
-             
+    company_id = fields.Many2one(
+    'res.company',
+    'Company',
+    default=lambda self: self.env.user.company_id.id 
+    )
+    
+        
+    @api.multi
+    @api.depends('company_id')
+    def _get_country_code(self):
+        for s in self:
+            s.fe_current_country_company_code = s.company_id.country_id.code 
+                         
     @api.multi
     def compute_refund(self, mode='refund'):
         inv_obj = self.env['account.invoice']
@@ -69,7 +91,7 @@ class accountInvoiceRefund(models.TransientModel):
 
                 date = form.date or False
                 description = form.description or inv.name
-                refund = inv.refund(form.date_invoice, date, description, inv.journal_id.id,form.fe_payment_type,form.payment_term_id.id,form.fe_activity_code_id.id,form.fe_receipt_status)
+                refund = inv.refund(form.date_invoice, date, description, inv.journal_id.id,form.fe_payment_type,form.payment_term_id.id,form.fe_activity_code_id.id,form.fe_receipt_status,form.fe_tipo_documento_referencia,form.fe_informacion_referencia_codigo)
 
                 created_inv.append(refund.id)
                 if mode in ('cancel', 'modify'):

@@ -58,7 +58,7 @@ class resCompany(models.Model):
                           'certificate_password':self.fe_password_certificate,
                           }
         json_to_send = json.dumps(json_string)
-        url = self.fe_url_server+'credential/update/'+self.vat
+        url = self.fe_url_server+'credential/update/'+self.vat.replace('-','').replace(' ','')
         log.info('--->url %s',url)
         header = {'Content-Type':'application/json'}
         response = requests.post(url, headers = header, data = json_to_send)

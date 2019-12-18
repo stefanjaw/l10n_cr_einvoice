@@ -107,8 +107,10 @@ class Invoice(models.Model):
     fe_in_invoice_type = fields.Selection(#1569867120
         string="Tipo Documento",
         selection=[
-                ('FE', 'Factura Electronica'),
+        
                 ('ME', 'Mensaje Aceptación'),
+                ('FE', 'Factura Electronica Compra'),
+                
         ],
         default="FE",
     )
@@ -406,21 +408,22 @@ class Invoice(models.Model):
            log.info('===340==== Response : \n  %s',response.text )
            '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
            json_response = json.loads(response.text)
-
+           
+           result = ""
            if "result" in json_response.keys():
                result = json_response['result']
-           if "status" in result.keys():
-               if result['status'] == "200":
-                   log.info('====== Exito \n')
-                   self.update({'fe_server_state':'enviado a procesar'})
+               if "status" in result.keys():
+                   if result['status'] == "200":
+                       log.info('====== Exito \n')
+                       self.update({'fe_server_state':'enviado a procesar'})
 
                elif "error" in  result.keys():
-                  result = json_response['result']['error']
-                  body = "Error1 "+result
-                  self.write_chatter(body)
+                    result = json_response['result']['error']
+                    body = "Error "+result
+                    self.write_chatter(body)
 
         except Exception as e:
-            body = "Error2 "+str(e)
+            body = "Error "+str(e)
             self.write_chatter(body)
 
     @api.multi
@@ -1045,13 +1048,13 @@ class Invoice(models.Model):
             r = requests.get(url, headers = header, data=json.dumps({}))
 
             data = r.json()
-            #1569447795
+            log.info('---> %s',data)
+            log.info('-->1569447795')
             #alamacena la informacion suministrada por el servidor
-            if data:
+            if data.get('result'):
 
-                if data.get('error'):
-                   params = {
-                      'fe_server_state':data['error']['message']}
+                if data.get('result').get('error'):
+                   self.write_chatter(data['result']['error'])
                 else:
                    params = {
                       'fe_server_state':data['result']['ind-estado'],
@@ -1060,9 +1063,9 @@ class Invoice(models.Model):
                       'fe_name_xml_hacienda':data['result']['nombre_xml_hacienda'],
                       'fe_xml_hacienda':data['result']['xml_hacienda'],
                    }
-                self.update(params)
-
-
+                   self.update(params)
+                
+                
     def _get_pdf_bill(self,id):
         log.info('--> _get_pdf_bill')
         ctx = self.env.context.copy()
@@ -1489,13 +1492,12 @@ class Invoice(models.Model):
         for invoice in invoice_list:
             if invoice.company_id.country_id.code == 'CR':
                 log.info('-->consecutivo %s',invoice.number)
-                #invoice._cr_post_server_side()
                 invoice.confirm_bill()
                 
                 
     #metodo original heredado            
     @api.model
-    def _prepare_refund(self, invoice, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None):
+    def _prepare_refund(self, invoice, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None,fe_tipo_documento_referencia=None,fe_informacion_referencia_codigo=None):
             """ Prepare the dict of values to create the new credit note from the invoice.
                 This method may be overridden to implement custom
                 credit note generation (making sure to call super() to establish
@@ -1539,7 +1541,8 @@ class Invoice(models.Model):
             values['payment_term_id'] = payment_term_id
             values['fe_activity_code_id'] = fe_activity_code_id
             values['fe_receipt_status'] = fe_receipt_status
-    
+            values['fe_tipo_documento_referencia'] = fe_tipo_documento_referencia
+            values['fe_informacion_referencia_codigo'] = fe_informacion_referencia_codigo
             if date:
                 values['date'] = date
             if description:
@@ -1549,12 +1552,12 @@ class Invoice(models.Model):
     #metodo original heredado          
     @api.multi
     @api.returns('self')
-    def refund(self, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None):
+    def refund(self, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None,fe_tipo_documento_referencia=None,fe_informacion_referencia_codigo=None):
             new_invoices = self.browse()
             for invoice in self:
                 # create the new invoice
                 values = self._prepare_refund(invoice, date_invoice=date_invoice, date=date,
-                                        description=description, journal_id=journal_id,fe_payment_type=fe_payment_type,payment_term_id=payment_term_id,fe_activity_code_id=fe_activity_code_id,fe_receipt_status=fe_receipt_status)
+                                        description=description, journal_id=journal_id,fe_payment_type=fe_payment_type,payment_term_id=payment_term_id,fe_activity_code_id=fe_activity_code_id,fe_receipt_status=fe_receipt_status,fe_tipo_documento_referencia=fe_tipo_documento_referencia,fe_informacion_referencia_codigo=fe_informacion_referencia_codigo)
                 refund_invoice = self.create(values)
                 invoice_type = {'out_invoice': ('customer invoices credit note'),
                     'in_invoice': ('vendor bill credit note')}

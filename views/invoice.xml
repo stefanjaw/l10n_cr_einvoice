@@ -87,10 +87,6 @@
           <field name = "fe_receipt_status" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
           <field name = "fe_activity_code_id"  domain="[('company_id', '=', company_id)]" options="{'no_create_edit':True}" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
       </field>
-
-      <field name="move_id" position="after">
-          <field name="fe_informacion_referencia_codigo" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
-      </field>
       <field name="payment_term_id" required="1" position="after">
             <field name="fe_server_state" readonly='1' attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
       </field>
