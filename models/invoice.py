@@ -654,7 +654,7 @@ class Invoice(models.Model):
         tipo = self.number[8:10]
         emisor_str = ""
         receptor_str = ""
-        log.info('tipo --> %s',tipo)
+
         translate = {}
         if self.type == 'out_invoice' or self.type == 'out_refund':
             if tipo =='01' or tipo =='02' or tipo =='03' or tipo =='09':
@@ -1293,7 +1293,7 @@ class Invoice(models.Model):
 
             if i.discount:
                 LineaMontoDescuento = round((LineaMontoTotal * (i.discount/100)),5)
-                LineaNaturalezaDescuento = "PENDIENTE_REFERENCIA AL NOMBRE DE LA TARIFA O UNO DEFAULT"
+                LineaNaturalezaDescuento = "Se aplica %s porciento de descuento" % (i.discount,)
 
                 inv_lines[arrayCount]['Descuento'] ={
                    'MontoDescuento':'{0:.5f}'.format(LineaMontoDescuento),
