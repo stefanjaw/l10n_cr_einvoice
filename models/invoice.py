@@ -13,6 +13,7 @@ import requests
 import base64
 import xmltodict
 import logging
+import time
 
 log = logging.getLogger(__name__)
 
@@ -147,6 +148,47 @@ class Invoice(models.Model):
                 ('04', 'Proporcionalidad'),
         ],
     )
+    
+    fe_currency_rate = fields.Char(string="Tipo de cambio",)
+    
+
+    @api.onchange("currency_id","date_invoice",)
+    def _onchange_currency_rate(self):
+        for s in self:
+            log.info('-->577381353')
+            if s.currency_id.name == "USD": 
+                date = None
+                if not s.date_invoice:
+                    date = time.strftime("%Y-%m-%d")
+                else:
+                    date = s.date_invoice 
+                                        
+                s._rate(date)
+                    
+            
+                       
+    def _rate(self,date):
+        rate_obj = self.env['res.currency.rate'].search([('name','=',date),('company_id','=',self.company_id.id)])
+        if rate_obj:
+            rate_calculation = 1 / rate_obj.rate
+            rate_name =  datetime.strptime(rate_obj.name,"%Y-%m-%d")
+            self.fe_currency_rate = "Fecha : %s || Cambio: %s" % (rate_name.strftime("%d/%m/%Y"), round(rate_calculation , 2) )
+            return
+        else:
+            update_currency = getattr(self.company_id, "_update_currency_bccr", None)
+            if callable(update_currency):
+                success = self.company_id._update_currency_bccr(date)
+                if success:
+                    return self._rate(date)
+                else:
+                    self.fe_currency_rate = "Se produjo un error"
+                    return
+            else:
+                self.fe_currency_rate = "No existe el tipo de cambio"
+                return 
+    
+    
+    
     @api.multi
     @api.depends('company_id')
     def _get_country_code(self):
