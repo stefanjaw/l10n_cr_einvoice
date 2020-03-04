@@ -53,6 +53,9 @@ class resCompany(models.Model):
     @api.multi
     def update_credentials_server_side(self):
         log.info('--->1574963401')
+        if not 'http://' in self.fe_url_server and  not 'https://' in self.fe_url_server:
+              raise ValidationError("El campo Server URL en compañia no tiene el formato correcto, asegurese que contenga http://")
+
         json_string = {
                           'token_user_password':self.fe_user_password,
                           'certificate_password':self.fe_password_certificate,
@@ -61,7 +64,14 @@ class resCompany(models.Model):
         url = self.fe_url_server+'credential/update/'+self.vat.replace('-','').replace(' ','')
         log.info('--->url %s',url)
         header = {'Content-Type':'application/json'}
-        response = requests.post(url, headers = header, data = json_to_send)
+        try:
+            response = requests.post(url, headers = header, data = json_to_send)
+        except Exception as ex:
+            if 'Name or service not known' in str(ex.args):
+                raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+            else:
+                 raise ValidationError(ex) 
+        
         log.info('--->response %s',response.text)
         json_response = json.loads(response.text)
 
@@ -115,6 +125,8 @@ class resCompany(models.Model):
             if s.country_id.code == 'CR':
                 if not s.fe_url_server[int(len(s.fe_url_server)-1):int(len( s.fe_url_server))] == "/" :
                     raise ValidationError("El Server URL debe de terminar con un slash /")
+
+           
                     
     
     

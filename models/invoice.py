@@ -111,6 +111,7 @@ class Invoice(models.Model):
         
                 ('ME', 'Mensaje Aceptación'),
                 ('FE', 'Factura Electronica Compra'),
+                ('FEX', 'Factura Electronica Compra Exterior'),
                 
         ],
         default="FE",
@@ -151,6 +152,13 @@ class Invoice(models.Model):
     
     fe_currency_rate = fields.Char(string="Tipo de cambio",)
     
+    @api.onchange('fe_in_invoice_type')
+    def _onchange_(self):
+        if self.fe_in_invoice_type == 'FEX':
+            self.update({'fe_server_state':'sin envio'})
+        else:
+            self.update({'fe_server_state':''})
+
 
     @api.onchange("currency_id","date_invoice",)
     def _onchange_currency_rate(self):
@@ -206,12 +214,19 @@ class Invoice(models.Model):
                                      'journal_id': None,
                                   }
                    }
-        else:
+        elif self.fe_in_invoice_type == "ME":
             return {'domain': {'journal_id': [('sequence_id.prefix', 'ilike', '05')]},
                          'value': {
                                      'journal_id': None,
                                   }
                    }
+        elif self.fe_in_invoice_type == "FEX":
+              return {'domain': {'journal_id': [('type', '=', 'purchase')] },
+                         'value': {
+                                     'journal_id': None,
+                                  }
+                   }
+
 
 
 
@@ -434,6 +449,9 @@ class Invoice(models.Model):
             raise exceptions.Warning((msg))
 
     def _cr_post_server_side(self):
+        if not self.company_id.fe_certificate:
+            raise exceptions.Warning(('No se encuentra el certificado en compañia'))
+            
         log.info('--> factelec-Invoice-_cr_post_server_side')
         self._cr_xml_factura_electronica()
         json_string = {
@@ -445,7 +463,13 @@ class Invoice(models.Model):
         log.info('========== json to send : \n%s\n', json_string)
         header = {'Content-Type':'application/json'}
         url = self.env.user.company_id.fe_url_server
-        response = requests.post(url, headers = header, data = json_to_send)
+        try:
+            response = requests.post(url, headers = header, data = json_to_send)
+        except Exception as ex:
+            if 'Name or service not known' in str(ex.args):
+                raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+            else:
+                 raise ValidationError(ex) 
         try:
            log.info('===340==== Response : \n  %s',response.text )
            '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
@@ -471,6 +495,8 @@ class Invoice(models.Model):
     @api.multi
     def confirm_bill(self):
         log.info('--> factelec-Invoice-confirm_bill')
+        if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
+            raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
         if self.state == 'draft':
            raise exceptions.Warning('VALIDE primero este documento')
@@ -574,8 +600,13 @@ class Invoice(models.Model):
             raise exceptions.Warning((msg))
 
     def _validate_invoice_line(self):
+        units = ['Al', 'Alc', 'Cm', 'I', 'Os', 'Sp', 'Spe', 'St', 'd', 'm', 'kg', 's', 'A', 'K', 'mol', 'cd', 'm²', 'm³', 'm/s', 'm/s²', '1/m', 'kg/m³', 'A/m²', 'A/m', 'mol/m³', 'cd/m²', '1', 'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'Ω', 'S', 'Wb', 'T', 'H', '°C', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'Pa·s', 'N·m', 'N/m', 'rad/s', 'rad/s²', 'W/m²', 'J/K', 'J/(kg·K)', 'J/kg', 'W/(m·K)', 'J/m³', 'V/m', 'C/m³', 'C/m²', 'F/m', 'H/m', 'J/mol', 'J/(mol·K)', 'C/kg', 'Gy/s', 'W/sr', 'W/(m²·sr)', 'kat/m³', 'min', 'h', 'd', 'º', '´', '´´', 'L', 't', 'Np', 'B', 'eV', 'u', 'ua', 'Unid', 'Gal', 'g', 'Km', 'Kw', 'ln', 'cm', 'mL', 'mm', 'Oz', 'Otros']
         log.info('--> _validate_invoice_line')
         for line in self.invoice_line_ids:
+
+            if line.uom_id.name not in units:
+                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda".format(line.uom_id.name)))
+                return
 
             if line.invoice_line_tax_ids:
 
@@ -694,6 +725,9 @@ class Invoice(models.Model):
 
     def validacion(self):
         tipo = self.number[8:10]
+        log.info(tipo)
+        if tipo !='01' and tipo !='02' and tipo !='03' and tipo  != '05' and tipo  !='08' and tipo !='09':
+            raise exceptions.Warning(("Configure el prefijo del diario contable para facturación electronica antes de validar"))
         emisor_str = ""
         receptor_str = ""
 
@@ -1040,7 +1074,7 @@ class Invoice(models.Model):
 
         log.info('--> action_invoice_open')
 
-        if self.company_id.country_id.code == 'CR':
+        if self.company_id.country_id.code == 'CR' and self.fe_in_invoice_type != 'FEX':
             if validate:
                     log.info('--> 1570130084')
                     for item in self.invoice_line_ids:
@@ -1073,10 +1107,13 @@ class Invoice(models.Model):
 
     @api.multi
     def get_invoice(self):
+            if self.state == 'draft':
+              raise exceptions.Warning('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
             log.info('--> 1569447129')
             log.info('--> get_invoice')
-
+            if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
+               raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
             if self.fe_xml_hacienda:
                  raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
 
@@ -1086,8 +1123,14 @@ class Invoice(models.Model):
                url = self.company_id.fe_url_server+'{0}'.format(self.fe_clave)
 
             header = {'Content-Type':'application/json'}
-
-            r = requests.get(url, headers = header, data=json.dumps({}))
+            
+            try:
+                r = requests.get(url, headers = header, data=json.dumps({}))
+            except Exception as ex:
+                if 'Name or service not known' in str(ex.args):
+                    raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+                else:
+                    raise ValidationError(ex) 
 
             data = r.json()
             log.info('---> %s',data)
@@ -1127,7 +1170,7 @@ class Invoice(models.Model):
         dic = {}
 
         for item in list:
-            if item.company_id.country_id.code == 'CR':
+            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'FEX':
                 if item.fe_clave:
                    if item.type == 'in_invoice' and item.fe_clave:   #CAMBIO se agrego and item.fe_clave
                       array.append(item.fe_clave+'-'+item.number)
@@ -1532,7 +1575,7 @@ class Invoice(models.Model):
         log.info('--> factelec-Invoice-build_json')
         invoice_list = self.env['account.invoice'].search([('fe_server_state','=',False),('state','=','open')])
         for invoice in invoice_list:
-            if invoice.company_id.country_id.code == 'CR':
+            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'FEX':
                 log.info('-->consecutivo %s',invoice.number)
                 invoice.confirm_bill()
                 

@@ -4,6 +4,8 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 import re
+import json
+import requests
 import logging
 
 log = logging.getLogger(__name__)
@@ -60,7 +62,22 @@ class resPartner(models.Model):
             if s.email:
                 if not re.match(pattern, s.email):
                     raise ValidationError("El correo electronico no tiene un formato valido")
+    
+    @api.onchange('vat')
+    def _onchange_(self):
+        if self.vat:
+            header = {'Content-Type':'application/json'}
+            url = "https://api.hacienda.go.cr/fe/ae?identificacion={0}".format(self.vat)
+            log.info(url)
+            response = requests.get(url, headers = header)
+ 
+            json_response = json.loads(response.text)
+                
+            if json_response.get("code") == 404:
+                return
+            return self.update({"name": json_response["nombre"],"fe_identification_type":json_response["tipoIdentificacion"]} )
 
+              
     '''
     @api.multi
     @api.constrains("phone","fe_fax_number")
