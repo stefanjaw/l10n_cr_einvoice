@@ -558,8 +558,6 @@ class Invoice(models.Model):
 
         filedir = os.path.dirname(os.path.realpath(__file__))
         filepath = os.path.join(filedir, 'xslt/fe.xslt')
-        #msg =  filepath
-        #raise exceptions.Warning((msg))
         if(type == 'FE'):
             transform = ET.XSLT(ET.parse(filepath))
         nuevodom = transform(dom)
