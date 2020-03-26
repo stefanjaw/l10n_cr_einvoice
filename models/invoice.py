@@ -14,6 +14,8 @@ import base64
 import xmltodict
 import logging
 import time
+import os
+
 
 log = logging.getLogger(__name__)
 
@@ -554,8 +556,12 @@ class Invoice(models.Model):
         transform = None
         dom = ET.fromstring(tostring(root_xml,pretty_print=True))
 
+        filedir = os.path.dirname(os.path.realpath(__file__))
+        filepath = os.path.join(filedir, 'xslt/fe.xslt')
+        #msg =  filepath
+        #raise exceptions.Warning((msg))
         if(type == 'FE'):
-            transform = ET.XSLT(ET.parse('/home/odoo/addons/factelec_43/static/src/fe.xslt'))
+            transform = ET.XSLT(ET.parse(filepath))
         nuevodom = transform(dom)
         return ET.tostring(nuevodom, pretty_print=True)
 
