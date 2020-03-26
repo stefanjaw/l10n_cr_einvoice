@@ -22,7 +22,7 @@
     'website': "http://www.avalantec.com",
 
     'category': 'Localization',
-    'version': '20190811.1424',
+    'version': '43.202003261132',
 
     'depends': ['base','contacts','account_accountant','l10n_cr'],
 
