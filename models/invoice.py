@@ -221,7 +221,7 @@ class Invoice(models.Model):
                                   }
                    }
         elif self.fe_in_invoice_type == "FEX":
-              return {'domain': {'journal_id': [('type', '=', 'purchase')] },
+              return {'domain': {'journal_id': [('type', '=', 'purchase'),('sequence_id.prefix', 'not ilike', '08'),('sequence_id.prefix', 'not ilike', '05')] },
                          'value': {
                                      'journal_id': None,
                                   }
