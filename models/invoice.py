@@ -5,6 +5,7 @@ from lxml.etree import Element, fromstring, parse, tostring, XMLParser
 from openerp.osv.orm import except_orm
 from openerp.osv import osv
 from openerp.tools.translate import _
+from .xslt import __path__ as path
 import lxml.etree as ET
 import pytz
 import json
@@ -14,7 +15,7 @@ import base64
 import xmltodict
 import logging
 import time
-import os
+#import os
 
 
 log = logging.getLogger(__name__)
@@ -555,11 +556,12 @@ class Invoice(models.Model):
         log.info('--> transform_doc')
         transform = None
         dom = ET.fromstring(tostring(root_xml,pretty_print=True))
-
-        filedir = os.path.dirname(os.path.realpath(__file__))
-        filepath = os.path.join(filedir, 'xslt/fe.xslt')
+        
+        #filedir = os.path.dirname(os.path.realpath(__file__))
+        #filepath = os.path.join(filedir, 'xslt/fe.xslt')
+        ruta = path._path[0]+"/fe.xslt"
         if(type == 'FE'):
-            transform = ET.XSLT(ET.parse(filepath))
+            transform = ET.XSLT(ET.parse(ruta))
         nuevodom = transform(dom)
         return ET.tostring(nuevodom, pretty_print=True)
 
