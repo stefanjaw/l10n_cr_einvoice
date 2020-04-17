@@ -1098,8 +1098,13 @@ class Invoice(models.Model):
             log.info('--> 1575061615')
             res = super(Invoice, self).action_invoice_open()
             tz = pytz.timezone('America/Costa_Rica')
-            self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
-            self.date_invoice = self.fe_fecha_emision
+            
+            if not self.date_invoice:
+                self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+                self.date_invoice = self.fe_fecha_emision
+            else:
+                self.fe_fecha_emision =  self.date_invoice 
+            
             self._validate_company()
             if self.number[8:10] != '05':
                 self._generar_clave()
