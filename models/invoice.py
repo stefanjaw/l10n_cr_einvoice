@@ -107,17 +107,15 @@ class Invoice(models.Model):
         ondelete="set null",
     )
 
+    #Cambio
 
     fe_in_invoice_type = fields.Selection(#1569867120
         string="Tipo Documento",
         selection=[
-        
                 ('ME', 'Mensaje Aceptación'),
                 ('FE', 'Factura Electronica Compra'),
-                ('FEX', 'Factura Electronica Compra Exterior'),
-                
+                ('OTRO', 'Otros'),                
         ],
-        default="FE",
     )
 
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
@@ -155,14 +153,31 @@ class Invoice(models.Model):
     
     fe_currency_rate = fields.Char(string="Tipo de cambio",)
     
+
+    #Cambio
+    '''
     @api.onchange('fe_in_invoice_type')
     def _onchange_(self):
         if self.fe_in_invoice_type == 'FEX':
             self.update({'fe_server_state':'sin envio'})
         else:
             self.update({'fe_server_state':''})
+    '''
 
+    @api.onchange("journal_id",)
+    def _onchange_journal_id(self):
+        if len(self.journal_id.sequence_id.prefix) == 10 :
+            if self.journal_id.sequence_id.prefix[8:10] == '08':
+                self.fe_in_invoice_type = 'FE'
+            elif self.journal_id.sequence_id.prefix[8:10] == '05':
+                self.fe_in_invoice_type = 'ME'
+            else:
+                self.fe_in_invoice_type = 'OTRO'
+        else:
+            self.fe_in_invoice_type = 'OTRO'
+            log.info('largo del prefijo del diario menor a 10')
 
+            
     @api.onchange("currency_id","date_invoice",)
     def _onchange_currency_rate(self):
         for s in self:
@@ -207,7 +222,8 @@ class Invoice(models.Model):
         for s in self:
             s.fe_current_country_company_code = s.company_id.country_id.code
 
-
+    #Cambio
+    '''
     @api.onchange("fe_in_invoice_type",)
     def _onchange_fe_in_invoice_type(self):
         #1569867217
@@ -229,6 +245,7 @@ class Invoice(models.Model):
                                      'journal_id': None,
                                   }
                    }
+    '''
 
 
 
@@ -1080,7 +1097,7 @@ class Invoice(models.Model):
 
         log.info('--> action_invoice_open')
 
-        if self.company_id.country_id.code == 'CR' and self.fe_in_invoice_type != 'FEX':
+        if self.company_id.country_id.code == 'CR' and self.fe_in_invoice_type != 'OTRO':
             if validate:
                     log.info('--> 1570130084')
                     for item in self.invoice_line_ids:
@@ -1181,7 +1198,7 @@ class Invoice(models.Model):
         dic = {}
 
         for item in list:
-            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'FEX':
+            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO':
                 if item.fe_clave:
                    if item.type == 'in_invoice' and item.fe_clave:   #CAMBIO se agrego and item.fe_clave
                       array.append(item.fe_clave+'-'+item.number)
@@ -1586,7 +1603,7 @@ class Invoice(models.Model):
         log.info('--> factelec-Invoice-build_json')
         invoice_list = self.env['account.invoice'].search([('fe_server_state','=',False),('state','=','open')])
         for invoice in invoice_list:
-            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'FEX':
+            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO':
                 log.info('-->consecutivo %s',invoice.number)
                 invoice.confirm_bill()
                 
