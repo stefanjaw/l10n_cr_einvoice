@@ -850,7 +850,7 @@ class Invoice(models.Model):
         validation['FechaEmision']['Padre'] = ''
         
         validation['Mensaje'] = {}
-        validation['Mensaje']['CondicionCampo'] = {'01':'2','09':'2','08':'2','05':'1','03':'2','02':'2'}
+        validation['Mensaje']['CondicionCampo'] = {'01':'2','09':'2','08':'2','05':'2','03':'2','02':'2'}
         validation['Mensaje']['Tipo'] = 'String'
         validation['Mensaje']['Tamano'] = {'Min':1,'Max':100}
         validation['Mensaje']['Patron'] = ''
