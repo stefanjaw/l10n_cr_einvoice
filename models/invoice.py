@@ -153,6 +153,20 @@ class Invoice(models.Model):
     
     fe_currency_rate = fields.Char(string="Tipo de cambio",)
     
+    @api.onchange('fe_msg_type')
+    def _onchange_fe_msg_type(self):
+        if self.fe_msg_type == '3':
+           account_id =  self.env['account.account'].search([('code','=','0-511301')])
+           accountLine = self.env['account.invoice.line']
+           accountLine_id = accountLine.create({
+                'name': 'Rechazado',
+                'account_id':account_id.id,
+                'price_unit':0,
+                'quantity':1,
+                })
+
+           log.info("----------->{}".format(accountLine_id.id))
+           self.invoice_line_ids = [(6, 0,[accountLine_id.id])]
 
     #Cambio
     '''
@@ -424,9 +438,9 @@ class Invoice(models.Model):
     def _cr_validate_mensaje_receptor(self):
         log.info('--> factelec-Invoice-_cr_validate_mensaje_receptor')
         #if self.state != 'open':  #Se cambio de 'open' a draft or cancel
-        if (self.state != 'open' and self.state != 'paid'):
-           msg = 'La factura debe de estar en Open o Paid para poder confirmarse'
-           raise exceptions.Warning((msg))
+        #if (self.state != 'open' and self.state != 'paid'):
+        #   msg = 'La factura debe de estar en Open o Paid para poder confirmarse'
+        #   raise exceptions.Warning((msg))
         if self.fe_msg_type == False:
             msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
             raise exceptions.Warning((msg))
@@ -450,6 +464,7 @@ class Invoice(models.Model):
             self.invoice = {self.fe_doc_type:{
                 'Clave':bill_dic['FacturaElectronica']['Clave'],
                 'NumeroCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Numero'],
+                'TipoCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Tipo'],
                 'FechaEmisionDoc':self.fe_fecha_emision_doc.split(' ')[0]+'T'+self.fe_fecha_emision_doc.split(' ')[1]+'-06:00',
                 'Mensaje':self.fe_msg_type,
                 'DetalleMensaje':self.fe_detail_msg,
@@ -460,6 +475,7 @@ class Invoice(models.Model):
                 'MontoTotalImpuesto':bill_dic['FacturaElectronica']['ResumenFactura']['TotalImpuesto'],
                 'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
                 'NumeroCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Numero'],
+                'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
                 'NumeroConsecutivoReceptor':self.number,
                 #'EmisorEmail':self.partner_id.email,
                 #'pdf':self._get_pdf_bill(self.id) or None,
@@ -473,7 +489,13 @@ class Invoice(models.Model):
             raise exceptions.Warning(('No se encuentra el certificado en compañia'))
             
         log.info('--> factelec-Invoice-_cr_post_server_side')
-        self._cr_xml_factura_electronica()
+        
+        if self.number[8:10] == '05':
+            self._cr_validate_mensaje_receptor()
+            self._cr_xml_mensaje_receptor()
+        else:
+            self._cr_xml_factura_electronica()
+        
         json_string = {
                       'invoice':self.invoice,
                       'certificate':base64.b64encode(self.company_id.fe_certificate).decode('utf-8'),
@@ -1094,24 +1116,55 @@ class Invoice(models.Model):
 
     @api.multi
     def action_invoice_open(self,validate = True):
-
         log.info('--> action_invoice_open')
-
         if self.company_id.country_id.code == 'CR' and self.fe_in_invoice_type != 'OTRO':
             if validate:
-                    log.info('--> 1570130084')
-                    for item in self.invoice_line_ids:
-                        if item.price_subtotal == False:
-                            return {
-                                    'type': 'ir.actions.act_window',
-                                    'name': '¡Alerta!',
-                                    'res_model': 'confirm.message',
-                                    'view_type': 'form',
-                                    'view_mode': 'form',
-                                    'views': [(False, 'form')],
-                                    'target': 'new',
-                                    'context': {'invoice': self.id}
-                                }
+                        if self.fe_msg_type != '3':
+                            log.info('--> 1570130084')
+                            for item in self.invoice_line_ids:
+                                if item.price_subtotal == False:
+                                    return {
+                                            'type': 'ir.actions.act_window',
+                                            'name': '¡Alerta!',
+                                            'res_model': 'confirm.message',
+                                            'view_type': 'form',
+                                            'view_mode': 'form',
+                                            'views': [(False, 'form')],
+                                            'target': 'new',
+                                            'context': {'invoice': self.id}
+                                       }
+                            #es mensaje de aceptacion??
+                            if len(self.journal_id.sequence_id.prefix) >= 10:
+                                if self.journal_id.sequence_id.prefix[8:10] == '05':
+                                        bill_dic = self.convert_xml_to_dic(self.fe_xml_supplier)
+                                        total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
+                                        if float(total) != self.amount_total:
+                                            return {
+                                                'type': 'ir.actions.act_window',
+                                                'name': '¡Alerta!',
+                                                'res_model': 'confirm.alert',
+                                                'view_type': 'form',
+                                                'view_mode': 'form',
+                                                'views': [(False, 'form')],
+                                                'target': 'new',
+                                                'context': {'invoice': self.id}
+                                            }
+                        else:
+                            if self.fe_msg_type == False:
+                                msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
+                                raise exceptions.Warning((msg))
+                            else:
+                                if self.fe_detail_msg == False and  self.fe_msg_type != '1':
+                                    msg = 'Falta el detalle mensaje'
+                                    raise exceptions.Warning((msg))
+                                if self.fe_msg_type == '3':
+                                    if self.amount_total > 0:
+                                        raise exceptions.Warning('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
+                                  
+
+
+
+                 
             log.info('--> 1575061615')
             res = super(Invoice, self).action_invoice_open()
             tz = pytz.timezone('America/Costa_Rica')
@@ -1124,6 +1177,7 @@ class Invoice(models.Model):
             
             self._validate_company()
             if self.number[8:10] != '05':
+                self._cr_validate_mensaje_receptor()
                 self._generar_clave()
             log.info('--->Clave %s',self.fe_clave)
             self.validacion()
