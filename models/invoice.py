@@ -1165,16 +1165,16 @@ class Invoice(models.Model):
 
 
 
-                 
+            date = self.date_invoice 
             log.info('--> 1575061615')
             res = super(Invoice, self).action_invoice_open()
             tz = pytz.timezone('America/Costa_Rica')
             
-            if not self.date_invoice:
+            if not date:
                 self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                 self.date_invoice = self.fe_fecha_emision
             else:
-                self.fe_fecha_emision = '{0} 00:00:00'.format(self.date_invoice) 
+                self.fe_fecha_emision = '{0} 00:00:00'.format(date) 
             
             self._validate_company()
             if self.number[8:10] != '05':
