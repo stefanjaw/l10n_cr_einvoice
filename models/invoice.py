@@ -1150,6 +1150,7 @@ class Invoice(models.Model):
                                                 'context': {'invoice': self.id}
                                             }
                         else:
+
                             if self.fe_msg_type == False:
                                 msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
                                 raise exceptions.Warning((msg))
@@ -1177,7 +1178,6 @@ class Invoice(models.Model):
             
             self._validate_company()
             if self.number[8:10] != '05':
-                self._cr_validate_mensaje_receptor()
                 self._generar_clave()
             log.info('--->Clave %s',self.fe_clave)
             self.validacion()
