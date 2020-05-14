@@ -39,7 +39,7 @@ class resCompany(models.Model):
         comodel_name="activity.code",
         inverse_name="company_id",
     )
-    fe_url_server = fields.Char(string="Url del server para facturar", )
+    fe_url_server = fields.Char(string="Url del server para facturar",default='http://localhost/api/v1/billing/')
 
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
 
