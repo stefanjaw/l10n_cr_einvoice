@@ -526,7 +526,6 @@ class Invoice(models.Model):
                        self.update({'fe_server_state':'enviado a procesar'})
 
                elif "error" in  result.keys():
-                    self.fe_server_state = 'error'
                     result = json_response['result']['error']
                     body = "Error "+result
                     self.write_chatter(body)
@@ -1251,20 +1250,22 @@ class Invoice(models.Model):
     def cron_get_server_bills(self):
         log.info('--> cron_get_server_bills')
         list = self.env['account.invoice'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','open'),
-        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=','error')])
+        ('fe_server_state','!=','pendiente enviar')])
 
         array = []
         dic = {}
 
         for item in list:
             if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO':
-                if item.fe_clave:
+                item.get_invoice()
+                '''if item.fe_clave:
                    if item.type == 'in_invoice' and item.fe_clave:   #CAMBIO se agrego and item.fe_clave
                       array.append(item.fe_clave+'-'+item.number)
                    else:
                       array.append(item.fe_clave)
+                '''
 
-
+        '''
         dic['ids'] = array
         json_string = json.dumps(dic)
         header = {'Content-Type':'application/json'}
@@ -1294,7 +1295,7 @@ class Invoice(models.Model):
                     params['fe_name_xml_hacienda'] = item['clave']+'-hacienda.xml'
                     params['fe_xml_hacienda'] = item['xml-hacienda']
                     bill.update(params)
-
+        '''
 
     def write_chatter(self,body):
         log.info('--> write_chatter')
