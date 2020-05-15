@@ -526,6 +526,7 @@ class Invoice(models.Model):
                        self.update({'fe_server_state':'enviado a procesar'})
 
                elif "error" in  result.keys():
+                    self.fe_server_state = 'error'
                     result = json_response['result']['error']
                     body = "Error "+result
                     self.write_chatter(body)
@@ -1136,6 +1137,10 @@ class Invoice(models.Model):
                             #es mensaje de aceptacion??
                             if len(self.journal_id.sequence_id.prefix) >= 10:
                                 if self.journal_id.sequence_id.prefix[8:10] == '05':
+                                        if self.fe_msg_type == False:
+                                            msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
+                                            raise exceptions.Warning((msg))
+
                                         bill_dic = self.convert_xml_to_dic(self.fe_xml_supplier)
                                         total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
                                         if float(total) != self.amount_total:
@@ -1246,7 +1251,7 @@ class Invoice(models.Model):
     def cron_get_server_bills(self):
         log.info('--> cron_get_server_bills')
         list = self.env['account.invoice'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','open'),
-        ('fe_server_state','!=','pendiente enviar')])
+        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=','error')])
 
         array = []
         dic = {}
