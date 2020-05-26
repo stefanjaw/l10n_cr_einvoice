@@ -797,7 +797,7 @@ class Invoice(models.Model):
         
         translate['CodigoActividad'] = 'fe_activity_code_id.code'
         translate['Clave'] = 'fe_clave'
-        translate['PlazoCredito'] = 'payment_term_id.name'
+        translate['PlazoCredito'] = 'invoice_payment_term_id.name'
         translate['NumeroConsecutivo'] = 'number'
         translate['FechaEmision'] = 'fe_fecha_emision'
         translate['Emisor-Identifacion-Tipo'] = emisor+'.fe_identification_type'
@@ -823,7 +823,7 @@ class Invoice(models.Model):
         translate['Receptor-Telefono-NumTelefono'] = receptor+'.phone'
         translate['Receptor-Fax-NumTelefono'] = receptor+'.fe_fax_number'
         translate['Receptor-CorreoElectronico'] = receptor+'.email'
-        translate['CondicionVenta'] = 'payment_term_id.fe_condition_sale'
+        translate['CondicionVenta'] = 'invoice_payment_term_id.fe_condition_sale'
         translate['MedioPago'] = 'fe_payment_type'
         translate['Mensaje'] = 'fe_msg_type'
 
@@ -1398,10 +1398,10 @@ class Invoice(models.Model):
             if s.partner_id.email:
                 s.invoice[s.fe_doc_type]['Receptor'].update({'CorreoElectronico':s.partner_id.email})
 
-            s.invoice[s.fe_doc_type].update({'CondicionVenta':s.payment_term_id.fe_condition_sale})
+            s.invoice[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
 
             if s.payment_term_id.name:
-                s.invoice[s.fe_doc_type].update({'PlazoCredito':s.payment_term_id.name})
+                s.invoice[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.name})
             if s.fe_condicion_impuesto:
                 s.invoice[s.fe_doc_type].update({'CondicionImpuesto':s.fe_condicion_impuesto})
             
@@ -1709,10 +1709,10 @@ class Invoice(models.Model):
             values['state'] = 'draft'
             values['number'] = False
             values['origin'] = invoice.number
-            values['payment_term_id'] = False
+            values['invoice_payment_term_id'] = False
             values['refund_invoice_id'] = invoice.id
             values['fe_payment_type'] = fe_payment_type
-            values['payment_term_id'] = payment_term_id
+            values['invoice_payment_term_id'] = invoice_payment_term_id
             values['fe_activity_code_id'] = fe_activity_code_id
             values['fe_receipt_status'] = fe_receipt_status
             values['fe_tipo_documento_referencia'] = fe_tipo_documento_referencia
