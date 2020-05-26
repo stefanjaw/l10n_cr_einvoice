@@ -1649,12 +1649,12 @@ class Invoice(models.Model):
                         })
 
             if s.comment:
-            s.invoice[s.fe_doc_type].update({
-                'Otros':{
-                    'OtroTexto':s.comment,
-                    #'OtroContenido':'ELEMENTO OPCIONAL'
-                }
-            })
+                s.invoice[s.fe_doc_type].update({
+                    'Otros':{
+                        'OtroTexto':s.comment,
+                        #'OtroContenido':'ELEMENTO OPCIONAL'
+                    }
+                })
             #PDF de FE,FEE,FEC,ND,NC
             #En caso de que el server-side envie el mail
 
