@@ -27,7 +27,7 @@ TYPE2REFUND = {
 }
 
 class Invoice(models.Model):
-    _inherit = "account.invoice"
+    _inherit = "account.move"
 
     log.info('--> Class factelec-Invoice')
     mensaje_validacion = ''
