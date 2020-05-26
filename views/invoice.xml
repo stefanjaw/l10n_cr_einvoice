@@ -67,9 +67,12 @@
           </form>
         </page>
       </xpath>
-      <xpath expr="//sheet/h1" position="after">
+      <!--<xpath expr="//sheet/h1" position="after">
           <h3><field name="fe_clave" readonly="1"/></h3>
-      </xpath>
+      </xpath>-->
+      <field name="name" position="after">
+            <h3><field name="fe_clave" readonly="1"/></h3>
+      </field>
       <field name="journal_id" position="replace"/>
       <field name="payment_term_id" position="after">
             <field name="journal_id" string="Tipo de Documento" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
