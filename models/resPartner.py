@@ -45,7 +45,7 @@ class resPartner(models.Model):
 
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
 
-    @api.multi
+
     @api.depends('company_id')
     def _get_country_code(self):
         log.info('--> 1575319718')
@@ -53,7 +53,7 @@ class resPartner(models.Model):
             s.fe_current_country_company_code = s.company_id.country_id.code
             log.info('--> codigo %s',s.fe_current_country_company_code)
 
-    @api.multi
+
     @api.constrains("email")
     def _check_field(self):
         log.info('--> _check_field REPETIDO1')

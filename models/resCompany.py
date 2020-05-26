@@ -43,7 +43,7 @@ class resCompany(models.Model):
 
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
 
-    @api.multi
+
     @api.depends('country_id')
     def _get_country_code(self):
         log.info('--> 1575319718')
@@ -107,7 +107,7 @@ class resCompany(models.Model):
 
 
 
-    @api.multi
+
     @api.constrains("email")
     def _check_email(self):
         log.info('--> _check_email')
@@ -117,7 +117,7 @@ class resCompany(models.Model):
                 if s.email:
                     if not re.match(pattern, s.email):
                         raise ValidationError("El correo electronico no tiene un formato valido")
-    @api.multi
+
     @api.constrains("fe_url_server")
     def _check_fe_url_server(self):
         log.info('--> _check_fe_url_server')

@@ -229,7 +229,7 @@ class Invoice(models.Model):
     
     
     
-    @api.multi
+
     @api.depends('company_id')
     def _get_country_code(self):
         log.info('--> 1575319718')
@@ -264,7 +264,7 @@ class Invoice(models.Model):
 
 
 
-    @api.multi
+
     def _compute_total_descuento(self):
         log.info('--> factelec/_compute_total_descuento')
         for s in self:
@@ -275,7 +275,7 @@ class Invoice(models.Model):
                     totalDiscount = totalDiscount + discount
         self.fe_total_descuento = totalDiscount
 
-    @api.multi
+
     def _compute_total_venta(self):
         log.info('--> factelec/_compute_total_venta')
         for s in self:
@@ -287,21 +287,21 @@ class Invoice(models.Model):
         self.fe_total_venta = totalSale
 
 
-    @api.multi
+
     @api.depends("fe_total_servicio_exentos", "fe_total_mercancias_exentas" )
     def _compute_total_exento(self):
         log.info('--> factelec/_compute_total_exento')
         for s in self:
             s.fe_total_exento = s.fe_total_servicio_exentos + s.fe_total_mercancias_exentas
 
-    @api.multi
+
     @api.depends("fe_total_servicio_gravados", "fe_total_mercancias_gravadas" )
     def _compute_total_gravado(self):
         log.info('--> factelec/_compute_total_gravado')
         for s in self:
             s.fe_total_gravado = s.fe_total_servicio_gravados + s.fe_total_mercancias_gravadas
 
-    @api.multi
+
     def _compute_total_servicios_gravados(self):
         log.info('--> factelec/_compute_total_servicios_gravados')
         totalServGravados = 0
@@ -314,7 +314,7 @@ class Invoice(models.Model):
 
         self.fe_total_servicio_gravados = totalServGravados
 
-    @api.multi
+
     def _compute_total_servicios_exentos(self):
         log.info('--> factelec/_compute_total_servicios_exentos')
         totalServExentos = 0
@@ -327,7 +327,7 @@ class Invoice(models.Model):
 
         self.fe_total_servicio_exentos  = totalServExentos
 
-    @api.multi
+
     def _compute_total_mercancias_gravadas(self):
         log.info('--> factelec/_compute_total_mercancias_gravadas')
         totalMercanciasGravadas = 0
@@ -339,7 +339,7 @@ class Invoice(models.Model):
                             totalMercanciasGravadas = totalMercanciasGravadas + totalAmount
         self.fe_total_mercancias_gravadas =  totalMercanciasGravadas
 
-    @api.multi
+
     def _compute_total_mercancias_exentas(self):
         log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO1')
         totalMercanciasExentas = 0
@@ -352,7 +352,7 @@ class Invoice(models.Model):
         self.fe_total_mercancias_exentas =  totalMercanciasExentas
 
 
-    @api.multi
+
     @api.depends("fe_total_mercancias_exentas")
     def _compute_total_mercancias_exentas(self):
         log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO2')
@@ -434,7 +434,7 @@ class Invoice(models.Model):
                         }
             }
 
-    @api.multi
+
     def _cr_validate_mensaje_receptor(self):
         log.info('--> factelec-Invoice-_cr_validate_mensaje_receptor')
         #if self.state != 'open':  #Se cambio de 'open' a draft or cancel
@@ -453,7 +453,7 @@ class Invoice(models.Model):
         log.info('===> XXXX VALIDACION QUE HAY ADJUNTO UN XML DEL EMISOR/PROVEEDOR')
         log.info('===> XXXX VALIDACION QUE EL XML ES DEL TIPO FacturaElectronica')
 
-    @api.multi
+
     def _cr_xml_mensaje_receptor(self):
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
 
@@ -534,7 +534,7 @@ class Invoice(models.Model):
             body = "Error "+str(e)
             self.write_chatter(body)
 
-    @api.multi
+
     def confirm_bill(self):
         log.info('--> factelec-Invoice-confirm_bill')
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
@@ -1114,99 +1114,101 @@ class Invoice(models.Model):
               + str("87654321")
            self.fe_clave = clave
 
-    @api.multi
-    def action_invoice_open(self,validate = True):
-        log.info('--> action_invoice_open')
-        if self.company_id.country_id.code == 'CR' and self.fe_in_invoice_type != 'OTRO':
-            if validate:
-                        if self.fe_msg_type != '3':
-                            log.info('--> 1570130084')
-                            for item in self.invoice_line_ids:
-                                if item.price_subtotal == False:
-                                    return {
-                                            'type': 'ir.actions.act_window',
-                                            'name': '¡Alerta!',
-                                            'res_model': 'confirm.message',
-                                            'view_type': 'form',
-                                            'view_mode': 'form',
-                                            'views': [(False, 'form')],
-                                            'target': 'new',
-                                            'context': {'invoice': self.id}
-                                       }
-                            #es mensaje de aceptacion??
-                            if len(self.journal_id.sequence_id.prefix) >= 10:
-                                if self.journal_id.sequence_id.prefix[8:10] == '05':
-                                        if self.fe_msg_type == False:
-                                            msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
-                                            raise exceptions.Warning((msg))
 
-                                        bill_dic = self.convert_xml_to_dic(self.fe_xml_supplier)
-                                        total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
-                                        if float(total) != self.amount_total:
-                                            return {
+    def action_invoice_open(self,validate = True):
+        for s in self:
+            log.info('--> action_invoice_open')
+            if s.company_id.country_id.code == 'CR' and s.fe_in_invoice_type != 'OTRO':
+                if validate:
+                            if s.fe_msg_type != '3':
+                                log.info('--> 1570130084')
+                                for item in s.invoice_line_ids:
+                                    if item.price_subtotal == False:
+                                        return {
                                                 'type': 'ir.actions.act_window',
                                                 'name': '¡Alerta!',
-                                                'res_model': 'confirm.alert',
+                                                'res_model': 'confirm.message',
                                                 'view_type': 'form',
                                                 'view_mode': 'form',
                                                 'views': [(False, 'form')],
                                                 'target': 'new',
-                                                'context': {'invoice': self.id}
-                                            }
-                        else:
+                                                'context': {'invoice': s.id}
+                                        }
+                                #es mensaje de aceptacion??
+                                if len(s.journal_id.sequence_id.prefix) >= 10:
+                                    if s.journal_id.sequence_id.prefix[8:10] == '05':
+                                            if s.fe_msg_type == False:
+                                                msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
+                                                raise exceptions.Warning((msg))
 
-                            if self.fe_msg_type == False:
-                                msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
-                                raise exceptions.Warning((msg))
+                                            bill_dic = s.convert_xml_to_dic(s.fe_xml_supplier)
+                                            total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
+                                            if float(total) != s.amount_total:
+                                                return {
+                                                    'type': 'ir.actions.act_window',
+                                                    'name': '¡Alerta!',
+                                                    'res_model': 'confirm.alert',
+                                                    'view_type': 'form',
+                                                    'view_mode': 'form',
+                                                    'views': [(False, 'form')],
+                                                    'target': 'new',
+                                                    'context': {'invoice': s.id}
+                                                }
                             else:
-                                if self.fe_detail_msg == False and  self.fe_msg_type != '1':
-                                    msg = 'Falta el detalle mensaje'
+
+                                if s.fe_msg_type == False:
+                                    msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
                                     raise exceptions.Warning((msg))
-                                if self.fe_msg_type == '3':
-                                    if self.amount_total > 0:
-                                        raise exceptions.Warning('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
-                                  
+                                else:
+                                    if s.fe_detail_msg == False and  s.fe_msg_type != '1':
+                                        msg = 'Falta el detalle mensaje'
+                                        raise exceptions.Warning((msg))
+                                    if s.fe_msg_type == '3':
+                                        if s.amount_total > 0:
+                                            raise exceptions.Warning('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
+                                    
 
 
 
-            date_temp = self.date_invoice 
-            log.info('--> 1575061615')
-            res = super(Invoice, self).action_invoice_open()
-            tz = pytz.timezone('America/Costa_Rica')
-            
-            if not date_temp:
-                self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
-                self.date_invoice = self.fe_fecha_emision
+                date_temp = s.date_invoice 
+                log.info('--> 1575061615')
+                res = super(Invoice, s).action_invoice_open()
+                tz = pytz.timezone('America/Costa_Rica')
+                
+                if not date_temp:
+                    s.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+                    s.date_invoice = s.fe_fecha_emision
+                else:
+                    s.fe_fecha_emision = '{0} 00:00:00'.format(date_temp) 
+                
+                s._validate_company()
+                if s.number[8:10] != '05':
+                    s._generar_clave()
+                log.info('--->Clave %s',s.fe_clave)
+                s.validacion()
+                s._validate_invoice_line()
             else:
-                self.fe_fecha_emision = '{0} 00:00:00'.format(date_temp) 
-            
-            self._validate_company()
-            if self.number[8:10] != '05':
-                self._generar_clave()
-            log.info('--->Clave %s',self.fe_clave)
-            self.validacion()
-            self._validate_invoice_line()
-        else:
-            log.info('--> 1575061637')
-            res = super(Invoice, self).action_invoice_open()
+                log.info('--> 1575061637')
+                res = super(Invoice, s).action_invoice_open()
 
 
-    @api.multi
+
     def get_invoice(self):
-            if self.state == 'draft':
+        for s in self:
+            if s.state == 'draft':
               raise exceptions.Warning('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
             log.info('--> 1569447129')
             log.info('--> get_invoice')
-            if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
+            if not 'http://' in s.company_id.fe_url_server and  not 'https://' in s.company_id.fe_url_server:
                raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
-            if self.fe_xml_hacienda:
+            if s.fe_xml_hacienda:
                  raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
 
-            if self.number[8:10] == "05":
-               url = self.company_id.fe_url_server+'{0}'.format(self.fe_clave+'-'+self.number)
+            if s.number[8:10] == "05":
+               url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave+'-'+s.number)
             else:
-               url = self.company_id.fe_url_server+'{0}'.format(self.fe_clave)
+               url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave)
 
             header = {'Content-Type':'application/json'}
             
@@ -1225,7 +1227,7 @@ class Invoice(models.Model):
             if data.get('result'):
 
                 if data.get('result').get('error'):
-                   self.write_chatter(data['result']['error'])
+                   s.write_chatter(data['result']['error'])
                 else:
                    params = {
                       'fe_server_state':data['result']['ind-estado'],
@@ -1234,7 +1236,7 @@ class Invoice(models.Model):
                       'fe_name_xml_hacienda':data['result']['nombre_xml_hacienda'],
                       'fe_xml_hacienda':data['result']['xml_hacienda'],
                    }
-                   self.update(params)
+                   s.update(params)
                 
                 
     def _get_pdf_bill(self,id):
@@ -1306,357 +1308,357 @@ class Invoice(models.Model):
                         'body': body,
                        })
 
-    @api.multi
+
     def _cr_xml_factura_electronica(self):
         log.info('--> factelec-Invoice-_cr_xml_factura_electronica')
+        for s in self:
+            s.invoice = {}
+            s.invoice[s.fe_doc_type] = {'CodigoActividad':s.fe_activity_code_id.code}
+            s.invoice[s.fe_doc_type].update({'Clave':s.fe_clave})
+            s.invoice[s.fe_doc_type].update({'NumeroConsecutivo':s.number})
+            s.invoice[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
+            s.invoice[s.fe_doc_type].update({'Emisor':{
+                'Nombre':s.company_id.company_registry
+            }})
+            s.invoice[s.fe_doc_type]['Emisor'].update({
+            'Identificacion':{
+                'Tipo': s.env.user.company_id.fe_identification_type or None,
+                'Numero':s.env.user.company_id.vat.replace('-','').replace(' ','') or None,
+            },
+            })
 
-        self.invoice = {}
-        self.invoice[self.fe_doc_type] = {'CodigoActividad':self.fe_activity_code_id.code}
-        self.invoice[self.fe_doc_type].update({'Clave':self.fe_clave})
-        self.invoice[self.fe_doc_type].update({'NumeroConsecutivo':self.number})
-        self.invoice[self.fe_doc_type].update({'FechaEmision':self.fe_fecha_emision.split(' ')[0]+'T'+self.fe_fecha_emision.split(' ')[1]+'-06:00'})
-        self.invoice[self.fe_doc_type].update({'Emisor':{
-             'Nombre':self.company_id.company_registry
-        }})
-        self.invoice[self.fe_doc_type]['Emisor'].update({
-           'Identificacion':{
-              'Tipo': self.env.user.company_id.fe_identification_type or None,
-              'Numero':self.env.user.company_id.vat.replace('-','').replace(' ','') or None,
-           },
-        })
+            if s.env.user.company_id.fe_comercial_name:
+                s.invoice[s.fe_doc_type]['Emisor'].update({'NombreComercial':s.env.user.company_id.fe_comercial_name})
 
-        if self.env.user.company_id.fe_comercial_name:
-           self.invoice[self.fe_doc_type]['Emisor'].update({'NombreComercial':self.env.user.company_id.fe_comercial_name})
-
-        self.invoice[self.fe_doc_type]['Emisor'].update({'Ubicacion':{
-           'Provincia':self.env.user.company_id.state_id.fe_code,
-           'Canton':self.env.user.company_id.fe_canton_id.code,
-           'Distrito':self.env.user.company_id.fe_district_id.code,
-        }})
-
-        if self.company_id.fe_neighborhood_id.code:
-           self.invoice[self.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':self.env.user.company_id.fe_neighborhood_id.code})
-
-        self.invoice[self.fe_doc_type]['Emisor']['Ubicacion'].update({'OtrasSenas':self.env.user.company_id.fe_other_signs})
-
-        if self.company_id.phone:
-           self.invoice[self.fe_doc_type]['Emisor'].update({'Telefono':{
-              'CodigoPais':str(self.company_id.country_id.phone_code),
-              'NumTelefono':self.company_id.phone.replace('-','').replace(' ',''),
-           }})
-        if self.env.user.company_id.fe_fax_number:
-           self.invoice[self.fe_doc_type]['Emisor'].update({'Fax':{
-              'CodigoPais':str(self.company_id.country_id.phone_code),
-              'NumTelefono':self.company_id.fe_fax_number,
-        }})
-
-        self.invoice[self.fe_doc_type]['Emisor'].update({'CorreoElectronico':self.company_id.email})
-
-        self.invoice[self.fe_doc_type].update({'Receptor':{
-           'Nombre':self.partner_id.name,
-        }})
-
-        if self.partner_id.vat:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'Identificacion':{
-              'Tipo':self.partner_id.fe_identification_type,
-              'Numero':self.partner_id.vat.replace('-','').replace(' ','') or None,
-        }})
-
-        if self.partner_id.fe_receptor_identificacion_extranjero:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'IdentificacionExtranjero':self.partner_id.fe_receptor_identificacion_extranjero})
-
-        if self.partner_id.fe_comercial_name:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'NombreComercial':self.partner_id.fe_comercial_name})
-
-        if self.partner_id.state_id.fe_code:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'Ubicacion':{
-              'Provincia':self.partner_id.state_id.fe_code,
-              'Canton':self.partner_id.fe_canton_id.code,
-              'Distrito':self.partner_id.fe_district_id.code,
-              'OtrasSenas':self.partner_id.fe_other_signs,
-           }})
-
-        if self.partner_id.fe_neighborhood_id.code:
-           self.invoice[self.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':self.partner_id.fe_neighborhood_id.code})
-
-        if self.partner_id.fe_receptor_otras_senas_extranjero:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'OtrasSenasExtranjero':self.partner_id.fe_receptor_otras_senas_extranjero})
-
-        if self.partner_id.phone:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'Telefono':{
-              'CodigoPais':str(self.company_id.country_id.phone_code),
-              'NumTelefono':self.partner_id.phone.replace('-','').replace(' ','') or None,
-           }})
-
-        if self.partner_id.fe_fax_number:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'Fax':{
-              'CodigoPais':str(self.company_id.country_id.phone_code),
-              'NumTelefono':self.partner_id.fe_fax_number,
-           }})
-
-        if self.partner_id.email:
-           self.invoice[self.fe_doc_type]['Receptor'].update({'CorreoElectronico':self.partner_id.email})
-
-        self.invoice[self.fe_doc_type].update({'CondicionVenta':self.payment_term_id.fe_condition_sale})
-
-        if self.payment_term_id.name:
-           self.invoice[self.fe_doc_type].update({'PlazoCredito':self.payment_term_id.name})
-        if self.fe_condicion_impuesto:
-            self.invoice[self.fe_doc_type].update({'CondicionImpuesto':self.fe_condicion_impuesto})
-        
-        self.invoice[self.fe_doc_type].update({'MedioPago':self.fe_payment_type})
-        
-        if self.fe_msg_type:
-            self.invoice[self.fe_doc_type].update({'Mensaje':self.fe_msg_type})
-            if self.fe_detail_msg:
-                self.invoice[self.fe_doc_type].update({'DetalleMensaje':self.fe_detail_msg})
-
-        inv_lines = []
-        OtrosCargos_array = []
-        NumeroLinea = 1
-        arrayCount = 0
-        totalSale = 0
-        TotalDescuentos = 0
-        TotalServGravados = 0
-        TotalServExentos = 0
-        TotalServExonerado = 0
-        TotalMercanciasGravadas = 0
-        TotalMercanciasExentas = 0
-        TotalMercExonerada = 0
-        TotalImpuesto = 0
-        TotalOtrosCargos = 0
-        OtrosCargos_array = []
-
-        for i in self.invoice_line_ids:
-            LineaCantidad = 0
-            LineaImpuestoTarifa = 0
-            LineaMontoDescuento = 0
-            MontoTotalLinea = 0
-            LineaImpuestoNeto = 0
-
-            inv_lines.append({'NumeroLinea':NumeroLinea})
-
-            #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
-
-            if i.product_id.default_code:
-               inv_lines[arrayCount]['Codigo'] = i.product_id.default_code
-
-            if i.product_id.fe_codigo_comercial_codigo:
-               inv_lines[arrayCount]['CodigoComercial'] = {
-                  'Tipo':i.product_id.fe_codigo_comercial_tipo,
-                  'Codigo':i.product_id.fe_codigo_comercial_codigo,
-               }
-
-            LineaCantidad = round(i.quantity,3)
-            inv_lines[arrayCount]['Cantidad'] = '{0:.3f}'.format(LineaCantidad)
-
-            inv_lines[arrayCount]['UnidadMedida'] = i.uom_id.name
-
-            if i.product_id.fe_unidad_medida_comercial:
-               inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
-
-            if i.name:
-               inv_lines[arrayCount]['Detalle'] = i.name or None
-
-            LineaPrecioUnitario = round(i.price_unit,5)
-            inv_lines[arrayCount]['PrecioUnitario'] = '{0:.5f}'.format(LineaPrecioUnitario)
-
-            LineaMontoTotal = round((LineaCantidad * LineaPrecioUnitario),5)
-            inv_lines[arrayCount]['MontoTotal'] = '{0:.5f}'.format(LineaMontoTotal)
-
-            if i.discount:
-                LineaMontoDescuento = round((LineaMontoTotal * (i.discount/100)),5)
-                LineaNaturalezaDescuento = "Se aplica %s porciento de descuento" % (i.discount,)
-
-                inv_lines[arrayCount]['Descuento'] ={
-                   'MontoDescuento':'{0:.5f}'.format(LineaMontoDescuento),
-                   'NaturalezaDescuento':LineaNaturalezaDescuento[:80]
-                }
-                TotalDescuentos = round((TotalDescuentos + LineaMontoDescuento),5)
-
-            LineaSubTotal = round((LineaMontoTotal - LineaMontoDescuento),5)
-            inv_lines[arrayCount]['SubTotal'] = '{0:.5f}'.format(LineaSubTotal)
-
-            if i.invoice_line_tax_ids:
-
-            ## COMIENZA TAXES y OTROS CARGOS
-
-               for tax_id in i.invoice_line_tax_ids :
-                  MontoCargo = 0
-                  LineaImpuestoMonto = 0
-
-                  if tax_id.type == 'OTHER': #
-
-                    OtrosCargos_json = { 'TipoDocumento':tax_id.tipo_documento }
-
-                    OtrosCargos_json.update({'Detalle':tax_id.name})
-
-                    OtrosCargos_json.update({'Porcentaje':'{0:.5f}'.format(tax_id.amount)})
-
-                    MontoCargo = LineaMontoTotal * (tax_id.amount/100)
-
-                    OtrosCargos_json.update({'MontoCargo':'{0:.5f}'.format(MontoCargo)})
-
-                    OtrosCargos_array.append(OtrosCargos_json)
-
-                    TotalOtrosCargos += MontoCargo
-
-                  else:
-
-                     LineaImpuestoTarifa = round(tax_id.amount,2)
-
-                     inv_lines[arrayCount]['Impuesto'] = {
-                        'Codigo':tax_id.tarifa_impuesto,
-                        'CodigoTarifa':tax_id.codigo_impuesto,
-                        'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
-                        }
-
-                     LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
-                     inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
-
-                     LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
-                     inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
-                   #Si esta exonerado al 100% se debe colocar 0-Zero
-
-            #XXXXXX FALTA TOTAL IVA DEVUELTO
-
-                     TotalImpuesto = round((TotalImpuesto + LineaImpuestoNeto),5)
-
-            MontoTotalLinea = round((LineaSubTotal + LineaImpuestoNeto),5)
-            inv_lines[arrayCount]['MontoTotalLinea'] = '{0:.5f}'.format(MontoTotalLinea)
-
-            if i.product_id.type == 'service':
-                #asking for tax for know if the product is Tax Free
-                if i.invoice_line_tax_ids:
-                    TotalServGravados = TotalServGravados + LineaMontoTotal
-                else:
-                    TotalServExentos = TotalServExentos + LineaMontoTotal
-                #  XXXX PENDIENTE LOS ServExonerados
-            else:
-                if i.invoice_line_tax_ids:
-                    TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
-                else:
-                    TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
-                #   XXXX PENDIENTE LOS MercanciasExoneradas
-
-
-            NumeroLinea = NumeroLinea + 1
-            arrayCount = arrayCount + 1
-
-        self.invoice[self.fe_doc_type]['DetalleServicio'] = {'LineaDetalle':inv_lines}
-
-
-
-        self.invoice[self.fe_doc_type].update({
-           'OtrosCargos':OtrosCargos_array
-        })
-
-        self.invoice[self.fe_doc_type].update(
-            {'ResumenFactura':{
-                   'CodigoTipoMoneda':{
-                      'CodigoMoneda':self.currency_id.name,
-                      'TipoCambio':'{0:.2f}'.format((1/self.currency_id.rate) or None),
-                   }
+            s.invoice[s.fe_doc_type]['Emisor'].update({'Ubicacion':{
+            'Provincia':s.env.user.company_id.state_id.fe_code,
+            'Canton':s.env.user.company_id.fe_canton_id.code,
+            'Distrito':s.env.user.company_id.fe_district_id.code,
             }})
 
-        TotalGravado = TotalServGravados + TotalMercanciasGravadas
-        TotalExento = TotalServExentos + TotalMercanciasExentas
-        TotalExonerado = TotalServExonerado + TotalMercExonerada
-        TotalVenta = TotalGravado + TotalExento #+ TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
-        TotalVentaNeta = TotalVenta - TotalDescuentos
+            if s.company_id.fe_neighborhood_id.code:
+                s.invoice[s.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':s.env.user.company_id.fe_neighborhood_id.code})
 
-        if TotalServGravados:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalServGravados':'{0:.5f}'.format(TotalServGravados)})
+            s.invoice[s.fe_doc_type]['Emisor']['Ubicacion'].update({'OtrasSenas':s.env.user.company_id.fe_other_signs})
 
-        if TotalServExentos:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalServExentos':'{0:.5f}'.format(TotalServExentos)})
+            if s.company_id.phone:
+                s.invoice[s.fe_doc_type]['Emisor'].update({'Telefono':{
+                    'CodigoPais':str(s.company_id.country_id.phone_code),
+                    'NumTelefono':s.company_id.phone.replace('-','').replace(' ',''),
+                }})
+            if s.env.user.company_id.fe_fax_number:
+                s.invoice[s.fe_doc_type]['Emisor'].update({'Fax':{
+                    'CodigoPais':str(s.company_id.country_id.phone_code),
+                    'NumTelefono':s.company_id.fe_fax_number,
+                }})
 
-        if TotalServExonerado:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(TotalServExonerado)})
+            s.invoice[s.fe_doc_type]['Emisor'].update({'CorreoElectronico':s.company_id.email})
 
-        if TotalMercanciasGravadas:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasGravadas':'{0:.5f}'.format(TotalMercanciasGravadas)})
+            s.invoice[s.fe_doc_type].update({'Receptor':{
+            'Nombre':s.partner_id.name,
+            }})
 
-        if TotalMercanciasExentas:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasExentas':'{0:.5f}'.format(TotalMercanciasExentas)})
+            if s.partner_id.vat:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'Identificacion':{
+                    'Tipo':s.partner_id.fe_identification_type,
+                    'Numero':s.partner_id.vat.replace('-','').replace(' ','') or None,
+                }})
 
-        if TotalMercExonerada:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(TotalMercExonerada)})
+            if s.partner_id.fe_receptor_identificacion_extranjero:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'IdentificacionExtranjero':s.partner_id.fe_receptor_identificacion_extranjero})
 
-        if TotalGravado:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
+            if s.partner_id.fe_comercial_name:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'NombreComercial':s.partner_id.fe_comercial_name})
 
-        if TotalExento:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
+            if s.partner_id.state_id.fe_code:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'Ubicacion':{
+                    'Provincia':s.partner_id.state_id.fe_code,
+                    'Canton':s.partner_id.fe_canton_id.code,
+                    'Distrito':s.partner_id.fe_district_id.code,
+                    'OtrasSenas':s.partner_id.fe_other_signs,
+                }})
 
-        if TotalExonerado:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(TotalServExonerado + TotalMercExonerada)})
+            if s.partner_id.fe_neighborhood_id.code:
+                s.invoice[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.fe_neighborhood_id.code})
 
-        if TotalVenta:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'{0:.5f}'.format(TotalVenta)})
-        else:
-            self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'0'})
+            if s.partner_id.fe_receptor_otras_senas_extranjero:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'OtrasSenasExtranjero':s.partner_id.fe_receptor_otras_senas_extranjero})
 
-        if TotalDescuentos:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalDescuentos':'{0:.5f}'.format(TotalDescuentos)})
+            if s.partner_id.phone:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'Telefono':{
+                    'CodigoPais':str(s.company_id.country_id.phone_code),
+                    'NumTelefono':s.partner_id.phone.replace('-','').replace(' ','') or None,
+                }})
 
-        if TotalVentaNeta:
-           self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'{0:.5f}'.format(TotalVentaNeta)})
-        else:
-            self.invoice[self.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'0'})
+            if s.partner_id.fe_fax_number:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'Fax':{
+                    'CodigoPais':str(s.company_id.country_id.phone_code),
+                    'NumTelefono':s.partner_id.fe_fax_number,
+                }})
 
-        if TotalImpuesto:
-           self.invoice[self.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '{0:.5f}'.format(TotalImpuesto)
-        else:
-            self.invoice[self.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '0'
+            if s.partner_id.email:
+                s.invoice[s.fe_doc_type]['Receptor'].update({'CorreoElectronico':s.partner_id.email})
 
+            s.invoice[s.fe_doc_type].update({'CondicionVenta':s.payment_term_id.fe_condition_sale})
 
+            if s.payment_term_id.name:
+                s.invoice[s.fe_doc_type].update({'PlazoCredito':s.payment_term_id.name})
+            if s.fe_condicion_impuesto:
+                s.invoice[s.fe_doc_type].update({'CondicionImpuesto':s.fe_condicion_impuesto})
+            
+            s.invoice[s.fe_doc_type].update({'MedioPago':s.fe_payment_type})
+            
+            if s.fe_msg_type:
+                s.invoice[s.fe_doc_type].update({'Mensaje':s.fe_msg_type})
+                if s.fe_detail_msg:
+                    s.invoice[s.fe_doc_type].update({'DetalleMensaje':s.fe_detail_msg})
 
-        ##PENDINETE TOTALIVADEVUELTO
-        #self.invoice[self.fe_doc_type]['ResumenFactura']['TotalIVADevuelto'] = 'PENDIENTE_TOTAL_IVA_DEVUELTO'     # CONDICIONAL
-             #Este campo será de condición obligatoria cuando se facturen servicios de salud y cuyo método de pago sea “Tarjeta”.
-             #Se obtiene de la sumatoria del Monto de los Impuestos pagado por los servicios de salud en tarjetas.
-             #Es un número decimal compuesto por 13 enteros y 5 decimales.
+            inv_lines = []
+            OtrosCargos_array = []
+            NumeroLinea = 1
+            arrayCount = 0
+            totalSale = 0
+            TotalDescuentos = 0
+            TotalServGravados = 0
+            TotalServExentos = 0
+            TotalServExonerado = 0
+            TotalMercanciasGravadas = 0
+            TotalMercanciasExentas = 0
+            TotalMercExonerada = 0
+            TotalImpuesto = 0
+            TotalOtrosCargos = 0
+            OtrosCargos_array = []
 
-        if TotalOtrosCargos:
-           self.invoice[self.fe_doc_type]['ResumenFactura']['TotalOtrosCargos'] = '{0:.5f}'.format(TotalOtrosCargos)
+            for i in s.invoice_line_ids:
+                LineaCantidad = 0
+                LineaImpuestoTarifa = 0
+                LineaMontoDescuento = 0
+                MontoTotalLinea = 0
+                LineaImpuestoNeto = 0
 
-        TotalComprobante = TotalVentaNeta + TotalImpuesto #+ TotalOtrosCargos - TotalIVADevuelto
-        if TotalComprobante:
-           self.invoice[self.fe_doc_type]['ResumenFactura']['TotalComprobante'] = '{0:.5f}'.format(TotalComprobante) #'PENDIENTE_TOTAL_Comprobante'
-           #SUMA DE: "total venta neta" + "monto total del impuesto" + "total otros cargos" - total IVA devuelto
-        else:
-            self.invoice[self.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
+                inv_lines.append({'NumeroLinea':NumeroLinea})
 
-        if self.number[8:10] == "02" or self.number[8:10] == "03":
-           if not self.origin:
-              error = True
-              msg = 'Indique el NUMERO CONSECUTIVO de REFERENCIA\n'
-           else:
-              if len(self.origin) == 20:
-                 origin_doc = self.search([('number', '=', self.origin)])
-                 origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
-                 self.invoice[self.fe_doc_type].update({
-                    'InformacionReferencia':{
-                       'TipoDoc':self.fe_tipo_documento_referencia,
-                       'Numero':origin_doc.number,
-                       'FechaEmision': origin_doc_fe_fecha_emision,
-                       'Codigo':self.fe_informacion_referencia_codigo or None,
-                       'Razon':self.name,
+                #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
+
+                if i.product_id.default_code:
+                inv_lines[arrayCount]['Codigo'] = i.product_id.default_code
+
+                if i.product_id.fe_codigo_comercial_codigo:
+                inv_lines[arrayCount]['CodigoComercial'] = {
+                    'Tipo':i.product_id.fe_codigo_comercial_tipo,
+                    'Codigo':i.product_id.fe_codigo_comercial_codigo,
+                }
+
+                LineaCantidad = round(i.quantity,3)
+                inv_lines[arrayCount]['Cantidad'] = '{0:.3f}'.format(LineaCantidad)
+
+                inv_lines[arrayCount]['UnidadMedida'] = i.uom_id.name
+
+                if i.product_id.fe_unidad_medida_comercial:
+                inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
+
+                if i.name:
+                inv_lines[arrayCount]['Detalle'] = i.name or None
+
+                LineaPrecioUnitario = round(i.price_unit,5)
+                inv_lines[arrayCount]['PrecioUnitario'] = '{0:.5f}'.format(LineaPrecioUnitario)
+
+                LineaMontoTotal = round((LineaCantidad * LineaPrecioUnitario),5)
+                inv_lines[arrayCount]['MontoTotal'] = '{0:.5f}'.format(LineaMontoTotal)
+
+                if i.discount:
+                    LineaMontoDescuento = round((LineaMontoTotal * (i.discount/100)),5)
+                    LineaNaturalezaDescuento = "Se aplica %s porciento de descuento" % (i.discount,)
+
+                    inv_lines[arrayCount]['Descuento'] ={
+                    'MontoDescuento':'{0:.5f}'.format(LineaMontoDescuento),
+                    'NaturalezaDescuento':LineaNaturalezaDescuento[:80]
                     }
-                 })
+                    TotalDescuentos = round((TotalDescuentos + LineaMontoDescuento),5)
 
-        if self.comment:
-           self.invoice[self.fe_doc_type].update({
-              'Otros':{
-                 'OtroTexto':self.comment,
-                 #'OtroContenido':'ELEMENTO OPCIONAL'
-              }
-           })
-        #PDF de FE,FEE,FEC,ND,NC
-        #En caso de que el server-side envie el mail
+                LineaSubTotal = round((LineaMontoTotal - LineaMontoDescuento),5)
+                inv_lines[arrayCount]['SubTotal'] = '{0:.5f}'.format(LineaSubTotal)
 
-        self.invoice[self.fe_doc_type].update({'PDF':self._get_pdf_bill(self.id)})
+                if i.invoice_line_tax_ids:
+
+                ## COMIENZA TAXES y OTROS CARGOS
+
+                for tax_id in i.invoice_line_tax_ids :
+                    MontoCargo = 0
+                    LineaImpuestoMonto = 0
+
+                    if tax_id.type == 'OTHER': #
+
+                        OtrosCargos_json = { 'TipoDocumento':tax_id.tipo_documento }
+
+                        OtrosCargos_json.update({'Detalle':tax_id.name})
+
+                        OtrosCargos_json.update({'Porcentaje':'{0:.5f}'.format(tax_id.amount)})
+
+                        MontoCargo = LineaMontoTotal * (tax_id.amount/100)
+
+                        OtrosCargos_json.update({'MontoCargo':'{0:.5f}'.format(MontoCargo)})
+
+                        OtrosCargos_array.append(OtrosCargos_json)
+
+                        TotalOtrosCargos += MontoCargo
+
+                    else:
+
+                        LineaImpuestoTarifa = round(tax_id.amount,2)
+
+                        inv_lines[arrayCount]['Impuesto'] = {
+                            'Codigo':tax_id.tarifa_impuesto,
+                            'CodigoTarifa':tax_id.codigo_impuesto,
+                            'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
+                            }
+
+                        LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
+                        inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
+
+                        LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
+                        inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
+                    #Si esta exonerado al 100% se debe colocar 0-Zero
+
+                #XXXXXX FALTA TOTAL IVA DEVUELTO
+
+                        TotalImpuesto = round((TotalImpuesto + LineaImpuestoNeto),5)
+
+                MontoTotalLinea = round((LineaSubTotal + LineaImpuestoNeto),5)
+                inv_lines[arrayCount]['MontoTotalLinea'] = '{0:.5f}'.format(MontoTotalLinea)
+
+                if i.product_id.type == 'service':
+                    #asking for tax for know if the product is Tax Free
+                    if i.invoice_line_tax_ids:
+                        TotalServGravados = TotalServGravados + LineaMontoTotal
+                    else:
+                        TotalServExentos = TotalServExentos + LineaMontoTotal
+                    #  XXXX PENDIENTE LOS ServExonerados
+                else:
+                    if i.invoice_line_tax_ids:
+                        TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
+                    else:
+                        TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
+                    #   XXXX PENDIENTE LOS MercanciasExoneradas
+
+
+                NumeroLinea = NumeroLinea + 1
+                arrayCount = arrayCount + 1
+
+            s.invoice[s.fe_doc_type]['DetalleServicio'] = {'LineaDetalle':inv_lines}
+
+
+
+            s.invoice[s.fe_doc_type].update({
+            'OtrosCargos':OtrosCargos_array
+            })
+
+            s.invoice[s.fe_doc_type].update(
+                {'ResumenFactura':{
+                    'CodigoTipoMoneda':{
+                        'CodigoMoneda':s.currency_id.name,
+                        'TipoCambio':'{0:.2f}'.format((1/s.currency_id.rate) or None),
+                    }
+                }})
+
+            TotalGravado = TotalServGravados + TotalMercanciasGravadas
+            TotalExento = TotalServExentos + TotalMercanciasExentas
+            TotalExonerado = TotalServExonerado + TotalMercExonerada
+            TotalVenta = TotalGravado + TotalExento #+ TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
+            TotalVentaNeta = TotalVenta - TotalDescuentos
+
+            if TotalServGravados:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServGravados':'{0:.5f}'.format(TotalServGravados)})
+
+            if TotalServExentos:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExentos':'{0:.5f}'.format(TotalServExentos)})
+
+            if TotalServExonerado:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(TotalServExonerado)})
+
+            if TotalMercanciasGravadas:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasGravadas':'{0:.5f}'.format(TotalMercanciasGravadas)})
+
+            if TotalMercanciasExentas:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasExentas':'{0:.5f}'.format(TotalMercanciasExentas)})
+
+            if TotalMercExonerada:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(TotalMercExonerada)})
+
+            if TotalGravado:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
+
+            if TotalExento:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
+
+            if TotalExonerado:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(TotalServExonerado + TotalMercExonerada)})
+
+            if TotalVenta:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'{0:.5f}'.format(TotalVenta)})
+            else:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'0'})
+
+            if TotalDescuentos:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalDescuentos':'{0:.5f}'.format(TotalDescuentos)})
+
+            if TotalVentaNeta:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'{0:.5f}'.format(TotalVentaNeta)})
+            else:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'0'})
+
+            if TotalImpuesto:
+                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '{0:.5f}'.format(TotalImpuesto)
+            else:
+                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '0'
+
+
+
+            ##PENDINETE TOTALIVADEVUELTO
+            #self.invoice[self.fe_doc_type]['ResumenFactura']['TotalIVADevuelto'] = 'PENDIENTE_TOTAL_IVA_DEVUELTO'     # CONDICIONAL
+                #Este campo será de condición obligatoria cuando se facturen servicios de salud y cuyo método de pago sea “Tarjeta”.
+                #Se obtiene de la sumatoria del Monto de los Impuestos pagado por los servicios de salud en tarjetas.
+                #Es un número decimal compuesto por 13 enteros y 5 decimales.
+
+            if TotalOtrosCargos:
+                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalOtrosCargos'] = '{0:.5f}'.format(TotalOtrosCargos)
+
+            TotalComprobante = TotalVentaNeta + TotalImpuesto #+ TotalOtrosCargos - TotalIVADevuelto
+            if TotalComprobante:
+                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] = '{0:.5f}'.format(TotalComprobante) #'PENDIENTE_TOTAL_Comprobante'
+            #SUMA DE: "total venta neta" + "monto total del impuesto" + "total otros cargos" - total IVA devuelto
+            else:
+                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
+
+            if s.number[8:10] == "02" or s.number[8:10] == "03":
+                if not s.origin:
+                    error = True
+                    msg = 'Indique el NUMERO CONSECUTIVO de REFERENCIA\n'
+                else:
+                    if len(s.origin) == 20:
+                        origin_doc = s.search([('number', '=', s.origin)])
+                        origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
+                        s.invoice[s.fe_doc_type].update({
+                            'InformacionReferencia':{
+                            'TipoDoc':s.fe_tipo_documento_referencia,
+                            'Numero':origin_doc.number,
+                            'FechaEmision': origin_doc_fe_fecha_emision,
+                            'Codigo':s.fe_informacion_referencia_codigo or None,
+                            'Razon':s.name,
+                            }
+                        })
+
+            if s.comment:
+            s.invoice[s.fe_doc_type].update({
+                'Otros':{
+                    'OtroTexto':s.comment,
+                    #'OtroContenido':'ELEMENTO OPCIONAL'
+                }
+            })
+            #PDF de FE,FEE,FEC,ND,NC
+            #En caso de que el server-side envie el mail
+
+            s.invoice[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
 
     @api.model
     def cron_send_json(self):
@@ -1723,7 +1725,7 @@ class Invoice(models.Model):
             return values
             
     #metodo original heredado          
-    @api.multi
+
     @api.returns('self')
     def refund(self, date_invoice=None, date=None, description=None, journal_id=None,fe_payment_type=None,payment_term_id=None,fe_activity_code_id=None,fe_receipt_status=None,fe_tipo_documento_referencia=None,fe_informacion_referencia_codigo=None):
             new_invoices = self.browse()

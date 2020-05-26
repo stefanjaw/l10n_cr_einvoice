@@ -65,13 +65,13 @@ class accountInvoiceRefund(models.TransientModel):
     )
     
         
-    @api.multi
+
     @api.depends('company_id')
     def _get_country_code(self):
         for s in self:
             s.fe_current_country_company_code = s.company_id.country_id.code 
                          
-    @api.multi
+
     def compute_refund(self, mode='refund'):
         inv_obj = self.env['account.invoice']
         inv_tax_obj = self.env['account.invoice.tax']
