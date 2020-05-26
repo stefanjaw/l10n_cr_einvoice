@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+<!--
 <record id="factelec_43_invoice_supplier" model="ir.ui.view">
   <field name="name">factelec_43.invoice.supplier.form</field>
   <field name="model">account.invoice</field>
@@ -23,30 +24,24 @@
         <field name = "fe_condicion_impuesto" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
      </field>
      <notebook position="before">
-         <!-- 1570054332 -->
          <field name = "fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
          <field name = "fe_xml_supplier_xslt" invisible="1"/>
      </notebook>
     <field name="currency_id" position="after">
        <field name="fe_server_state" readonly='1' attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
-       <!-- 1569524296 -->
        <field name="fe_xml_supplier" filename="fe_xml_supplier_name" string="Subir XML Proveedor" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}" />
        <field name="fe_xml_supplier_name" invisible="1"/>
-       <!--1569524732-->
        <field name="fe_xml_supplier_hacienda" filename="fe_xml_supplier_hacienda_name" string="Subir XML Hacienda Proveedor" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}"/>
        <field name="fe_xml_supplier_hacienda_name" invisible="1"/>
-      <!--1570034790-->
        <field name="fe_xml_hacienda" filename="fe_name_xml_hacienda" string="Mensaje Hacienda Respuesta" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
        <field name="fe_name_xml_hacienda" invisible="1"/>
-       <!--1570035130-->
        <field name = "fe_msg_type" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}" />
-       <!--1570035143-->
        <field name = "fe_detail_msg" attrs="{'invisible':[('fe_in_invoice_type','!=','ME')]}" />
         <button name='confirm_bill' string="Enviar a Hacienda"  type="object" class="oe_highlight" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
         <button name='get_invoice' string="consultar"  type="object" class="oe_highlight" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
     </field>
   </field>
-</record>
+</record> -->
 <!-- Inherit Form view -->
 <record id="factelec_43_invoice" model="ir.ui.view">
   <field name="name">factelec_43.invoice.form</field>
