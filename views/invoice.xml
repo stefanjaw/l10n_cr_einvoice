@@ -50,8 +50,8 @@
 <!-- Inherit Form view -->
 <record id="factelec_43_invoice" model="ir.ui.view">
   <field name="name">factelec_43.invoice.form</field>
-  <field name="model">account.invoice</field>
-  <field name="inherit_id" ref="account.invoice_form"/>
+  <field name="model">account.move</field>
+  <field name="inherit_id" ref="account.view_move_form"/>
   <field name="arch" type="xml">
       <xpath expr="//page[last()]" position="after">
         <field name ="fe_current_country_company_code" invisible="1"/>
