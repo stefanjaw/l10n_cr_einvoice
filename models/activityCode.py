@@ -15,12 +15,12 @@ class activityCode(models.Model):
     )
     invoice_ids = fields.One2many(
         string="Invoice",
-        comodel_name="account.invoice",
+        comodel_name="account.move",
         inverse_name="fe_activity_code_id",
     )
     invoice_refund_ids = fields.One2many(
             string="Invoice",
-            comodel_name="account.invoice.refund",
+            comodel_name="account.move.reversal",
             inverse_name="fe_activity_code_id",
     )
    
