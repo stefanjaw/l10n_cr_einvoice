@@ -1400,7 +1400,7 @@ class Invoice(models.Model):
 
             s.invoice[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
 
-            if s.payment_term_id.name:
+            if s.invoice_payment_term_id.name:
                 s.invoice[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.name})
             if s.fe_condicion_impuesto:
                 s.invoice[s.fe_doc_type].update({'CondicionImpuesto':s.fe_condicion_impuesto})
