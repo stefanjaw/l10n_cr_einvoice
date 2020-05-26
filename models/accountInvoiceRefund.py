@@ -1,4 +1,4 @@
-from odoo import models, fields, api, _
+'''from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
 from odoo.exceptions import UserError
         
@@ -151,4 +151,4 @@ class accountInvoiceRefund(models.TransientModel):
             invoice_domain.append(('id', 'in', created_inv))
             result['domain'] = invoice_domain
             return result
-        return True
+        return True'''
