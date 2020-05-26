@@ -1441,13 +1441,13 @@ class Invoice(models.Model):
                 #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
 
                 if i.product_id.default_code:
-                inv_lines[arrayCount]['Codigo'] = i.product_id.default_code
+                    inv_lines[arrayCount]['Codigo'] = i.product_id.default_code
 
                 if i.product_id.fe_codigo_comercial_codigo:
-                inv_lines[arrayCount]['CodigoComercial'] = {
-                    'Tipo':i.product_id.fe_codigo_comercial_tipo,
-                    'Codigo':i.product_id.fe_codigo_comercial_codigo,
-                }
+                    inv_lines[arrayCount]['CodigoComercial'] = {
+                        'Tipo':i.product_id.fe_codigo_comercial_tipo,
+                        'Codigo':i.product_id.fe_codigo_comercial_codigo,
+                    }
 
                 LineaCantidad = round(i.quantity,3)
                 inv_lines[arrayCount]['Cantidad'] = '{0:.3f}'.format(LineaCantidad)
@@ -1455,10 +1455,10 @@ class Invoice(models.Model):
                 inv_lines[arrayCount]['UnidadMedida'] = i.uom_id.name
 
                 if i.product_id.fe_unidad_medida_comercial:
-                inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
+                    inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
 
                 if i.name:
-                inv_lines[arrayCount]['Detalle'] = i.name or None
+                    inv_lines[arrayCount]['Detalle'] = i.name or None
 
                 LineaPrecioUnitario = round(i.price_unit,5)
                 inv_lines[arrayCount]['PrecioUnitario'] = '{0:.5f}'.format(LineaPrecioUnitario)
@@ -1481,48 +1481,48 @@ class Invoice(models.Model):
 
                 if i.invoice_line_tax_ids:
 
-                ## COMIENZA TAXES y OTROS CARGOS
+                    ## COMIENZA TAXES y OTROS CARGOS
 
-                for tax_id in i.invoice_line_tax_ids :
-                    MontoCargo = 0
-                    LineaImpuestoMonto = 0
+                    for tax_id in i.invoice_line_tax_ids :
+                        MontoCargo = 0
+                        LineaImpuestoMonto = 0
 
-                    if tax_id.type == 'OTHER': #
+                        if tax_id.type == 'OTHER': #
 
-                        OtrosCargos_json = { 'TipoDocumento':tax_id.tipo_documento }
+                            OtrosCargos_json = { 'TipoDocumento':tax_id.tipo_documento }
 
-                        OtrosCargos_json.update({'Detalle':tax_id.name})
+                            OtrosCargos_json.update({'Detalle':tax_id.name})
 
-                        OtrosCargos_json.update({'Porcentaje':'{0:.5f}'.format(tax_id.amount)})
+                            OtrosCargos_json.update({'Porcentaje':'{0:.5f}'.format(tax_id.amount)})
 
-                        MontoCargo = LineaMontoTotal * (tax_id.amount/100)
+                            MontoCargo = LineaMontoTotal * (tax_id.amount/100)
 
-                        OtrosCargos_json.update({'MontoCargo':'{0:.5f}'.format(MontoCargo)})
+                            OtrosCargos_json.update({'MontoCargo':'{0:.5f}'.format(MontoCargo)})
 
-                        OtrosCargos_array.append(OtrosCargos_json)
+                            OtrosCargos_array.append(OtrosCargos_json)
 
-                        TotalOtrosCargos += MontoCargo
+                            TotalOtrosCargos += MontoCargo
 
-                    else:
+                        else:
 
-                        LineaImpuestoTarifa = round(tax_id.amount,2)
+                            LineaImpuestoTarifa = round(tax_id.amount,2)
 
-                        inv_lines[arrayCount]['Impuesto'] = {
-                            'Codigo':tax_id.tarifa_impuesto,
-                            'CodigoTarifa':tax_id.codigo_impuesto,
-                            'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
-                            }
+                            inv_lines[arrayCount]['Impuesto'] = {
+                                'Codigo':tax_id.tarifa_impuesto,
+                                'CodigoTarifa':tax_id.codigo_impuesto,
+                                'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
+                                }
 
-                        LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
-                        inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
+                            LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
+                            inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
-                        LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
-                        inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
-                    #Si esta exonerado al 100% se debe colocar 0-Zero
+                            LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
+                            inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
+                        #Si esta exonerado al 100% se debe colocar 0-Zero
 
-                #XXXXXX FALTA TOTAL IVA DEVUELTO
+                    #XXXXXX FALTA TOTAL IVA DEVUELTO
 
-                        TotalImpuesto = round((TotalImpuesto + LineaImpuestoNeto),5)
+                            TotalImpuesto = round((TotalImpuesto + LineaImpuestoNeto),5)
 
                 MontoTotalLinea = round((LineaSubTotal + LineaImpuestoNeto),5)
                 inv_lines[arrayCount]['MontoTotalLinea'] = '{0:.5f}'.format(MontoTotalLinea)
