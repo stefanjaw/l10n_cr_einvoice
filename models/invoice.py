@@ -2,7 +2,6 @@ from odoo import models, fields, api, exceptions
 from odoo.exceptions import ValidationError
 from datetime import datetime,timezone
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
-from openerp.osv.orm import except_orm
 from openerp.osv import osv
 from openerp.tools.translate import _
 from .xslt import __path__ as path
