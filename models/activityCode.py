@@ -24,7 +24,7 @@ class activityCode(models.Model):
             inverse_name="fe_activity_code_id",
     )
    
-    @api.multi
+
     @api.depends()
     def compute_name(self):
         for s in self:
