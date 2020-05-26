@@ -31,7 +31,6 @@
     <record id="action_neighborhood" model="ir.actions.act_window">
         <field name="name">Neighborhood</field>
         <field name="res_model">client.neighborhood</field>
-        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
