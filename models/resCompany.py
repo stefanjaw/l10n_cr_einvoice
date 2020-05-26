@@ -50,41 +50,42 @@ class resCompany(models.Model):
         for s in self:
             s.fe_current_country_company_code = s.country_id.code
 
-    @api.multi
+
     def update_credentials_server_side(self):
-        log.info('--->1574963401')
-        if not 'http://' in self.fe_url_server and  not 'https://' in self.fe_url_server:
-              raise ValidationError("El campo Server URL en compañia no tiene el formato correcto, asegurese que contenga http://")
+        for s in self:
+            log.info('--->1574963401')
+            if not 'http://' in s.fe_url_server and  not 'https://' in s.fe_url_server:
+                raise ValidationError("El campo Server URL en compañia no tiene el formato correcto, asegurese que contenga http://")
 
-        json_string = {
-                          'token_user_password':self.fe_user_password,
-                          'certificate_password':self.fe_password_certificate,
-                          }
-        json_to_send = json.dumps(json_string)
-        url = self.fe_url_server+'credential/update/'+self.vat.replace('-','').replace(' ','')
-        log.info('--->url %s',url)
-        header = {'Content-Type':'application/json'}
-        try:
-            response = requests.post(url, headers = header, data = json_to_send)
-        except Exception as ex:
-            if 'Name or service not known' in str(ex.args):
-                raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
-            else:
-                 raise ValidationError(ex) 
-        
-        log.info('--->response %s',response.text)
-        json_response = json.loads(response.text)
+            json_string = {
+                            'token_user_password':s.fe_user_password,
+                            'certificate_password':s.fe_password_certificate,
+                            }
+            json_to_send = json.dumps(json_string)
+            url = s.fe_url_server+'credential/update/'+s.vat.replace('-','').replace(' ','')
+            log.info('--->url %s',url)
+            header = {'Content-Type':'application/json'}
+            try:
+                response = requests.post(url, headers = header, data = json_to_send)
+            except Exception as ex:
+                if 'Name or service not known' in str(ex.args):
+                    raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+                else:
+                    raise ValidationError(ex) 
+            
+            log.info('--->response %s',response.text)
+            json_response = json.loads(response.text)
 
-        if "result" in json_response.keys():
-            result = json_response['result']
-            if "status" in result.keys():
-                if result['status'] == "200":
-                    log.info('====== Exito \n')
-                    raise ValidationError("Actualizado con éxito")
+            if "result" in json_response.keys():
+                result = json_response['result']
+                if "status" in result.keys():
+                    if result['status'] == "200":
+                        log.info('====== Exito \n')
+                        raise ValidationError("Actualizado con éxito")
 
-            elif "validation" in  result.keys():
-                result = json_response['result']['validation']
-                raise ValidationError(result)
+                elif "validation" in  result.keys():
+                    result = json_response['result']['validation']
+                    raise ValidationError(result)
 
 
     @api.onchange("country_id")
