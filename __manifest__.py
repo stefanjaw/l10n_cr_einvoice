@@ -42,7 +42,7 @@
         'views/payment_term.xml',
         'views/product.xml',
         'views/provincia.xml',
-        'views/report.xml',
+        #'views/report.xml',
         'views/tax.xml',
     ],
 
