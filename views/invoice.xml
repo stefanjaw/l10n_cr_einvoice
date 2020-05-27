@@ -77,7 +77,7 @@
       <field name="invoice_payment_term_id" position="after">
             <field name="journal_id" string="Tipo de Documento" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
       </field>
-      <field name="user_id" position="after">
+      <field name="invoice_user_id" position="after">
           <field name = "fe_payment_type"  attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
           <field name = "fe_receipt_status" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
           <field name = "fe_activity_code_id"  domain="[('company_id', '=', company_id)]" options="{'no_create_edit':True}" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
