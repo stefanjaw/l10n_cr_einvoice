@@ -4,7 +4,7 @@
         <field name="name">client.district.tree</field>
         <field name="model">client.district</field>
         <field name="arch" type="xml">
-            <tree string="District">
+            <tree string="District" edit="true" create="true" delete="true">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="canton_id"/>
@@ -16,7 +16,7 @@
         <field name="name">client.district.form</field>
         <field name="model">client.district</field>
         <field name="arch" type="xml">
-            <form string="District">
+            <form string="District" edit="true" create="true" delete="true">
                 <sheet>
                     <group col="4" colspan="4">
                         <field name="name" required="1"/>
