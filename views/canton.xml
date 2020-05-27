@@ -4,7 +4,7 @@
         <field name="name">client.canton.tree</field>
         <field name="model">client.canton</field>
         <field name="arch" type="xml">
-            <tree string="Canton">
+            <tree string="Canton" create="true" delete="true">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="state_id"/>
@@ -16,12 +16,12 @@
         <field name="name">client.canton.form</field>
         <field name="model">client.canton</field>
         <field name="arch" type="xml">
-            <form string="Canton">
+            <form string="Canton" edit="true" create="true" delete="true">
                 <sheet>
                     <group col="4" colspan="4">
-                        <field name="name" required="1"/>
-                        <field name="code"/>
-                        <field name="state_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                        <field name="name" readonly="0" required="1"/>
+                        <field name="code" readonly="0"/>
+                        <field name="state_id" readonly="0" options="{'no_create': True, 'no_create_edit': True}"/>
                     </group>
                 </sheet>
             </form>
