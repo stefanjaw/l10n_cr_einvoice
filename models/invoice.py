@@ -1114,9 +1114,9 @@ class Invoice(models.Model):
            self.fe_clave = clave
 
 
-    def action_invoice_open(self,validate = True):
+    def action_post(self,validate = True):
         for s in self:
-            log.info('--> action_invoice_open')
+            log.info('--> action_post')
             if s.company_id.country_id.code == 'CR' and s.fe_in_invoice_type != 'OTRO':
                 if validate:
                             if s.fe_msg_type != '3':
@@ -1171,7 +1171,7 @@ class Invoice(models.Model):
 
                 date_temp = s.date_invoice 
                 log.info('--> 1575061615')
-                res = super(Invoice, s).action_invoice_open()
+                res = super(Invoice, s).action_post()
                 tz = pytz.timezone('America/Costa_Rica')
                 
                 if not date_temp:
@@ -1188,7 +1188,7 @@ class Invoice(models.Model):
                 s._validate_invoice_line()
             else:
                 log.info('--> 1575061637')
-                res = super(Invoice, s).action_invoice_open()
+                res = super(Invoice, s).action_post()
 
 
 

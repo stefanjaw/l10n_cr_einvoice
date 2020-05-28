@@ -73,9 +73,9 @@ class accountInvoiceRefund(models.TransientModel):
                          
 
     def compute_refund(self, mode='refund'):
-        inv_obj = self.env['account.invoice']
-        inv_tax_obj = self.env['account.invoice.tax']
-        inv_line_obj = self.env['account.invoice.line']
+        inv_obj = self.env['account.move']
+        inv_tax_obj = self.env['account.move.tax']
+        inv_line_obj = self.env['account.move.line']
         context = dict(self._context or {})
         xml_id = False
 
