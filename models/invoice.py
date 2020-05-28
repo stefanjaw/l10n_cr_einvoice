@@ -1101,7 +1101,7 @@ class Invoice(models.Model):
             self.mensaje_validacion = ''
 
     def _generar_clave(self):
-        document_date_invoice = datetime.strptime(self.invoice_date,'%Y-%m-%d')
+        document_date_invoice = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
         if self.fe_doc_type != "MensajeReceptor":
            country_code = self.company_id.country_id.phone_code
            vat = self.company_id.vat or ''
