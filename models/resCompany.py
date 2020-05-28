@@ -27,12 +27,12 @@ class resCompany(models.Model):
     fe_identification_type = fields.Selection(related="partner_id.fe_identification_type",store=True)
     fe_comercial_name = fields.Char(related="partner_id.fe_comercial_name")
 
-    fe_canton_id = fields.Many2one(related="partner_id.fe_canton_id")
-    fe_district_id = fields.Many2one(related="partner_id.fe_district_id")
-    fe_neighborhood_id = fields.Many2one(related="partner_id.fe_neighborhood_id")
-    fe_other_signs = fields.Text(related="partner_id.fe_other_signs")
+    fe_canton_id = fields.Many2one(related="partner_id.fe_canton_id",store=True)
+    fe_district_id = fields.Many2one(related="partner_id.fe_district_id",store=True)
+    fe_neighborhood_id = fields.Many2one(related="partner_id.fe_neighborhood_id",store=True)
+    fe_other_signs = fields.Text(related="partner_id.fe_other_signs",store=True)
 
-    fe_fax_number = fields.Char(related="partner_id.fe_fax_number")
+    fe_fax_number = fields.Char(related="partner_id.fe_fax_number",store=True)
 
     fe_activity_code_ids = fields.One2many(
         string="Codigo de actividades economicas",
