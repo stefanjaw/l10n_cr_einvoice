@@ -307,7 +307,7 @@ class Invoice(models.Model):
         for s in self:
             for i in s.invoice_line_ids:
                 if i.product_id.type == 'Service':
-                    if i.invoice_line_tax_ids:
+                    if i.tax_ids:
                         totalAmount = i.price_unit * i.quantity
                         totalServGravados = totalServGravados + totalAmount
 
@@ -320,7 +320,7 @@ class Invoice(models.Model):
         for s in self:
             for i in s.invoice_line_ids:
                 if i.product_id.type == 'Service':
-                    if i.invoice_line_tax_ids:
+                    if i.tax_ids:
                         totalAmount = i.price_unit * i.quantity
                         totalServExentos = totalServExentos + totalAmount
 
@@ -333,7 +333,7 @@ class Invoice(models.Model):
         for s in self:
             for i in s.invoice_line_ids:
                 if i.product_id.type != 'Service':
-                        if i.invoice_line_tax_ids:
+                        if i.tax_ids:
                             totalAmount = i.price_unit * i.quantity
                             totalMercanciasGravadas = totalMercanciasGravadas + totalAmount
         self.fe_total_mercancias_gravadas =  totalMercanciasGravadas
@@ -345,7 +345,7 @@ class Invoice(models.Model):
         for s in self:
             for i in s.invoice_line_ids:
                 if i.product_id.type != 'Service':
-                        if not i.invoice_line_tax_ids:
+                        if not i.tax_ids:
                             totalAmount = i.price_unit * i.quantity
                             totalMercanciasExentas = totalMercanciasExentas + totalAmount
         self.fe_total_mercancias_exentas =  totalMercanciasExentas
@@ -360,7 +360,7 @@ class Invoice(models.Model):
             for i in s.invoice_line_ids:
                 if i.product_id.type != 'Service':
                     #asking for tax for know if the product is exempt
-                    if not i.invoice_line_tax_ids:
+                    if not i.tax_ids:
                         totalAmount = i.price_unit * i.quantity
                         total_mercancias_exentas = total_mercancias_exentas + totalAmount
 
@@ -652,9 +652,9 @@ class Invoice(models.Model):
                 raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda".format(line.product_uom_id.name)))
                 return
 
-            if line.invoice_line_tax_ids:
+            if line.tax_ids:
 
-               for tax_id in line.invoice_line_tax_ids:
+               for tax_id in line.tax_ids:
 
                   if tax_id.type == 'OTHER':
                      if not tax_id.tipo_documento:
@@ -1478,11 +1478,11 @@ class Invoice(models.Model):
                 LineaSubTotal = round((LineaMontoTotal - LineaMontoDescuento),5)
                 inv_lines[arrayCount]['SubTotal'] = '{0:.5f}'.format(LineaSubTotal)
 
-                if i.invoice_line_tax_ids:
+                if i.tax_ids:
 
                     ## COMIENZA TAXES y OTROS CARGOS
 
-                    for tax_id in i.invoice_line_tax_ids :
+                    for tax_id in i.tax_ids :
                         MontoCargo = 0
                         LineaImpuestoMonto = 0
 
@@ -1528,13 +1528,13 @@ class Invoice(models.Model):
 
                 if i.product_id.type == 'service':
                     #asking for tax for know if the product is Tax Free
-                    if i.invoice_line_tax_ids:
+                    if i.tax_ids:
                         TotalServGravados = TotalServGravados + LineaMontoTotal
                     else:
                         TotalServExentos = TotalServExentos + LineaMontoTotal
                     #  XXXX PENDIENTE LOS ServExonerados
                 else:
-                    if i.invoice_line_tax_ids:
+                    if i.tax_ids:
                         TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
                     else:
                         TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
