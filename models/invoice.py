@@ -1647,10 +1647,10 @@ class Invoice(models.Model):
                             }
                         })
 
-            if s.comment:
+            if s.narration:
                 s.invoice[s.fe_doc_type].update({
                     'Otros':{
-                        'OtroTexto':s.comment,
+                        'OtroTexto':s.narration,
                         #'OtroContenido':'ELEMENTO OPCIONAL'
                     }
                 })
