@@ -81,16 +81,15 @@
           <field name = "fe_payment_type"  attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
           <field name = "fe_receipt_status" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
           <field name = "fe_activity_code_id"  domain="[('company_id', '=', company_id)]" options="{'no_create_edit':True}" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
+          <field name="fe_server_state" readonly='1' attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
       </field>
       <!--<div groups="base.group_multi_currency" position="after">
         <field name = "fe_currency_rate" readonly="1"/>
       </div>-->
-      <field name="journal_id" position="after">
+      <field name="currency_id" position="after">
         <field name = "fe_currency_rate" readonly="1"/>
       </field>
-      <field name="invoice_payment_term_id" required="1" position="after">
-            <field name="fe_server_state" readonly='1' attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
-      </field>
+
       
   </field>
 </record>
