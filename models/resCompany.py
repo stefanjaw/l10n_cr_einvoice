@@ -27,7 +27,7 @@ class resCompany(models.Model):
     fe_identification_type = fields.Selection(related="partner_id.fe_identification_type")
     fe_comercial_name = fields.Char(related="partner_id.fe_comercial_name")
 
-    fe_canton_id = fields.Many2one(related="partner_id.fe_canton_id",store=True)
+    fe_canton_id = fields.Many2one(related="partner_id.fe_canton_id")
     fe_district_id = fields.Many2one(related="partner_id.fe_district_id")
     fe_neighborhood_id = fields.Many2one(related="partner_id.fe_neighborhood_id")
     fe_other_signs = fields.Text(related="partner_id.fe_other_signs")
