@@ -151,6 +151,7 @@ class Invoice(models.Model):
     )
     
     fe_currency_rate = fields.Char(string="Tipo de cambio",)
+    invoice = {}
     
     @api.onchange('fe_msg_type')
     def _onchange_fe_msg_type(self):
