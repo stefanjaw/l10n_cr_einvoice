@@ -1387,7 +1387,7 @@ class Invoice(models.Model):
             if s.partner_id.phone:
                 s.invoice[s.fe_doc_type]['Receptor'].update({'Telefono':{
                     'CodigoPais':str(s.company_id.country_id.phone_code),
-                    'NumTelefono':s.partner_id.phone.replace('-','').replace(' ','').replace('+506 ','') or None,
+                    'NumTelefono':s.partner_id.phone.replace('-','').replace(' ','').replace('+506','') or None,
                 }})
 
             if s.partner_id.fe_fax_number:
