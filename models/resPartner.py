@@ -50,7 +50,7 @@ class resPartner(models.Model):
     def _get_country_code(self):
         log.info('--> 1575319718')
         for s in self:
-            s.fe_current_country_company_code = s.company_id.country_id.code
+            s.fe_current_country_company_code = s.country_id.code
             log.info('--> codigo %s',s.fe_current_country_company_code)
             #raise ValidationError(s.fe_current_country_company_code)
 
