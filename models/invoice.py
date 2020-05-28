@@ -191,16 +191,16 @@ class Invoice(models.Model):
             log.info('largo del prefijo del diario menor a 10')
 
             
-    @api.onchange("currency_id","date_invoice",)
+    @api.onchange("currency_id","invoice_date",)
     def _onchange_currency_rate(self):
         for s in self:
             log.info('-->577381353')
             if s.currency_id.name == "USD": 
                 date = None
-                if not s.date_invoice:
+                if not s.invoice_date:
                     date = time.strftime("%Y-%m-%d")
                 else:
-                    date = s.date_invoice 
+                    date = s.invoice_date 
                                         
                 s._rate(date)
                     
@@ -550,7 +550,7 @@ class Invoice(models.Model):
 
         country_code = self.company_id.partner_id.country_id.code
 
-        self.source_date = self.date_invoice
+        self.source_date = self.invoice_date
 
         if country_code == 'CR':
             self._validate_company()
@@ -1101,7 +1101,7 @@ class Invoice(models.Model):
             self.mensaje_validacion = ''
 
     def _generar_clave(self):
-        document_date_invoice = datetime.strptime(self.date_invoice,'%Y-%m-%d')
+        document_date_invoice = datetime.strptime(self.invoice_date,'%Y-%m-%d')
         if self.fe_doc_type != "MensajeReceptor":
            country_code = self.company_id.country_id.phone_code
            vat = self.company_id.vat or ''
@@ -1169,14 +1169,14 @@ class Invoice(models.Model):
 
 
 
-                date_temp = s.date_invoice 
+                date_temp = s.invoice_date 
                 log.info('--> 1575061615')
                 res = super(Invoice, s).action_post()
                 tz = pytz.timezone('America/Costa_Rica')
                 
                 if not date_temp:
                     s.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
-                    s.date_invoice = s.fe_fecha_emision
+                    s.invoice_date = s.fe_fecha_emision
                 else:
                     s.fe_fecha_emision = '{0} 00:00:00'.format(date_temp) 
                 
