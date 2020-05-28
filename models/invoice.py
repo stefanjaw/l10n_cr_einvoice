@@ -648,8 +648,8 @@ class Invoice(models.Model):
         log.info('--> _validate_invoice_line')
         for line in self.invoice_line_ids:
 
-            if line.uom_id.name not in units:
-                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda".format(line.uom_id.name)))
+            if line.product_uom_id.name not in units:
+                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda".format(line.product_uom_id.name)))
                 return
 
             if line.invoice_line_tax_ids:
@@ -1451,7 +1451,7 @@ class Invoice(models.Model):
                 LineaCantidad = round(i.quantity,3)
                 inv_lines[arrayCount]['Cantidad'] = '{0:.3f}'.format(LineaCantidad)
 
-                inv_lines[arrayCount]['UnidadMedida'] = i.uom_id.name
+                inv_lines[arrayCount]['UnidadMedida'] = i.product_uom_id.name
 
                 if i.product_id.fe_unidad_medida_comercial:
                     inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
