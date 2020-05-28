@@ -1304,7 +1304,7 @@ class Invoice(models.Model):
         chatter = self.env['mail.message']
         chatter.create({
                         'res_id': self.id,
-                        'model':'account.invoice',
+                        'model':'account.move',
                         'body': body,
                        })
 
