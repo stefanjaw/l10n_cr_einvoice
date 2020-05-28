@@ -151,8 +151,8 @@ class Invoice(models.Model):
     )
     
     fe_currency_rate = fields.Char(string="Tipo de cambio",)
-    invoice = {}
-    
+
+
     @api.onchange('fe_msg_type')
     def _onchange_fe_msg_type(self):
         if self.fe_msg_type == '3':
@@ -494,10 +494,10 @@ class Invoice(models.Model):
             self._cr_validate_mensaje_receptor()
             self._cr_xml_mensaje_receptor()
         else:
-            self._cr_xml_factura_electronica()
+            invoice = self._cr_xml_factura_electronica()
         
         json_string = {
-                      'invoice':self.invoice,
+                      'invoice': invoice,
                       'certificate':base64.b64encode(self.company_id.fe_certificate).decode('utf-8'),
                       'token_user_name':self.company_id.fe_user_name,
                       }
@@ -1659,6 +1659,7 @@ class Invoice(models.Model):
             #En caso de que el server-side envie el mail
 
             s.invoice[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
+            return s.invoice
 
     @api.model
     def cron_send_json(self):
