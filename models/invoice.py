@@ -475,7 +475,7 @@ class Invoice(models.Model):
                 'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
                 'NumeroCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Numero'],
                 'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
-                'NumeroConsecutivoReceptor':self.number,
+                'NumeroConsecutivoReceptor':self.name,
                 #'EmisorEmail':self.partner_id.email,
                 #'pdf':self._get_pdf_bill(self.id) or None,
                 }}
@@ -489,7 +489,7 @@ class Invoice(models.Model):
             
         log.info('--> factelec-Invoice-_cr_post_server_side')
         
-        if self.number[8:10] == '05':
+        if self.name[8:10] == '05':
             self._cr_validate_mensaje_receptor()
             self._cr_xml_mensaje_receptor()
         else:
@@ -557,19 +557,19 @@ class Invoice(models.Model):
             self.validacion()
             self._validate_invoice_line()
 
-            if self.number[8:10] == "01":                    #FACTURA ELECTRONICA
+            if self.name[8:10] == "01":                    #FACTURA ELECTRONICA
                 self.fe_doc_type = "FacturaElectronica"
                 self._cr_post_server_side()
 
-            elif self.number[8:10] == "02":                  #NOTA DEBITO ELECTRONICA
+            elif self.name[8:10] == "02":                  #NOTA DEBITO ELECTRONICA
                 self.fe_doc_type = "NotaDebitoElectronica"
                 self._cr_post_server_side()
 
-            elif self.number[8:10] == "03":                  #NOTA CREDITO ELECTRONICA
+            elif self.name[8:10] == "03":                  #NOTA CREDITO ELECTRONICA
                 self.fe_doc_type = "NotaCreditoElectronica"
                 self._cr_post_server_side()
 
-            elif self.number[8:10] == "05":                 #Vendor Bill - Mensaje Receptor - Aceptar Factura
+            elif self.name[8:10] == "05":                 #Vendor Bill - Mensaje Receptor - Aceptar Factura
 
                 if self.fe_xml_hacienda:
                    msg = '--> Ya se tiene el XML de Hacienda Almacenado'
@@ -582,11 +582,11 @@ class Invoice(models.Model):
                    self.fe_fecha_emision_doc = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                    self._cr_post_server_side()
 
-            elif self.number[8:10] == "08":                    #FACTURA ELECTRONICA COMPRA
+            elif self.name[8:10] == "08":                    #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaCompra"
                 self._cr_post_server_side()
 
-            elif self.number[8:10] == "09":                    #FACTURA ELECTRONICA COMPRA
+            elif self.name[8:10] == "09":                    #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaExportacion"
                 self._cr_post_server_side()
 
@@ -768,7 +768,7 @@ class Invoice(models.Model):
                 self.mensaje_validacion += validation[key]['Mensaje']+" no cumple con el formato correcto "+validation[key]['Patron']+'\n'
 
     def validacion(self):
-        tipo = self.number[8:10]
+        tipo = self.name[8:10]
         log.info(tipo)
         if tipo !='01' and tipo !='02' and tipo !='03' and tipo  != '05' and tipo  !='08' and tipo !='09':
             raise exceptions.Warning(("Configure el prefijo del diario contable para facturación electronica antes de validar"))
@@ -798,7 +798,7 @@ class Invoice(models.Model):
         translate['CodigoActividad'] = 'fe_activity_code_id.code'
         translate['Clave'] = 'fe_clave'
         translate['PlazoCredito'] = 'invoice_payment_term_id.name'
-        translate['NumeroConsecutivo'] = 'number'
+        translate['NumeroConsecutivo'] = 'name'
         translate['FechaEmision'] = 'fe_fecha_emision'
         translate['Emisor-Identifacion-Tipo'] = emisor+'.fe_identification_type'
         translate['Emisor-Identifacion-Numero'] = emisor+'.vat'
@@ -1109,7 +1109,7 @@ class Invoice(models.Model):
            vat = vat.replace(' ','')
            vat_complete = "0" * (12 - len(vat)) + vat
            clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
-              + str(vat_complete) + str(self.number) + str(self.fe_receipt_status) \
+              + str(vat_complete) + str(self.name) + str(self.fe_receipt_status) \
               + str("87654321")
            self.fe_clave = clave
 
@@ -1181,7 +1181,7 @@ class Invoice(models.Model):
                     s.fe_fecha_emision = '{0} 00:00:00'.format(date_temp) 
                 
                 s._validate_company()
-                if s.number[8:10] != '05':
+                if s.name[8:10] != '05':
                     s._generar_clave()
                 log.info('--->Clave %s',s.fe_clave)
                 s.validacion()
@@ -1204,8 +1204,8 @@ class Invoice(models.Model):
             if s.fe_xml_hacienda:
                  raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
 
-            if s.number[8:10] == "05":
-               url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave+'-'+s.number)
+            if s.name[8:10] == "05":
+               url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave+'-'+s.name)
             else:
                url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave)
 
@@ -1261,7 +1261,7 @@ class Invoice(models.Model):
                 item.get_invoice()
                 '''if item.fe_clave:
                    if item.type == 'in_invoice' and item.fe_clave:   #CAMBIO se agrego and item.fe_clave
-                      array.append(item.fe_clave+'-'+item.number)
+                      array.append(item.fe_clave+'-'+item.name)
                    else:
                       array.append(item.fe_clave)
                 '''
@@ -1284,7 +1284,7 @@ class Invoice(models.Model):
         if 'result' in dic.keys():
             for item in dic['result']:
                 if item['doc-type']=='05':
-                    bill = self.env['account.invoice'].search([('number','=',item['clave'].split('-')[1]),('type','=','in_invoice')])
+                    bill = self.env['account.invoice'].search([('name','=',item['clave'].split('-')[1]),('type','=','in_invoice')])
                 else:
                     bill = self.env['account.invoice'].search([('fe_clave','=',item['clave'])])
 
@@ -1314,7 +1314,7 @@ class Invoice(models.Model):
             s.invoice = {}
             s.invoice[s.fe_doc_type] = {'CodigoActividad':s.fe_activity_code_id.code}
             s.invoice[s.fe_doc_type].update({'Clave':s.fe_clave})
-            s.invoice[s.fe_doc_type].update({'NumeroConsecutivo':s.number})
+            s.invoice[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
             s.invoice[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
             s.invoice[s.fe_doc_type].update({'Emisor':{
                 'Nombre':s.company_id.company_registry
@@ -1629,18 +1629,18 @@ class Invoice(models.Model):
             else:
                 s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
 
-            if s.number[8:10] == "02" or s.number[8:10] == "03":
+            if s.name[8:10] == "02" or s.name[8:10] == "03":
                 if not s.origin:
                     error = True
                     msg = 'Indique el NUMERO CONSECUTIVO de REFERENCIA\n'
                 else:
                     if len(s.origin) == 20:
-                        origin_doc = s.search([('number', '=', s.origin)])
+                        origin_doc = s.search([('name', '=', s.origin)])
                         origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
                         s.invoice[s.fe_doc_type].update({
                             'InformacionReferencia':{
                             'TipoDoc':s.fe_tipo_documento_referencia,
-                            'Numero':origin_doc.number,
+                            'Numero':origin_doc.name,
                             'FechaEmision': origin_doc_fe_fecha_emision,
                             'Codigo':s.fe_informacion_referencia_codigo or None,
                             'Razon':s.name,
@@ -1665,7 +1665,7 @@ class Invoice(models.Model):
         invoice_list = self.env['account.invoice'].search([('fe_server_state','=',False),('state','=','open')])
         for invoice in invoice_list:
             if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO':
-                log.info('-->consecutivo %s',invoice.number)
+                log.info('-->consecutivo %s',invoice.name)
                 invoice.confirm_bill()
                 
                 
@@ -1707,8 +1707,8 @@ class Invoice(models.Model):
             values['type'] = TYPE2REFUND[invoice['type']]
             values['date_invoice'] = date_invoice or fields.Date.context_today(invoice)
             values['state'] = 'draft'
-            values['number'] = False
-            values['origin'] = invoice.number
+            values['name'] = False
+            values['origin'] = invoice.name
             values['invoice_payment_term_id'] = False
             values['refund_invoice_id'] = invoice.id
             values['fe_payment_type'] = fe_payment_type
@@ -1735,7 +1735,7 @@ class Invoice(models.Model):
                 refund_invoice = self.create(values)
                 invoice_type = {'out_invoice': ('customer invoices credit note'),
                     'in_invoice': ('vendor bill credit note')}
-                message = _("This %s has been created from: <a href=# data-oe-model=account.invoice data-oe-id=%d>%s</a>") % (invoice_type[invoice.type], invoice.id, invoice.number)
+                message = _("This %s has been created from: <a href=# data-oe-model=account.invoice data-oe-id=%d>%s</a>") % (invoice_type[invoice.type], invoice.id, invoice.name)
                 refund_invoice.message_post(body=message)
                 new_invoices += refund_invoice
             return new_invoices
