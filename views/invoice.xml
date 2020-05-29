@@ -90,6 +90,7 @@
       </div>-->
       <!--Vendor bill-->
       <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency" attrs="{'column_invisible': [('parent.type', '!=', 'entry')]}" position="after" >
+            <field name="fe_in_invoice_type" invisible="1"/>
             <field name="fe_xml_supplier" filename="fe_xml_supplier_name" string="Subir XML Proveedor" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}" />
             <field name="fe_xml_supplier_name" invisible="1"/>
             <field name="fe_xml_supplier_hacienda" filename="fe_xml_supplier_hacienda_name" string="Subir XML Hacienda Proveedor" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}"/>
