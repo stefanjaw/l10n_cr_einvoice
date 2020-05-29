@@ -72,6 +72,7 @@
       </xpath>-->
       <field name="name" position="after">
             <h3><field name="fe_clave" readonly="1"/></h3>
+            <field name="fe_clave" invisible="1"/>
       </field>
 
       <field name="journal_id" position="attributes">
