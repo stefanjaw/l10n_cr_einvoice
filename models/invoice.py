@@ -157,7 +157,7 @@ class Invoice(models.Model):
     def _onchange_fe_msg_type(self):
         if self.fe_msg_type == '3':
            account_id =  self.env['account.account'].search([('code','=','0-511301')])
-           accountLine = self.env['account.invoice.line']
+           accountLine = self.env['account.move.line']
            accountLine_id = accountLine.create({
                 'name': 'Rechazado',
                 'account_id':account_id.id,
