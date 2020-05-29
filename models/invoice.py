@@ -159,6 +159,7 @@ class Invoice(models.Model):
            account_id =  self.env['account.account'].search([('code','=','0-511301')])
            accountLine = self.env['account.move.line']
            accountLine_id = accountLine.create({
+                'move_id':self.id,
                 'name': 'Rechazado',
                 'account_id':account_id.id,
                 'price_unit':0,
