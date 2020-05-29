@@ -421,9 +421,9 @@ class Invoice(models.Model):
             dic = self.convert_xml_to_dic(self.fe_xml_supplier)
             if not dic.get("FacturaElectronica"):
                 raise exceptions.Warning(("La factura xml no es un archivo de factura valido"))
-            type = self.get_doc_type(dic)
+            doc_type = self.get_doc_type(dic)
             # 1570054332
-            self.fe_xml_supplier_xslt = self.transform_doc(root_xml,type);
+            self.fe_xml_supplier_xslt = self.transform_doc(root_xml,doc_type)
             self.update({'fe_clave' : dic['FacturaElectronica']['Clave']})
         else:
             return{
