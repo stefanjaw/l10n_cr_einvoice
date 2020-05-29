@@ -481,6 +481,7 @@ class Invoice(models.Model):
                 #'EmisorEmail':self.partner_id.email,
                 #'pdf':self._get_pdf_bill(self.id) or None,
                 }}
+            return self.invoice
         else:
             msg = 'adjunte una factura electronica antes de confirmar la aceptacion'
             raise exceptions.Warning((msg))
@@ -493,7 +494,7 @@ class Invoice(models.Model):
         
         if self.name[8:10] == '05':
             self._cr_validate_mensaje_receptor()
-            self._cr_xml_mensaje_receptor()
+            invoice = self._cr_xml_mensaje_receptor()
         else:
             invoice = self._cr_xml_factura_electronica()
         
