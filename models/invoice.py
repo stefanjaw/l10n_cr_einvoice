@@ -155,7 +155,7 @@ class Invoice(models.Model):
 
     @api.onchange('fe_msg_type')
     def _onchange_fe_msg_type(self):
-        if self.fe_msg_type == '3':
+        '''if self.fe_msg_type == '3':
            account_id =  self.env['account.account'].search([('code','=','0-511301')])
            accountLine = self.env['account.move.line']
            accountLine_id = accountLine.create({
@@ -167,7 +167,7 @@ class Invoice(models.Model):
                 })
 
            log.info("----------->{}".format(accountLine_id.id))
-           self.invoice_line_ids = [(6, 0,[accountLine_id.id])]
+           self.invoice_line_ids = [(6, 0,[accountLine_id.id])]'''
 
     #Cambio
     '''
