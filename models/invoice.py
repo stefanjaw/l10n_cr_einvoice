@@ -478,7 +478,7 @@ class Invoice(models.Model):
                 #PENDIENTE AGREGAR CAMPO 'MontoTotalDeGastoAplicable':'PENDIENTE2 CALCULAR 0.00',
                 'MontoTotalImpuesto':bill_dic['FacturaElectronica']['ResumenFactura']['TotalImpuesto'],
                 'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
-                'NumeroCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Numero'],
+                'NumeroCedulaReceptor':s.env.user.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Numero'],
                 'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
                 'NumeroConsecutivoReceptor':self.name,
                 #'EmisorEmail':self.partner_id.email,
