@@ -112,7 +112,8 @@ class Invoice(models.Model):
         string="Tipo Documento",
         selection=[
                 ('ME', 'Mensaje Aceptación'),
-                ('FE', 'Factura Electronica Compra'),
+                ('FE', 'Factura Electronica'),
+                ('FEC', 'Factura Electronica Compra'),
                 ('OTRO', 'Otros'),                
         ],
     )
@@ -183,9 +184,11 @@ class Invoice(models.Model):
     def _onchange_journal_id(self):
         if len(self.journal_id.sequence_id.prefix) == 10 :
             if self.journal_id.sequence_id.prefix[8:10] == '08':
-                self.fe_in_invoice_type = 'FE'
+                self.fe_in_invoice_type = 'FEC'
             elif self.journal_id.sequence_id.prefix[8:10] == '05':
                 self.fe_in_invoice_type = 'ME'
+            elif self.journal_id.sequence_id.prefix[8:10] == '01':
+                self.fe_in_invoice_type = 'FE'
             else:
                 self.fe_in_invoice_type = 'OTRO'
         else:
