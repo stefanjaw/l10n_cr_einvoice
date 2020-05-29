@@ -162,7 +162,7 @@ class Invoice(models.Model):
                 'name': 'Rechazado',
                 'account_id':account_id.id,
                 'price_unit':0,
-                'quantity':1,
+                'quantity':1.000,
                 })
 
            log.info("----------->{}".format(accountLine_id.id))
