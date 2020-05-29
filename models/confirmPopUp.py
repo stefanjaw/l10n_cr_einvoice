@@ -11,7 +11,7 @@ class confirmPopUp(models.TransientModel):
     
     def continuar(self):
         invoice = self.env['account.move'].search([("id","=",self._context['invoice'])])
-        invoice.action_invoice_open(False)
+        invoice.action_post(False)
 
 
 class confirmPopUp(models.TransientModel):
@@ -20,4 +20,4 @@ class confirmPopUp(models.TransientModel):
     
     def continuar(self):
         invoice = self.env['account.move'].search([("id","=",self._context['invoice'])])
-        invoice.action_invoice_open(False)
+        invoice.action_post(False)
