@@ -100,7 +100,7 @@
             <field name = "fe_detail_msg" attrs="{'invisible':[('fe_in_invoice_type','!=','ME')]}" />
       </field>
 
-      <field name="narration" nolabel="1" height="50" position="before">
+      <field name="narration" nolabel="1" height="50" position="after">
          <field name = "fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
          <field name = "fe_xml_supplier_xslt" invisible="1"/>
       </field>
