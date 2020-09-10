@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<!-- Inherit Form view -->
+<record id="l10n_cr_einvoice.account_move_form" model="ir.ui.view">
+  <field name="name">l10n_cr_einvoice.account.move.form</field>
+  <field name="model">account.move</field>
+  <field name="inherit_id" ref="account.view_move_form"/>
+  <field name="arch" type="xml">
+      <xpath expr="//page[last()]" position="after">
+        <field name ="fe_current_country_company_code" invisible="1"/>
+        <page string="Facturacion electrónica" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}">
+          <form>
+            <group>
+              <button name='get_invoice' string="consultar"  type="object" class="oe_highlight" />
+            </group>
+            <group>
+              <button name='confirm_bill' string="Enviar a Hacienda"  type="object" class="oe_highlight" />
+            </group>
+            <group>
+              <field name="fe_name_xml_sign" invisible='1'/>
+              <field name="fe_name_xml_hacienda" invisible='1'/>
+              <field name="fe_xml_sign" filename='fe_name_xml_sign' options="{'filename': 'fe_name_xml_sign'}"/>
+              <field name="fe_xml_hacienda" filename='fe_name_xml_hacienda' options="{'filename': 'fe_name_xml_hacienda'}"/>
+            </group>
+          </form>
+        </page>
+      </xpath>
+      <!--<xpath expr="//sheet/h1" position="after">
+          <h3><field name="fe_clave" readonly="1"/></h3>
+      </xpath>-->
+      
+     <field name="name" position="after">
+            <h3><field name="fe_clave" readonly="1"/></h3>
+            <field name="fe_clave" invisible="1"/>
+      </field>
+
+      <field name="journal_id" position="attributes">
+        <attribute name="attrs">{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}</attribute>
+      </field>
+
+      <field name="ref" position="after">
+          <field name = "fe_payment_type"  attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+          <field name = "fe_receipt_status" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+          <field name = "fe_activity_code_id"  domain="[('company_id', '=', company_id)]" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+          <field name="fe_server_state" readonly='1' attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+          <field name = "fe_currency_rate" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+      </field>
+      <!--<div groups="base.group_multi_currency" position="after">
+        <field name = "fe_currency_rate" readonly="1"/>
+      </div>-->
+      <!--Vendor bill-->
+      <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency" attrs="{'column_invisible': [('parent.type', '!=', 'entry')]}" position="after" >
+            <field name="fe_in_invoice_type" invisible="1"/>
+            <field name="fe_xml_supplier" filename="fe_xml_supplier_name" string="Subir XML Proveedor" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}" />
+            <field name="fe_xml_supplier_name" invisible="1"/>
+            <field name="fe_xml_supplier_hacienda" filename="fe_xml_supplier_hacienda_name" string="Subir XML Hacienda Proveedor" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}"/>
+            <field name="fe_xml_supplier_hacienda_name" invisible="1"/>
+            <field name="fe_name_xml_hacienda" invisible="1"/>
+            <field name = "fe_msg_type" attrs="{'invisible':['|',('fe_in_invoice_type','!=','ME'),('fe_current_country_company_code', '!=', 'CR')]}" />
+            <field name = "fe_detail_msg" attrs="{'invisible':[('fe_in_invoice_type','!=','ME')]}" />
+      </field>
+
+      <field name="narration" nolabel="1" height="50" position="after">
+         <field name = "fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+         <field name = "fe_xml_supplier_xslt" invisible="1"/>
+      </field>
+
+  </field>
+</record>
+
+    
+ <!-- Inherit Form view  credit note-->   
+<record id="l10n_cr_einvoice.account_move_form_credit_note" model="ir.ui.view">
+    <field name="name">l10n_cr_einvoice.account.move.form.credit.note</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+      <field name="journal_id" position="after">
+        <field name ="fe_current_country_company_code" invisible="1"/>
+        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund')]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund')]}"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund')]}"/>                  
+     </field>
+    </field>
+  </record>
+    
+    
+</odoo>

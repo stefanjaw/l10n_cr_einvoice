@@ -1,0 +1,156 @@
+<odoo>
+<template id="l10n_cr_einvoice.report_invoice_document_with_payments_inherit" inherit_id="account.report_invoice_document_with_payments">
+  <xpath expr="/t/t/div/h2" position="before">
+      <t t-if="o.fe_current_country_company_code == 'CR'" >
+            <t t-set="address" position="replace"/>
+            <table class="table table-borderless mt-4 mb-4">
+            <tbody>
+            <tr>
+            <td><strong>Cliente:</strong></td>
+            <td><span t-field="o.partner_id.name"/></td>
+            <td><strong>Identificación:</strong></td>
+            <td><span t-field="o.partner_id.vat"/></td>
+            </tr>
+            <tr>
+            <td><strong>Correo electrónico:</strong></td>
+            <td><span t-field="o.partner_id.email"/></td>
+            <td><strong>Teléfono:</strong></td>
+            <td><span t-field="o.partner_id.phone"/></td>
+            </tr>
+            <tr>
+            <td><strong>Dirección:</strong></td>
+            <td colspan = "3">
+            <span t-field="o.partner_id.state_id"/> 
+            <span t-field="o.partner_id.canton_id"/>
+            <span t-field="o.partner_id.distrito_id"/>
+            <span t-field="o.partner_id.barrio_id"/>
+            <span t-field="o.partner_id.street"/>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+      </t>
+  </xpath>
+
+  <xpath expr="/t/t/div/h2"
+      position="after">
+      <div class="row" t-if="o.fe_current_country_company_code == 'CR'" >
+        <div class="col-12">
+          <span>
+            <strong>Clave:</strong>
+          </span>
+          <span t-field="o.fe_clave" />
+        </div>
+      </div>
+    </xpath>
+    <xpath expr="/t/t/div/div[3]/div"
+           position="replace">
+      <div class="row">
+        <div class="col-6">
+          <table class="table table-sm"
+                 style="page-break-inside: avoid;" t-if="o.fe_current_country_company_code == 'CR'">
+            <tr class=""
+                style="">
+              <td>Servicios gravados</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_servicio_gravados" />
+              </td>
+            </tr>
+            <tr class=""
+                style="">
+              <td>Servicios exentos</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_servicio_exentos" />
+              </td>
+            </tr>
+            <tr class=""
+                style="">
+              <td>Mercancias gravadas</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_mercancias_gravadas" />
+              </td>
+            </tr>
+            <tr class=""
+                style="">
+              <td>Mercancias exentas</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_mercancias_exentas" />
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="col-6">
+          <table class="table table-sm"
+                 style="page-break-inside: avoid;">
+            <tr class=""
+                style="" t-if="o.fe_current_country_company_code == 'CR'" >
+              <td>Tolal gravado</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_gravado" />
+              </td>
+            </tr>
+            <tr class=""
+                style="" t-if="o.fe_current_country_company_code == 'CR'">
+              <td>Total exento</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_exento" />
+              </td>
+            </tr>
+            <tr class=""
+                style="">
+              <td>
+                <strong>Subtotal</strong>
+              </td>
+              <td class="text-right">
+                <span t-field="o.amount_untaxed" />
+              </td>
+            </tr>
+            <tr class="border-black o_subtotal"
+                style="" t-if="o.fe_current_country_company_code == 'CR'">
+              <td>Descuento</td>
+              <td class="text-right">
+                <span t-field="o.fe_total_descuento" />
+              </td>
+            </tr>
+            <t t-foreach="o.amount_by_group"
+               t-as="amount_by_group">
+              <tr style="">
+                <t t-if="len(o.line_ids.filtered(lambda line: line.tax_line_id)) in [0, 1] and o.amount_untaxed == amount_by_group[2]">
+                  <td>
+                    <span class="text-nowrap"
+                          t-esc="amount_by_group[0]" />
+                  </td>
+                  <td class="text-right o_price_total">
+                    <span class="text-nowrap"
+                          t-esc="amount_by_group[3]" />
+                  </td>
+                </t>
+                <t t-else="">
+                  <td>
+                    <span t-esc="amount_by_group[0]" />
+                    <span class="text-nowrap"> on
+                    <t t-esc="amount_by_group[4]" />
+                  </span>
+                </td>
+                <td class="text-right o_price_total">
+                  <span class="text-nowrap"
+                        t-esc="amount_by_group[3]" />
+                </td>
+              </t>
+            </tr>
+          </t>
+          <tr class="border-black o_total">
+            <td>
+              <strong>Total</strong>
+            </td>
+            <td class="text-right">
+              <span class="text-nowrap"
+                    t-field="o.amount_total" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </xpath>
+</template>
+</odoo>

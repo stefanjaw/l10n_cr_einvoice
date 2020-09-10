@@ -1,3 +1,19 @@
 # -*- coding: utf-8 -*-
-
-from . import models
+from . import account_move_func
+from . import account_move
+from . import confirm_alert_func
+from . import confirm_message_func
+from . import res_partner
+from . import res_partner_func
+from . import res_company
+from . import res_company_func
+from . import activity_code
+from . import activity_code_func
+from . import account_tax
+from . import account_payment
+from . import currency
+from . import currency_rate
+from . import product_template
+from . import res_country_state
+from . import account_move_reversal
+from . import account_move_reversal_func

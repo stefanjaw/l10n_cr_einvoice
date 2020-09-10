@@ -1,0 +1,98 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+import re
+import json
+import requests
+import logging
+
+log = logging.getLogger(__name__)
+
+class ResCompanyFunctions(models.Model):
+    _inherit = "res.company"
+    
+    @api.depends('country_id')
+    def _get_country_code(self):
+        log.info('--> 1575319718')
+        for s in self:
+            s.fe_current_country_company_code = s.country_id.code
+
+
+    def update_credentials_server_side(self):
+        for s in self:
+            log.info('--->1574963401')
+            if not s.vat:
+                 raise ValidationError("Porfavor escriba el numero de identificación de la empresa antes de actualizar los datos")
+            if not 'http://' in s.fe_url_server and  not 'https://' in s.fe_url_server:
+                raise ValidationError("El campo Server URL en compañia no tiene el formato correcto, asegurese que contenga http://")
+
+            json_string = {
+                            'token_user_password':s.fe_user_password,
+                            'certificate_password':s.fe_password_certificate,
+                            }
+            json_to_send = json.dumps(json_string)
+            url = s.fe_url_server+'credential/update/'+s.vat.replace('-','').replace(' ','')
+            log.info('--->url %s',url)
+            header = {'Content-Type':'application/json'}
+            try:
+                response = requests.post(url, headers = header, data = json_to_send)
+            except Exception as ex:
+                if 'Name or service not known' in str(ex.args):
+                    raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+                else:
+                    raise ValidationError(ex) 
+            
+            log.info('--->response %s',response.text)
+            json_response = json.loads(response.text)
+
+            if "result" in json_response.keys():
+                result = json_response['result']
+                if "status" in result.keys():
+                    if result['status'] == "200":
+                        log.info('====== Exito \n')
+                        raise ValidationError("Actualizado con éxito")
+
+                elif "validation" in  result.keys():
+                    result = json_response['result']['validation']
+                    raise ValidationError(result)
+
+
+    @api.onchange("country_id")
+    def _onchange_field(self):
+        log.info('--> _onchange_field')
+        vals={}
+        if not self.country_id.code == "CR":
+            vals = {'value':{
+                            'fe_identification_type':None,
+                            'fe_comercial_name':None,
+                            'fe_canton_id':None,
+                            'fe_district_id':None,
+                            'fe_neighborhood_id':None,
+                            'fe_other_signs':None,
+                            'fe_fax_number':None,
+                            'fe_code':None,
+                            }
+                   }
+        return vals
+
+
+
+
+    @api.constrains("email")
+    def _check_email(self):
+        log.info('--> _check_email')
+        pattern = r"\s*\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s*"
+        for s in self:
+            if s.country_id.code == 'CR':
+                if s.email:
+                    if not re.match(pattern, s.email):
+                        raise ValidationError("El correo electronico no tiene un formato valido")
+
+    @api.constrains("fe_url_server")
+    def _check_fe_url_server(self):
+        log.info('--> _check_fe_url_server')
+        for s in self:
+            if s.country_id.code == 'CR':
+                if not s.fe_url_server[int(len(s.fe_url_server)-1):int(len( s.fe_url_server))] == "/" :
+                    raise ValidationError("El Server URL debe de terminar con un slash /")

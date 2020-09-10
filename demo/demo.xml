@@ -1,30 +1,81 @@
 <odoo>
     <data>
-<!--
-          <record id="object0" model="l10n_cr_einvoice/.l10n_cr_einvoice/">
-            <field name="name">Object 0</field>
-            <field name="value">0</field>
-          </record>
-
-          <record id="object1" model="l10n_cr_einvoice/.l10n_cr_einvoice/">
-            <field name="name">Object 1</field>
-            <field name="value">10</field>
-          </record>
-
-          <record id="object2" model="l10n_cr_einvoice/.l10n_cr_einvoice/">
-            <field name="name">Object 2</field>
-            <field name="value">20</field>
-          </record>
-
-          <record id="object3" model="l10n_cr_einvoice/.l10n_cr_einvoice/">
-            <field name="name">Object 3</field>
-            <field name="value">30</field>
-          </record>
-
-          <record id="object4" model="l10n_cr_einvoice/.l10n_cr_einvoice/">
-            <field name="name">Object 4</field>
-            <field name="value">40</field>
-          </record>
--->
+        
+    <record model="ir.sequence" id="l10n_cr_einvoice_sequence_factura_electronica">
+            <field name="name">Secuencia Factura Electronica</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">0010000101</field>
+            <field name="padding">10</field>
+            <field name="number_increment">1</field>
+            <field name="number_next_actual">300</field>
+            <field name="implementation">no_gap</field>
+             <field name="company_id" ref = "base.main_company"/>
+    </record>
+        
+    <record model="ir.sequence" id="l10n_cr_einvoice_sequence_nota_credito">
+            <field name="name">Secuencia Nota Credito Electronica</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">0010000103</field>
+            <field name="padding">10</field>
+            <field name="number_increment">1</field>
+            <field name="number_next_actual">300</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" ref = "base.main_company"/>
+    </record>
+        
+     <record model="account.journal" id="l10n_cr_einvoice_account_journal_factura_electronica">
+            <field name="name">Factura Electrónica</field>
+            <field name="active">sale</field>
+            <field name="code">FA</field>
+            <field name="type">sale</field>
+            <field name="sequence">1</field>
+            <field name="company_id" ref = "base.main_company"/>
+            <field name="sequence_id" ref="l10n_cr_einvoice_sequence_factura_electronica"/>
+            <field name="refund_sequence">TRUE</field>
+            <field name="refund_sequence_id" ref="l10n_cr_einvoice_sequence_nota_credito"/>
+    </record>  
+            
+    <record model="ir.sequence" id="l10n_cr_einvoice_sequence_mensaje_receptor">
+            <field name="name">Secuencia Mensaje Receptor</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">0010000105</field>
+            <field name="padding">10</field>
+            <field name="number_increment">1</field>
+            <field name="number_next_actual">300</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" ref = "base.main_company"/>
+     </record>
+        
+     <record model="account.journal" id="l10n_cr_einvoice_account_journal_mensaje_receptor">
+            <field name="name">Mensaje Receptor</field>
+            <field name="active">TRUE</field>
+            <field name="code">MR</field>
+            <field name="type">purchase</field>
+            <field name="sequence">2</field>
+            <field name="company_id" ref = "base.main_company"/>
+            <field name="sequence_id" ref="l10n_cr_einvoice_sequence_mensaje_receptor"/>
+            <field name="refund_sequence">FALSE</field>
+    </record>
+   <record model="ir.sequence" id="l10n_cr_einvoice_sequence_factura_compra">
+            <field name="name">Secuencia Factura electronica Compra</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">0010000108</field>
+            <field name="padding">10</field>
+            <field name="number_increment">1</field>
+            <field name="number_next_actual">300</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" ref = "base.main_company"/>
+     </record>
+        
+     <record model="account.journal" id="l10n_cr_einvoice_account_journal_factura_compra">
+            <field name="name">Factura Electrónica Compra</field>
+            <field name="active">TRUE</field>
+            <field name="code">FC</field>
+            <field name="type">purchase</field>
+            <field name="sequence">3</field>
+            <field name="company_id" ref = "base.main_company"/>
+            <field name="sequence_id" ref="l10n_cr_einvoice_sequence_factura_compra"/>
+            <field name="refund_sequence">FALSE</field>
+    </record>
     </data>
 </odoo>

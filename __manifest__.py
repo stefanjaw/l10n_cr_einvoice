@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "l10n_cr_einvoice/",
+    'name': "l10n_cr_einvoice",
 
     'summary': """
         Short (1 phrase/line) summary of the module's purpose, used as
@@ -20,13 +20,26 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base','contacts','l10n_cr_zones','account_accountant','l10n_cr'],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
+        'security/ir.model.access.csv',
+        'views/account_move_views.xml',
+        'views/confirm_alert_views.xml',
+        'views/confirm_message_views.xml',
+        'views/res_company_views.xml',
+        'views/res_partner_views.xml',
+        'views/account_journal_views.xml',
+        'views/account_move_views.xml',
+        'views/account_payment_term_views.xml',
+        'views/account_tax_views.xml',
+        'views/product_template_views.xml',
+        'views/cron_job_views.xml',
+        'views/res_country_state_views.xml',
+        'views/account_move_reversal_views.xml',
+        'views/report_invoice_document_with_payments.xml',
+        #'demo/demo.xml', no funcionan bien los diarios hay que agregar las cuentas default
     ],
     # only loaded in demonstration mode
     'demo': [
