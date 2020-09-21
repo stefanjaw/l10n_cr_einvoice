@@ -1,6 +1,7 @@
 from odoo import api, exceptions, fields, models, _
 from odoo.exceptions import ValidationError
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
+from .xslt import __path__ as path
 import lxml.etree as ET
 import xmltodict
 import logging
@@ -50,11 +51,14 @@ class ElectronicDoc(models.Model):
 
     xslt = fields.Html(string="Representacion Grafica", )
 
-    odoo_bill = fields.Many2one(
-        string="Factura odoo",
-        comodel_name="account.invoice",
-        ondelete="set null",
-    )
+    fe_msg_type = fields.Selection([ # 1570035130
+            ('1', 'Accept'),
+            ('2', 'Partially Accept'),
+            ('3', 'Reject'),
+        ], string="Mensaje", track_visibility="onchange",)
+
+    fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
+    
 
     display_name = fields.Char(
         string='Name',
@@ -65,29 +69,6 @@ class ElectronicDoc(models.Model):
          'El documento ya existe en la base de datos!!'),
     ]
 
-
-
-    @api.constrains('xml_acceptance')
-    def _check_receiver_xml_acceptance(self):
-        for record in self:
-            if record.xml_acceptance:
-                if 'xml' in record.xml_acceptance_name:
-                    dic = record.convert_xml_to_dic(record.xml_acceptance)
-                    doc_type = record.get_doc_type(dic)
-                    if doc_type != 'MH':
-                        raise ValidationError(
-                            _("El documento de Aceptacion del Ministerio de Hacienda no tiene un formato valido!"
-                              ))
-                    else:
-                        key = record.get_key(dic, doc_type)
-                        if key != record.key:
-                            raise ValidationError(
-                                _("El documento de Aceptacion del Ministerio de Hacienda no corresponde para esta factura o tiquete electronico"
-                                  ))
-                else:
-                    raise ValidationError(
-                        _("El documento de Aceptacion del Ministerio de Hacienda No corresponde a un archivo xml!!"
-                          ))
 
 
     @api.depends('key', 'provider', 'date')
@@ -261,15 +242,16 @@ class ElectronicDoc(models.Model):
         if (document):
             document.update({
                 'xml_acceptance': xml_acceptance,
-                'xml_acceptance_name': xml_acceptance_name,
+                'xml_acceptance_name': xml_acceptance_name or '{}_aceptacion.xml'.format(key),
             })
 
     def transform_to_xslt(self, root_xml, doc_type):
         dom = ET.fromstring(base64.b64decode(root_xml))
         if (doc_type == 'FE'):
+            ruta = path._path[0]+"/fe.xslt"
             transform = ET.XSLT(
                 ET.parse(
-                    '/home/odoo/addons/localization_cr_client/static/src/templateFE.xslt'
+                    ruta
                 ))
         elif (doc_type == 'TE'):
             transform = ET.XSLT(
@@ -282,10 +264,10 @@ class ElectronicDoc(models.Model):
     "UC03"
 
     def get_doc_type(self, dic):
-
-        tag_TE = 'https://tribunet.hacienda.go.cr/docs/esquemas/2017/v4.2/tiqueteElectronico'
-        tag_FE = 'https://tribunet.hacienda.go.cr/docs/esquemas/2017/v4.2/facturaElectronica'
-        tag_MH = 'https://tribunet.hacienda.go.cr/docs/esquemas/2017/v4.2/mensajeHacienda'
+                 
+        tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
+        tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronica'
+        tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
         try:
             if 'TiqueteElectronico' in dic.keys():
                 if dic['TiqueteElectronico']['@xmlns'] == tag_TE:

@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 class email(models.Model):
     _name = 'email'
     _inherit = ['mail.thread']
+    _rec_name = 'display_name'
     message_id = fields.Char()
     date = fields.Char()
     email_from = fields.Char()
@@ -22,7 +23,15 @@ class email(models.Model):
     attachments = fields.One2many('email.attach',
                                   'email_id',
                                   string='Archivos adjuntos')
-
+    display_name = fields.Char(
+        string='Name',
+        compute='_compute_display_name',
+    )
+        
+    @api.depends('email_from', 'date')
+    def _compute_display_name(self):
+        self.display_name = '{0} {1}'.format(self.email_from, self.date)
+        
     def create_email(self, msg_dict):
 
         id = msg_dict.get('message_id', '')

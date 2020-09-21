@@ -17,8 +17,7 @@
         <field name="name">email.view.form</field>
         <field name="model">email</field>
         <field name="arch" type="xml">
-            <form >
-                <field name="message_id" readonly="1"/>
+            <form>
                 <sheet>
                     <group col="4" colspan="4">
                       <!--WIP - UC02B-->
@@ -26,7 +25,6 @@
                       <field name="email_from"/>
                       <field name="to"/>
                       <field name="subject"/>
-                      <button string="Send Email" type="object" name="send_email" class="oe_highlight"/>
                     </group>
                   <notebook>
                     <page string='body'>
