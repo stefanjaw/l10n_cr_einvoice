@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--WIP - UC02A-->
+    <record id="view_email_tree" model="ir.ui.view">
+        <field name="name">email.view.tree</field>
+        <field name="model">email</field>
+        <field name="arch" type="xml">
+            <tree string="Listado">
+               <field name="email_from"/>
+               <field name="subject"/>
+               <field name="date"/>
+            </tree>
+        </field>
+    </record>
+    <!--WIP - UC02B-->
+    <record id="view_email_form" model="ir.ui.view">
+        <field name="name">email.view.form</field>
+        <field name="model">email</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group col="4" colspan="4">
+                      <!--WIP - UC02B-->
+                      <field name="date"/>
+                      <field name="email_from"/>
+                      <field name="to"/>
+                      <field name="subject"/>
+                    </group>
+                  <notebook>
+                    <page string='body'>
+                      <field name="body" readonly="1"/>
+                    </page>
+                    <page string='attachments'>
+                      <field name="attachments">
+                              <tree>
+                                  <field name="doc_type"/>
+                                  <field name="name" invisible='1'/>
+                                  <field name='doc'  invisible='1'/>
+                                  <field name="doc" string='Attachment' widget="download_link" filename='name' options="{'filename': 'name'}" />
+                              </tree>
+                          </field>
+                    </page>
+                  </notebook>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_email" model="ir.actions.act_window">
+        <field name="name">Listado Emails</field>
+        <field name="res_model">email</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <menuitem
+        id="menu_email"
+        name = "Emails"
+        action="action_email"
+        sequence="100"
+    />
+</odoo>

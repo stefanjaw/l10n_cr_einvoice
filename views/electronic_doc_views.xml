@@ -1,0 +1,117 @@
+<odoo>
+  <record id="electronic_doc_view_form" model="ir.ui.view">
+    <field name="name">doc.form</field>
+    <field name="model">electronic.doc</field>
+    <field name="arch" type="xml">
+      <form string="">
+          
+          <header>
+               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"/> 
+               <field name="estado" widget="statusbar" statusbar_visible="draft,posted"/>
+          </header>
+          
+        <sheet>
+         <group>
+            <h1 class="mt0">
+                <field name="consecutivo" readonly="True" attrs="{'invisible':[('consecutivo', '=', False )]}"/>
+            </h1>
+         </group>
+            
+          <group>
+            <field name="key" readonly='1' required='1'/>
+            <field name="key" invisible='1'/>
+            <field name="xml_bill_name" invisible='1'/>
+            <field name="xml_acceptance_name" invisible='1'/>
+            <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('estado', '=' ,'posted')]}"/>
+            <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('estado', '=' ,'posted')]}"/>
+          </group>
+            
+          <group>  
+              <group>
+
+                <!--duplicate field for save the information in the current model because readonly field dont write in vals-->
+                <field name="electronic_doc_bill_number" readonly='1' required='1'/>
+                <field name="electronic_doc_bill_number" invisible='1'/>
+
+                <field name="provider" readonly='1' required='1'/>
+                <field name="provider" invisible='1'/>
+
+                <field name="receiver_name" readonly='1' required='1'/>
+                <field name="receiver_name" invisible='1'/>
+                <field name="receiver_number" invisible='1'/>
+                <field name="date" readonly='1' required='1'/>
+                <field name="date" invisible='1'/>
+
+                <field name="doc_type"  readonly='1' required='1'/>
+                <field name="doc_type"  invisible='1'/>
+                <field name="total_amount" readonly='1'/>
+                <field name="total_amount" invisible='1'/>
+              </group>
+              <group>
+                  <field name="journal_id" required='1' attrs="{'readonly': [('estado','=','posted')]}"/>
+                  <field name = "fe_msg_type"  required='1' attrs="{'readonly': [('estado','=','posted')]}" />
+                  <field name = "fe_detail_msg"  attrs="{'readonly': [('estado','=','posted')],'required':[('fe_msg_type','!=','1')]}" />
+              </group>
+          </group>
+            
+          <notebook>
+            <page string="Factura">
+              <group>
+                <field name="xslt" readonly='1' required='1'/>
+                <field name="xslt" invisible='1'/>
+              </group>
+            </page>
+            <page string="Facturacion electrónica">
+          <form>
+            <group>
+              <button  string="consultar"  type="object" class="oe_highlight" />
+            </group>
+            <group>
+              <button   string="Enviar a Hacienda"  type="object" class="oe_highlight" />
+            </group>
+            <group>
+              <field name="fe_name_xml_sign" invisible='1'/>
+              <field name="fe_name_xml_hacienda" invisible='1'/>
+              <field name="fe_xml_sign" filename='fe_name_xml_sign' options="{'filename': 'fe_name_xml_sign'}"/>
+              <field name="fe_xml_hacienda" filename='fe_name_xml_hacienda' options="{'filename': 'fe_name_xml_hacienda'}"/>
+            </group>
+          </form>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+
+  <!--UC05B-->
+  <record id="electronic_doc_view_tree" model="ir.ui.view">
+    <field name="name">doc.tree</field>
+    <field name="model">electronic.doc</field>
+    <field name="arch" type="xml">
+      <tree string="">
+        <field name="key"/>
+        <field name="date"/>
+        <field name="provider"/>
+        <field name="receiver_name"/>
+        <field name="electronic_doc_bill_number"/>
+        <field name="has_acceptance"/>
+        <field name="total_amount"/>
+        <field name="doc_type"/>
+      </tree>
+    </field>
+  </record>
+
+
+
+  <record id="doc_action_form" model="ir.actions.act_window">
+    <field name="name">Documentos</field>
+    <field name="res_model">electronic.doc</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+  </record>
+
+
+  <menuitem id="menu_doc" name="Documentos"  action="doc_action_form" sequence="200"/>
+</odoo>
