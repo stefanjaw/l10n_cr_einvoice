@@ -240,45 +240,45 @@ class ElectronicDoc(models.Model):
                 'fe_detail_msg':self.fe_detail_msg,
                 'estado':'posted'
             }) 
-            
-            bill_dict = self.convert_xml_to_dic(self.xml_bill)
-            bill_type =  self.get_doc_type(bill_dict)
-            identificacion =  self.get_provider_identification(bill_dict, bill_type)
-            contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
-            if not contacto:
-                nombre = self.get_provider(bill_dict,bill_type)
-                contacto = self.env['res.partner'].create({
-                    'vat':identificacion,
-                    'name': nombre,
-                })
-                
-                
-            root_xml = fromstring(base64.b64decode(self.xml_bill))
-            ds = "http://www.w3.org/2000/09/xmldsig#"
-            xades = "http://uri.etsi.org/01903/v1.3.2#"
-            ns2 = {"ds": ds, "xades": xades}
-            signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
-            namespace = self._get_namespace(root_xml)
-            
-            lineasDetalle = root_xml.xpath(
-                "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
-   
-            invoice_lines = []          
-            for linea in lineasDetalle:   
-                new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace).text,
-                                    'account_id': 1,
-                                    'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace).text,
-                                    'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace).text,
-                                   }]
-                invoice_lines.append(new_line)
+            if self.journal_id.sequence_id.prefix[8:10] == "07":
+                bill_dict = self.convert_xml_to_dic(self.xml_bill)
+                bill_type =  self.get_doc_type(bill_dict)
+                identificacion =  self.get_provider_identification(bill_dict, bill_type)
+                contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
+                if not contacto:
+                    nombre = self.get_provider(bill_dict,bill_type)
+                    contacto = self.env['res.partner'].create({
+                        'vat':identificacion,
+                        'name': nombre,
+                    })
 
-            
-            record = self.env['account.move'].create({
-                'partner_id': contacto.id,
-                'ref': 'Factura importada desde correo consecutivo : {}'.format(next_number),
-                'type' : 'in_invoice',
-                'invoice_line_ids':invoice_lines,
-            })
+
+                root_xml = fromstring(base64.b64decode(self.xml_bill))
+                ds = "http://www.w3.org/2000/09/xmldsig#"
+                xades = "http://uri.etsi.org/01903/v1.3.2#"
+                ns2 = {"ds": ds, "xades": xades}
+                signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
+                namespace = self._get_namespace(root_xml)
+
+                lineasDetalle = root_xml.xpath(
+                    "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
+
+                invoice_lines = []          
+                for linea in lineasDetalle:   
+                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace).text,
+                                        'account_id': 1,
+                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace).text,
+                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace).text,
+                                       }]
+                    invoice_lines.append(new_line)
+
+
+                record = self.env['account.move'].create({
+                    'partner_id': contacto.id,
+                    'ref': 'Factura importada desde correo consecutivo : {}'.format(next_number),
+                    'type' : 'in_invoice',
+                    'invoice_line_ids':invoice_lines,
+                })
 
 
 
