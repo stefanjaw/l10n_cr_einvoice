@@ -265,10 +265,10 @@ class ElectronicDoc(models.Model):
    
             invoice_lines = []          
             for linea in lineasDetalle:   
-                new_line =  [0, 0, {'name': valor,
+                new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace).text,
                                     'account_id': 1,
-                                    'quantity': valor,
-                                    'price_unit':valor,
+                                    'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace).text,
+                                    'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace).text,
                                    }]
                 invoice_lines.append(new_line)
 
@@ -515,7 +515,7 @@ class ElectronicDoc(models.Model):
         country_code = self.company_id.partner_id.country_id.code 
         if country_code == 'CR':
             self.validar_compania
-            if self.consecutivo[8:10] == "05":                
+            if self.consecutivo[8:10] == "05" or self.consecutivo[8:10] == "06" or  self.consecutivo[8:10] == "07":                
 
                 if self.fe_xml_hacienda:
                    msg = '--> Ya se tiene el XML de Hacienda Almacenado'
@@ -631,8 +631,8 @@ class ElectronicDoc(models.Model):
                raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
             if s.fe_xml_hacienda:
                  raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
-
-            if s.consecutivo[8:10] == "05":
+ 
+            if s.consecutivo[8:10] == "05"or s.consecutivo[8:10] == "06" or  s.consecutivo[8:10] == "07": 
                 url = s.company_id.fe_url_server+'{0}'.format(s.key+'-'+s.consecutivo)
                 header = {'Content-Type':'application/json'}
 
@@ -669,7 +669,7 @@ class ElectronicDoc(models.Model):
             
         log.info('--> factelec-Invoice-_cr_post_server_side')
         
-        if self.consecutivo[8:10] == '05':
+        if self.consecutivo[8:10] == '05'or self.consecutivo[8:10] == "06" or  self.consecutivo[8:10] == "07": 
             invoice = self._cr_xml_mensaje_receptor()      
             json_string = {
                       'invoice': invoice,
