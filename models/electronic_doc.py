@@ -659,7 +659,6 @@ class ElectronicDoc(models.Model):
         log.info('--> cron_get_bills')
         list = self.env['electronic.doc'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('estado','=','posted'),
         ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
-
         for item in list:
             if item.company_id.country_id.code == 'CR':
                 log.info(' item name %s',item.consecutivo)
