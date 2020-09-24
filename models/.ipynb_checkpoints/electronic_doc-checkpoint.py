@@ -5,6 +5,7 @@ from datetime import datetime,timezone
 from .xslt import __path__ as path
 import lxml.etree as ET
 import xmltodict
+import re
 import logging
 import base64
 import pytz
@@ -73,7 +74,10 @@ class ElectronicDoc(models.Model):
 
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
     
-    journal_id = fields.Many2one('account.journal', string='Journal',)
+    journal_id = fields.Many2one('account.journal', string='Journal', domain = ['|','|',('sequence_id.prefix','=','0010000105'),
+                                                                               ('sequence_id.prefix','=','0010000106'),
+                                                                               ('sequence_id.prefix','=','0010000107'),
+                                                                               ])
     
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )
@@ -196,9 +200,29 @@ class ElectronicDoc(models.Model):
                         }
             }
 
-
+    def validar_xml_aceptacion(self):
+         for record in self:
+            if record.xml_acceptance:
+                if 'xml' in record.xml_acceptance_name:
+                    dic = record.convert_xml_to_dic(record.xml_acceptance)
+                    doc_type = record.get_doc_type(dic)
+                    if doc_type != 'MH':
+                        raise ValidationError(
+                            _("El documento de Aceptacion del Ministerio de Hacienda no tiene un formato valido!"
+                              ))
+                    else:
+                        key = record.get_key(dic, doc_type)
+                        if key != record.key:
+                            raise ValidationError(
+                                _("El documento de Aceptacion del Ministerio de Hacienda no corresponde para esta factura o tiquete electronico"
+                                  ))
+                else:
+                    raise ValidationError(
+                        _("El documento de Aceptacion del Ministerio de Hacienda No corresponde a un archivo xml!!"
+                          ))
+                    
     def confirmar(self):
-        
+        self.validar_xml_aceptacion
         if self.journal_id:
             next_number = self.journal_id.sequence_id.next_by_id()
             self.update({
@@ -219,14 +243,44 @@ class ElectronicDoc(models.Model):
                     'vat':identificacion,
                     'name': nombre,
                 })
+                
+                
+            root_xml = fromstring(base64.b64decode(self.xml_bill))
+            ds = "http://www.w3.org/2000/09/xmldsig#"
+            xades = "http://uri.etsi.org/01903/v1.3.2#"
+            ns2 = {"ds": ds, "xades": xades}
+            signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
+            namespace = self._get_namespace(root_xml)
+            
+            lineasDetalle = root_xml.xpath(
+                "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
+   
+            invoice_lines = []          
+            for linea in lineasDetalle:   
+                new_line =  [0, 0, {'name': valor,
+                                    'account_id': 1,
+                                    'quantity': valor,
+                                    'price_unit':valor,
+                                   }]
+                invoice_lines.append(new_line)
+
+            
             record = self.env['account.move'].create({
                 'partner_id': contacto.id,
                 'ref': 'Factura importada desde correo consecutivo : {}'.format(next_number),
                 'type' : 'in_invoice',
+                'invoice_line_ids':invoice_lines,
             })
 
 
-        
+
+    def _get_namespace(self, xml):
+        name = ""
+        form = re.match('\{.*\}', xml.tag)
+        if form:
+            name = form.group(0).split('}')[0].strip('{')
+        return {'xmlns': name}
+   
     def create_electronic_doc(self, xml, xml_name):
 
         dic = self.convert_xml_to_dic(xml)
