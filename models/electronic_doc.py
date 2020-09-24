@@ -1,11 +1,18 @@
 from odoo import api, exceptions, fields, models, _
 from odoo.exceptions import ValidationError
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
+from datetime import datetime,timezone
 from .xslt import __path__ as path
 import lxml.etree as ET
 import xmltodict
 import logging
 import base64
+import pytz
+import json
+import requests
+
+
+
 
 from io import BytesIO
 
@@ -16,6 +23,8 @@ class ElectronicDoc(models.Model):
 
     _name = 'electronic.doc'
     _rec_name = 'display_name'
+    _inherit = ['mail.thread']
+    
     key = fields.Char(string="Clave")
     consecutivo = fields.Char(string="Consecutivo")
     electronic_doc_bill_number = fields.Char(string="Numero Factura", )
@@ -50,6 +59,7 @@ class ElectronicDoc(models.Model):
         ], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
 
+    fe_server_state = fields.Char(string="Estado Hacienda", )
     
     total_amount = fields.Float(string="Monto Total", )
 
@@ -70,6 +80,11 @@ class ElectronicDoc(models.Model):
     fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda", )
     fe_xml_hacienda = fields.Binary(string="XML Hacienda", )# 1570034790
     fe_server_state = fields.Char(string="Estado Hacienda", )
+    company_id = fields.Many2one(
+        'res.company',
+        'Company',
+         default=lambda self: self.env.company.id 
+    )
     
     display_name = fields.Char(
         string='Name',
@@ -423,3 +438,229 @@ class ElectronicDoc(models.Model):
 
                 elif doc_type == 'MH':
                     self.add_acceptance(xml, xml_name)
+                    
+                    
+    def send_bill(self):
+        if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
+            raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
+
+        if self.estado == 'draft':
+           raise exceptions.Warning('VALIDE primero este documento')
+        if self.fe_xml_hacienda:
+           raise exceptions.Warning("Ya se tiene la RESPUESTA de Hacienda")
+
+        country_code = self.company_id.partner_id.country_id.code 
+        if country_code == 'CR':
+            self.validar_compania
+            if self.consecutivo[8:10] == "05":                
+
+                if self.fe_xml_hacienda:
+                   msg = '--> Ya se tiene el XML de Hacienda Almacenado'
+                   log.info(msg)
+                   raise exceptions.Warning((msg))
+
+                else:
+                   self._cr_post_server_side()
+                    
+
+    def write_chatter(self,body):
+        log.info('--> write_chatter')
+        chatter = self.env['mail.message']
+        chatter.create({
+                        'res_id': self.id,
+                        'model':'electronic.doc',
+                        'body': body,
+                       })   
+        
+    def _cr_xml_mensaje_receptor(self):
+        log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
+
+        bill_dic = self.convert_xml_to_dic(self.xml_bill)
+
+        if 'FacturaElectronica' in bill_dic.keys():
+            tz = pytz.timezone('America/Costa_Rica')
+            fecha = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+            json = {'MensajeReceptor':{
+                'Clave':bill_dic['FacturaElectronica']['Clave'],
+                'NumeroCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Numero'],
+                'TipoCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Tipo'],
+                'FechaEmisionDoc':fecha.split(' ')[0]+'T'+fecha.split(' ')[1]+'-06:00',
+                'Mensaje':self.fe_msg_type,
+                'DetalleMensaje':self.fe_detail_msg,
+                'MontoTotalImpuesto':bill_dic['FacturaElectronica']['ResumenFactura']['TotalImpuesto'],
+                'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
+                'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
+                'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
+                'NumeroConsecutivoReceptor':self.consecutivo,
+                }}
+            return json
+        else:
+            msg = 'adjunte una factura electronica antes de confirmar la aceptacion'
+            raise exceptions.Warning((msg))
+            
+    def validar_compania(self):
+        
+            msg = ''               
+            if not self.consecutivo:
+                msg += 'El documento no contiene numero consecutivo \n'
+            elif len(self.consecutivo) != 20:
+                msg += 'El consecutivo del documento debe ser de un largo de 20 \n'
+            
+            if not self.key:
+                msg += 'El documento no contiene clave \n'
+
+            elif len(self.key) != 50:
+                msg += 'La clave tiene que tener un largo de 50 \n'
+               
+            if not self.company_id.company_registry:
+                msg += 'En compañia, falta el campo registro de la compañia \n'
+            
+            if not self.company_id.fe_comercial_name:
+                msg += 'En compañia, falta el campo nombre comercial \n'
+            if not self.company_id.fe_identification_type:
+                msg += 'En compañia, falta el tipo de identificación \n'
+            if not self.company_id.vat:
+                msg += 'En compañia, falta el campo NIF \n'
+            elif len(self.company_id.vat) < 9 and len(self.company_id.vat) >12:
+                msg += 'En compañia, el largo del NIF debe ser entre 9 y 12 \n'
+         
+            if not self.company_id.state_id:
+                 msg += 'En compañia, la provincia es requerida \n'
+            elif not self.company_id.state_id.fe_code:
+                 msg += 'En compañia, el codigo para factura electronica de la provincia es requerida \n'
+                    
+            if not self.company_id.canton_id:
+                msg += 'En compañia, el canton es requerido \n'
+                
+            if not self.company_id.distrito_id:
+                    msg += 'En compañia, el distrito es requerido \n'
+            
+            if not self.company_id.street:
+                msg += 'En compañia, el campo otras señas es requerido \n'
+            
+            if not self.company_id.phone:
+                msg += 'En compañia, falta el numero de teléfono \n'
+            elif len(self.company_id.phone) < 8 and len(self.company_id.phone) > 20:
+                 msg += 'En compañia, el numero de teléfono debe ser igual o mayor que 8 y menor que 20 \n'
+            elif not re.search('^\d+$',self.company_id.phone):
+                msg += 'En compañia, el numero de teléfono debe contener solo numeros \n'
+            
+            if self.company_id.fe_fax_number:
+                if len(self.company_id.fe_fax_number)  < 8 and len(self.company_id.fe_fax_number) > 20:
+                    msg += 'En compañia, el numero de fax debe ser igual o mayor que 8 y menor que 20 \n' 
+            if not self.company_id.email:
+                 msg += 'En compañia, el correo electronico es requerido \n'
+            if not self.company_id.fe_url_server:
+                msg += "Configure el URL del Servidor en Settings/User & Companies/ TAB: Factura Electronica -> URL\n"
+            if not self.company_id.fe_activity_code_ids:
+                msg += "Falta agregar codigo de actividad en Settings/User & Companies/TAB: Factura Electronica\n"  
+            if msg:        
+                raise ValidationError(msg)
+                
+    def get_bill(self):
+        for s in self:
+            if s.estado == 'draft':
+              raise exceptions.Warning('VALIDE primero este documento')
+            #peticion al servidor a partir de la clave
+            log.info('--> 1569447129')
+            log.info('--> get_invoice')
+            if not 'http://' in s.company_id.fe_url_server and  not 'https://' in s.company_id.fe_url_server:
+               raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
+            if s.fe_xml_hacienda:
+                 raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
+
+            if s.consecutivo[8:10] == "05":
+                url = s.company_id.fe_url_server+'{0}'.format(s.key+'-'+s.consecutivo)
+                header = {'Content-Type':'application/json'}
+
+                try:
+                    r = requests.get(url, headers = header, data=json.dumps({}))
+                except Exception as ex:
+                    if 'Name or service not known' in str(ex.args):
+                        raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+                    else:
+                        raise ValidationError(ex) 
+
+                data = r.json()
+                log.info('---> %s',data)
+                log.info('-->1569447795')
+                #alamacena la informacion suministrada por el servidor
+                if data.get('result'):
+
+                    if data.get('result').get('error'):
+                       s.write_chatter(data['result']['error'])
+                    else:
+                       params = {
+                          'fe_server_state':data['result']['ind-estado'],
+                          'fe_name_xml_sign':data['result']['nombre_xml_firmado'],
+                          'fe_xml_sign':data['result']['xml_firmado'],
+                          'fe_name_xml_hacienda':data['result']['nombre_xml_hacienda'],
+                          'fe_xml_hacienda':data['result']['xml_hacienda'],
+                       }
+                       s.update(params)
+                    
+                
+    def _cr_post_server_side(self):
+        if not self.company_id.fe_certificate:
+            raise exceptions.Warning(('No se encuentra el certificado en compañia'))
+            
+        log.info('--> factelec-Invoice-_cr_post_server_side')
+        
+        if self.consecutivo[8:10] == '05':
+            invoice = self._cr_xml_mensaje_receptor()      
+            json_string = {
+                      'invoice': invoice,
+                      'certificate':base64.b64encode(self.company_id.fe_certificate).decode('utf-8'),
+                      'token_user_name':self.company_id.fe_user_name,
+                      }
+            json_to_send = json.dumps(json_string)
+            log.info('========== json to send : \n%s\n', json_string)
+            header = {'Content-Type':'application/json'}
+            url = self.company_id.fe_url_server
+            try:
+                response = requests.post(url, headers = header, data = json_to_send)
+            except Exception as ex:
+                if 'Name or service not known' in str(ex.args):
+                    raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
+                else:
+                     raise ValidationError(ex) 
+            try:
+               log.info('===340==== Response : \n  %s',response.text )
+               '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
+               json_response = json.loads(response.text)
+
+               result = ""
+               if "result" in json_response.keys():
+                   result = json_response['result']
+                   if "status" in result.keys():
+                       if result['status'] == "200":
+                           log.info('====== Exito \n')
+                           self.update({'fe_server_state':'enviado a procesar'})
+
+                   elif "error" in  result.keys():
+                        result = json_response['result']['error']
+                        body = "Error "+result
+                        self.write_chatter(body)
+
+            except Exception as e:
+                body = "Error "+str(e)
+                self.write_chatter(body)
+                
+    @api.model
+    def cron_send_bill(self):
+        invoice_list = self.env['electronic.doc'].search(['&',('fe_server_state','=',False),('estado','=','posted')])
+        log.info('-->invoice_list %s',invoice_list)
+        for invoice in invoice_list:
+            if invoice.company_id.country_id.code == 'CR':
+                log.info('-->consecutivo %s',invoice.consecutivo)
+                invoice.send_bill()
+    @api.model
+    def cron_get_bill(self):
+        log.info('--> cron_get_bills')
+        list = self.env['electronic.doc'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('estado','=','posted'),
+        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
+
+        for item in list:
+            if item.company_id.country_id.code == 'CR':
+                log.info(' item name %s',item.consecutivo)
+                item.get_bill()

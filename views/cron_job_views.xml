@@ -25,4 +25,33 @@
           <field name="model_id" ref="l10n_cr_einvoice.model_account_move"/>
           <field name="code" eval="'model.cron_get_server_bills()'"/>
   </record>
+    
+    
+    <record id="cron_send_bill_mensaje" model="ir.cron">
+    <field name="name">Enviar Mensajes server side</field>
+    <field name="active" eval="True"/>
+    <field name="state" eval="'code'"/>
+    <field name="priority" eval="5"/>
+          <field name="interval_number">1</field>
+          <field name="interval_type">minutes</field>
+          <field name="numbercall">-1</field>
+          <field name="doall" eval="False"/>
+          <field name="model_id" ref="l10n_cr_einvoice.model_electronic_doc"/>
+          <field name="code" eval="'model.cron_send_bill()'"/>
+  </record>
+
+
+  <record id="cron_get_bill_mensaje" model="ir.cron">
+    <field name="name">Consultar Mensajes server side</field>
+    <field name="active" eval="True"/>
+    <field name="state" eval="'code'"/>
+    <field name="priority" eval="5"/>
+          <field name="interval_number">1</field>
+          <field name="interval_type">minutes</field>
+          <field name="numbercall">-1</field>
+          <field name="doall" eval="False"/>
+          <field name="model_id" ref="l10n_cr_einvoice.model_electronic_doc"/>
+          <field name="code" eval="'model.cron_get_bill()'"/>
+  </record>
+    
 </odoo>
