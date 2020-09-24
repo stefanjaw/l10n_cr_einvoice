@@ -240,7 +240,7 @@ class ElectronicDoc(models.Model):
                 'fe_detail_msg':self.fe_detail_msg,
                 'estado':'posted'
             }) 
-            if self.journal_id.sequence_id.prefix[8:10] == "07":
+            if self.journal_id.sequence_id.prefix[8:10] != "07":
                 bill_dict = self.convert_xml_to_dic(self.xml_bill)
                 bill_type =  self.get_doc_type(bill_dict)
                 identificacion =  self.get_provider_identification(bill_dict, bill_type)
