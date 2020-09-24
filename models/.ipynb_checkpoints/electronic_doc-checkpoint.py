@@ -100,7 +100,15 @@ class ElectronicDoc(models.Model):
     ]
 
 
-
+    @api.onchange("journal_id")
+    def _onchange_journal_id(self):
+        if self.journal_id.sequence_id.prefix == '0010000105':
+            self.update({'fe_msg_type':'1'})
+        elif self.journal_id.sequence_id.prefix == '0010000106':
+            self.update({'fe_msg_type':'2'})
+        elif self.journal_id.sequence_id.prefix == '0010000107':
+            self.update({'fe_msg_type':'3'})
+        
     @api.depends('key', 'provider', 'date')
     def _compute_display_name(self):
         self.display_name = '{0} {1} {2}'.format(self.date, self.provider, self.key)
