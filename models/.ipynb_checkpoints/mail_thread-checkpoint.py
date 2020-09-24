@@ -28,7 +28,7 @@ class mailThread(models.AbstractModel):
         if name_field in fields and not data.get('name'):
             data[name_field] = msg_dict.get('subject', '')
         if msg_dict:
-            if msg_dict.get('message_id', ''):
+            if msg_dict.get('message_id', '') != '':
                 self.env['email'].create_email(msg_dict)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
                 self.env['electronic.doc'].automatic_bill_creation(docs)

@@ -265,10 +265,10 @@ class ElectronicDoc(models.Model):
 
                 invoice_lines = []          
                 for linea in lineasDetalle:   
-                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace).text,
+                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'account_id': 1,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace).text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace).text,
+                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
+                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
                                        }]
                     invoice_lines.append(new_line)
 
