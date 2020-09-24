@@ -73,7 +73,7 @@ class ElectronicDoc(models.Model):
 
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
     
-    journal_id = fields.Many2one('account.journal', string='Journal')
+    journal_id = fields.Many2one('account.journal', string='Journal',)
     
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )
@@ -304,9 +304,10 @@ class ElectronicDoc(models.Model):
                     ruta
                 ))
         elif (doc_type == 'TE'):
+            ruta = path._path[0]+"/te.xslt"
             transform = ET.XSLT(
                 ET.parse(
-                    '/home/odoo/addons/localization_cr_client/static/src/templateTE.xslt'
+                    ruta
                 ))
         nuevodom = transform(dom)
         return ET.tostring(nuevodom, pretty_print=True)
@@ -659,7 +660,6 @@ class ElectronicDoc(models.Model):
         log.info('--> cron_get_bills')
         list = self.env['electronic.doc'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('estado','=','posted'),
         ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
-
         for item in list:
             if item.company_id.country_id.code == 'CR':
                 log.info(' item name %s',item.consecutivo)
