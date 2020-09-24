@@ -21,3 +21,4 @@ from . import email
 from . import email_attach
 from . import mail_thread
 from . import electronic_doc
+from . import account_journal

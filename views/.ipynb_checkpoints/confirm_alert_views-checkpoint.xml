@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<!--**************popup*****************-->
+
+  <record model="ir.ui.view" id="l10n_cr_einvoice.alert_wizard">
+        <field name="name">l10n_cr_einvoice.alert.wizard</field>
+        <field name="model">confirm.alert</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+    <group>
+     <span>El total de la factura no es igual a la factura del proveedor, ¿Desea continuar?</span>
+    </group>
+                <footer>
+                    <button string="Edit" special="cancel" class="oe_highlight"/>
+                    <button name="continuar" string="Continue" type="object" class="oe_highlight" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

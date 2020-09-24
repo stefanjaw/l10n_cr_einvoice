@@ -1,0 +1,21 @@
+<odoo>
+ <!-- Inherit Form view -->
+ <record id="l10n_cr_einvoice.account_move_reversal_form_inherit" model="ir.ui.view">
+   <field name="name">l10n_cr_einvoice.account.move.reversal.form.inherit</field>
+   <field name="model">account.move.reversal</field>
+   <field name="inherit_id" ref="account.view_account_move_reversal"/>
+   <field name="arch" type="xml">
+     <field name="date" position="after">
+        <field name="fe_current_country_company_code" invisible="1"/>
+        <field name="company_id" invisible="1"/>
+        <field name="fe_payment_type" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')],'required': [('fe_current_country_company_code', '=', 'CR')]}"/>
+        <field name="payment_term_id" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')],'required': [('fe_current_country_company_code', '=', 'CR')]}"/>
+        <field name="fe_receipt_status" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')],'required': [('fe_current_country_company_code', '=', 'CR')]}"/>
+        <field name="fe_activity_code_id" domain="[('company_id', '=', company_id)]" options="{'no_create_edit':True}" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')],'required': [('fe_current_country_company_code', '=', 'CR')]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')],'required': [('fe_current_country_company_code', '=', 'CR')]}"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')],'required': [('fe_current_country_company_code', '=', 'CR')]}"/>
+     </field>
+   </field>
+ </record>
+ 
+</odoo>

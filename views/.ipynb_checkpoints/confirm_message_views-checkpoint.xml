@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<!--**************popup*****************-->
+  <!--#1570130107-->
+  <record model="ir.ui.view" id="l10n_cr_einvoice.confirm_wizard">
+        <field name="name">l10n_cr_einvoice.confirm.wizard</field>
+        <field name="model">confirm.message</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+    <group>
+     <span>La factura contiene lineas con valor 0, ¿Desea continuar?</span>
+    </group>
+                <footer>
+                    <button string="Edit" special="cancel" class="oe_highlight"/>
+                    <button name="continuar" string="Continue" type="object" class="oe_highlight" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>
