@@ -263,16 +263,24 @@ class ElectronicDoc(models.Model):
                 lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
 
-                invoice_lines = []          
-                for linea in lineasDetalle:   
+                
+                invoice_lines = []   
+                account = self.env['account.account'].search([("code","=","0-511301")])
+                
+                
+                for linea in lineasDetalle: 
+                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)[0].text
+                    tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent)])
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'account_id': 1,
+                                        'tax_ids': [(6,0,[tax.id])],
+                                        'account_id': account.id,
                                         'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
                                         'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
                                        }]
                     invoice_lines.append(new_line)
 
-
+                
+                
                 record = self.env['account.move'].create({
                     'partner_id': contacto.id,
                     'ref': 'Factura importada desde correo consecutivo : {}'.format(next_number),
