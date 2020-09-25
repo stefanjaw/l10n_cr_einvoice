@@ -35,9 +35,14 @@
       </field>
 
       <field name="journal_id" position="attributes">
-        <attribute name="attrs">{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}</attribute>
+        <attribute name="attrs">{
+            'invisible': [('fe_current_country_company_code', '!=', 'CR')]}
+        </attribute>
+        <attribute name="domain">
+            [["sequence_id.prefix","not in",["0010000105","0010000106","0010000107"]],["type","=","purchase"]]
+        </attribute>
       </field>
-
+      
       <field name="ref" position="after">
           <field name ='fe_in_invoice_type' invisible = 'True' />
           <field name = "fe_payment_type"  attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>

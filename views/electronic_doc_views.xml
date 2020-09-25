@@ -96,12 +96,14 @@
     <field name="model">electronic.doc</field>
     <field name="arch" type="xml">
       <tree string="">
+        <field name="estado"/>  
+        <field name="consecutivo"/>
         <field name="key"/>
+        <field name = "fe_msg_type"/>
         <field name="date"/>
         <field name="provider"/>
         <field name="receiver_name"/>
-        <field name="electronic_doc_bill_number"/>
-        <field name="has_acceptance"/>
+        <field string="Aceptación" name="has_acceptance"/>
         <field name="total_amount"/>
         <field name="doc_type"/>
       </tree>
