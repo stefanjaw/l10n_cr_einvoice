@@ -74,7 +74,7 @@ class ElectronicDoc(models.Model):
 
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
     
-    journal_id = fields.Many2one('account.journal', string='Journal', domain = [["sequence_id.prefix","in",["0010000105","0010000106","0010000107"]])
+    journal_id = fields.Many2one('account.journal', string='Journal',)
     
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )

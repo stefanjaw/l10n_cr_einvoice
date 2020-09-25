@@ -30,16 +30,17 @@ class AccountMoveFunctions(models.Model):
     
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):
-        if len(self.journal_id.sequence_id.prefix) == 10 :
-            if self.journal_id.sequence_id.prefix[8:10] == '08':
-                self.fe_in_invoice_type = 'FEC'
-            elif self.journal_id.sequence_id.prefix[8:10] == '01':
-                self.fe_in_invoice_type = 'FE'
+        if self.journal_id:
+            if len(self.journal_id.sequence_id.prefix) == 10 :
+                if self.journal_id.sequence_id.prefix[8:10] == '08':
+                    self.fe_in_invoice_type = 'FEC'
+                elif self.journal_id.sequence_id.prefix[8:10] == '01':
+                    self.fe_in_invoice_type = 'FE'
+                else:
+                    self.fe_in_invoice_type = 'OTRO'
             else:
                 self.fe_in_invoice_type = 'OTRO'
-        else:
-            self.fe_in_invoice_type = 'OTRO'
-            log.info('largo del prefijo del diario menor a 10')
+                log.info('largo del prefijo del diario menor a 10')
 
             
     @api.onchange("currency_id","invoice_date",)
