@@ -269,10 +269,16 @@ class ElectronicDoc(models.Model):
                 
                 
                 for linea in lineasDetalle: 
-                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)[0].text
-                    tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent)])
+                    
+                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
+                    tax = False
+                    if percent:
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        if tax:
+                            tax = [(6,0,[tax.id])]
+                            
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'tax_ids': [(6,0,[tax.id])],
+                                        'tax_ids': tax,
                                         'account_id': account.id,
                                         'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
                                         'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
