@@ -33,8 +33,6 @@ class AccountMoveFunctions(models.Model):
         if len(self.journal_id.sequence_id.prefix) == 10 :
             if self.journal_id.sequence_id.prefix[8:10] == '08':
                 self.fe_in_invoice_type = 'FEC'
-            elif self.journal_id.sequence_id.prefix[8:10] == '05':
-                self.fe_in_invoice_type = 'ME'
             elif self.journal_id.sequence_id.prefix[8:10] == '01':
                 self.fe_in_invoice_type = 'FE'
             else:
