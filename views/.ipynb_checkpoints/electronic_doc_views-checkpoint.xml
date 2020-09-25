@@ -50,6 +50,7 @@
               <group>
                   <field name="journal_id" required='1' attrs="{'readonly': [('estado','=','posted')]}"/>
                   <field name = "fe_msg_type"  required='1' readonly = 'True' />
+                  <field name = "fe_msg_type"  invisible = 'True' />
                   <field name = "fe_detail_msg"  attrs="{'readonly': [('estado','=','posted')],'required':[('fe_msg_type','!=','1')]}" />                <field name="fe_server_state" readonly='1'/>
               </group>
           </group>
