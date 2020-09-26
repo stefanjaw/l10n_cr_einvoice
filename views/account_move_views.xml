@@ -38,9 +38,6 @@
         <attribute name="attrs">{
             'invisible': [('fe_current_country_company_code', '!=', 'CR')]}
         </attribute>
-        <attribute name="domain">
-            [["sequence_id.prefix","not in",["0010000105","0010000106","0010000107"]],["type","=","purchase"]]
-        </attribute>
       </field>
       
       <field name="ref" position="after">
