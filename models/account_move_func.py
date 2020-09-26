@@ -30,6 +30,7 @@ class AccountMoveFunctions(models.Model):
     
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):
+        self.fe_in_invoice_type = 'OTRO'
         if self.journal_id:
             if len(self.journal_id.sequence_id.prefix) == 10 :
                 if self.journal_id.sequence_id.prefix[8:10] == '08':

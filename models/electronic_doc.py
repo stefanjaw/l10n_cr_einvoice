@@ -26,6 +26,7 @@ class ElectronicDoc(models.Model):
     _rec_name = 'display_name'
     _inherit = ['mail.thread']
     
+    invoice_id = fields.Many2one('account.move', string='invoice',)
     key = fields.Char(string="Clave")
     consecutivo = fields.Char(string="Consecutivo")
     electronic_doc_bill_number = fields.Char(string="Numero Factura", )
@@ -302,7 +303,8 @@ class ElectronicDoc(models.Model):
                     'invoice_date':self.date,
                     'invoice_line_ids':invoice_lines,
                 })
-
+                
+                self.update({'invoice_id':record.id})
 
 
     def _get_namespace(self, xml):
