@@ -106,6 +106,7 @@ class AccountMove(models.Model):
                 ('FEC', 'Factura Electronica Compra'),
                 ('OTRO', 'Otros'),                
         ],
+        default = 'OTRO',
     )
 
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
