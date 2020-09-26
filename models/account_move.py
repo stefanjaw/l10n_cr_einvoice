@@ -147,4 +147,4 @@ class AccountMove(models.Model):
     
     fe_doc_ref = fields.Char(string="Documento Referencia",states={'posted': [('readonly', True)]})
     
-    electronic_doc_id = fields.Many2one('electronic.doc', string='XML',)
+    electronic_doc_id = fields.Many2one('electronic.doc', string='XML',readonly = True, )

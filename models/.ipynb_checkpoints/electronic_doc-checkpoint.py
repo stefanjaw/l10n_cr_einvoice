@@ -109,7 +109,8 @@ class ElectronicDoc(models.Model):
         
     @api.depends('key', 'provider', 'date')
     def _compute_display_name(self):
-        self.display_name = '{0} {1} {2}'.format(self.date, self.provider, self.key)
+        for record in self:
+            record.display_name = '{0} {1} {2}'.format(record.date, record.provider, record.key)
 
 
     @api.depends('xml_acceptance')
@@ -238,7 +239,7 @@ class ElectronicDoc(models.Model):
                 'fe_detail_msg':self.fe_detail_msg,
                 'estado':'posted'
             }) 
-            if self.journal_id.sequence_id.prefix[8:10] != "07" or not self.invoice_id:
+            if self.journal_id.sequence_id.prefix[8:10] != "07" and not self.invoice_id:
                 bill_dict = self.convert_xml_to_dic(self.xml_bill)
                 bill_type =  self.get_doc_type(bill_dict)
                 
@@ -302,9 +303,15 @@ class ElectronicDoc(models.Model):
                     'type' : 'in_invoice',
                     'invoice_date':self.date,
                     'invoice_line_ids':invoice_lines,
+                    'electronic_doc_id':self.id,
                 })
                 
                 self.update({'invoice_id':record.id})
+                
+            elif self.invoice_id and self.journal_id.sequence_id.prefix[8:10] != "07":
+                self.invoice_id.update({
+                    'electronic_doc_id':self.id,
+                })
 
 
     def _get_namespace(self, xml):
