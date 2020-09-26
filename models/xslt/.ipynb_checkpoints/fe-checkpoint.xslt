@@ -55,7 +55,20 @@ exclude-result-prefixes="d">
               <td colspan="2" style="padding-top: 3px; border-bottom: 1px solid #ddd;"><xsl:value-of select="d:MontoTotalLinea"/></td>
             </tr>
           </xsl:for-each>
+          <tr>
+            <th colspan="2" style="background-color: #dcdfe5;padding-top: 6px;
+            padding-bottom: 6px;margin-top: 10px;">Otros Cargos</th>
+            <th colspan="2" style="background-color: #dcdfe5;padding-top: 6px;
+            padding-bottom: 6px; margin-top: 10px;">Monto</th>
+          </tr>
+           <xsl:for-each select="d:FacturaElectronica/d:OtrosCargos">
             <tr>
+              <td colspan="2" style="padding-top: 3px;"><xsl:value-of select="d:Detalle" /></td>
+              <td colspan="2" style="padding-top: 3px;"><xsl:value-of select="d:MontoCargo" /></td>
+            </tr>
+          </xsl:for-each>
+
+         <tr>
             <td colspan='12'></td>
             <td><span style='font-weight: bold;'>
             Sub Total: </span><xsl:value-of

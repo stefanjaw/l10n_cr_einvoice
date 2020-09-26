@@ -240,6 +240,7 @@ class ElectronicDoc(models.Model):
             if self.journal_id.sequence_id.prefix[8:10] != "07":
                 bill_dict = self.convert_xml_to_dic(self.xml_bill)
                 bill_type =  self.get_doc_type(bill_dict)
+                
                 identificacion =  self.get_provider_identification(bill_dict, bill_type)
                 contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
                 if not contacto:
@@ -281,13 +282,24 @@ class ElectronicDoc(models.Model):
                                         'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
                                        }]
                     invoice_lines.append(new_line)
+                
+                otros_cargos = root_xml.xpath(
+                    "xmlns:OtrosCargos", namespaces=namespace)
+                
+                for otros in otros_cargos:
+                    new_line =  [0, 0, {'name': otros.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'account_id': account.id,
+                                        'quantity': 1,
+                                        'price_unit':otros.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
+                                       }]
+                    invoice_lines.append(new_line)
+                    
 
-                
-                
                 record = self.env['account.move'].create({
                     'partner_id': contacto.id,
                     'ref': 'Factura importada desde correo consecutivo : {}'.format(next_number),
                     'type' : 'in_invoice',
+                    'invoice_date':self.date,
                     'invoice_line_ids':invoice_lines,
                 })
 

@@ -59,6 +59,7 @@
         id="menu_email"
         name = "Emails"
         action="action_email"
-        sequence="100"
+        parent="account.menu_finance_payables"
+        sequence="199"
     />
 </odoo>
