@@ -40,7 +40,8 @@
         'views/account_move_reversal_views.xml',
         'views/report_invoice_document_with_payments.xml',
         'views/electronic_doc_views.xml',
-        'views/email_views.xml'
+        'views/email_views.xml',
+        'views/wizard_agregar_contabilidad_views.xml',
         #'demo/demo.xml', no funcionan bien los diarios hay que agregar las cuentas default
     ],
     # only loaded in demonstration mode

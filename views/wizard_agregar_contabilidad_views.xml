@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <record model="ir.ui.view" id="l10n_cr_einvoice.agregar_contabilidad">
+        <field name="name">l10n_cr_einvoice.agregar.contabilidad</field>
+        <field name="model">wizard.agregar.contabilidad</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+            <group>
+             <field name = 'opciones' widget="radio" />
+             <field name = "invoice_id" attrs="{'invisible': [('opciones','=','1')]}" domain = '[["electronic_doc_id","=",False]]' />
+            </group>
+                <footer>
+                    <button name="agregar" string="Agregar" type="object" class="oe_highlight" />
+                    <button string="Cancelar" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

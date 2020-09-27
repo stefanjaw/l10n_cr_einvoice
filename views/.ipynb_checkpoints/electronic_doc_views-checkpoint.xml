@@ -7,7 +7,7 @@
           
           <header>
                <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('estado','=','posted')]}"/> 
-               <field name="estado" widget="statusbar" statusbar_visible="draft,posted"/>
+               <field name="estado" widget="statusbar" statusbar_visible="draft,posted,accounting"/>
           </header>
           
         <sheet>
@@ -48,7 +48,7 @@
                 <field name="total_amount" invisible='1'/>
               </group>
               <group>
-                  <field name="invoice_id" attrs="{'readonly': [('estado','=','posted')]}" domain = '[["electronic_doc_id","=",False]]' />
+                  <field name="invoice_id" attrs="{'invisible': [('estado','!=','accounting')]}"/>
                   <field name="journal_id" required='1' attrs="{'readonly': [('estado','=','posted')]}" domain= '[["sequence_id.prefix","in",["0010000105","0010000106","0010000107"]]]'/>
                   <field name = "fe_msg_type"  required='1' readonly = 'True' />
                   <field name = "fe_msg_type"  invisible = 'True' />
@@ -124,4 +124,18 @@
 
 
   <menuitem id="menu_doc" name="CR XMLS"  action="doc_action_form" parent="account.menu_finance_payables" sequence="200"/>
+    
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="l10n_cr_einvoice.action_server_electronic_doc">
+      <field name="name">Agregar a contabilidad</field>
+      <field name="model_id" ref="l10n_cr_einvoice.model_electronic_doc"/>
+      <field name="binding_model_id" ref="l10n_cr_einvoice.model_electronic_doc"/>
+      <field name="binding_view_types">form</field>
+      <field name="state">code</field>
+      <field name="code">
+        action = records.agregar_contabilidad()
+      </field>
+    </record>
+    
+    
 </odoo>

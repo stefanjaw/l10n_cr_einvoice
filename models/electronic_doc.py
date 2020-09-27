@@ -26,7 +26,7 @@ class ElectronicDoc(models.Model):
     _rec_name = 'display_name'
     _inherit = ['mail.thread']
     
-    invoice_id = fields.Many2one('account.move', string='invoice',)
+    invoice_id = fields.Many2one('account.move', string='invoice',readonly = True,)
     key = fields.Char(string="Clave")
     consecutivo = fields.Char(string="Consecutivo")
     electronic_doc_bill_number = fields.Char(string="Numero Factura", )
@@ -57,7 +57,7 @@ class ElectronicDoc(models.Model):
     estado = fields.Selection(selection=[
             ('draft', 'Draft'),
             ('posted', 'Posted'),
-            ('cancel', 'Cancelled')
+            ('accounting', 'Accounting')
         ], string='Status', required=True, readonly=True, copy=False, tracking=True,
         default='draft')
 
@@ -228,6 +228,28 @@ class ElectronicDoc(models.Model):
                         _("El documento de Aceptacion del Ministerio de Hacienda No corresponde a un archivo xml!!"
                           ))
                     
+    def agregar_contabilidad(self):
+        if self.estado == 'draft':
+            raise ValidationError("Primero confirme este documento")
+        if self.estado == 'accounting':
+            raise ValidationError("Este documento ya fue agregado en contabilidad")
+        if self.journal_id.sequence_id.prefix == '0010000107':
+            raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
+        return {
+                'type': 'ir.actions.act_window',
+                'name': 'Agregar documento a contabilidad',
+                'res_model': 'wizard.agregar.contabilidad',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'views': [(False, 'form')],
+                'target': 'new',
+                'context': {
+                    'doc': self.id,
+                    'xml':self.xml_bill,
+                 }
+             }                                       
+
+                    
     def confirmar(self):
         self.validar_xml_aceptacion
         if self.journal_id:
@@ -239,80 +261,6 @@ class ElectronicDoc(models.Model):
                 'fe_detail_msg':self.fe_detail_msg,
                 'estado':'posted'
             }) 
-            if self.journal_id.sequence_id.prefix[8:10] != "07" and not self.invoice_id:
-                bill_dict = self.convert_xml_to_dic(self.xml_bill)
-                bill_type =  self.get_doc_type(bill_dict)
-                
-                identificacion =  self.get_provider_identification(bill_dict, bill_type)
-                contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
-                if not contacto:
-                    nombre = self.get_provider(bill_dict,bill_type)
-                    contacto = self.env['res.partner'].create({
-                        'vat':identificacion,
-                        'name': nombre,
-                    })
-
-
-                root_xml = fromstring(base64.b64decode(self.xml_bill))
-                ds = "http://www.w3.org/2000/09/xmldsig#"
-                xades = "http://uri.etsi.org/01903/v1.3.2#"
-                ns2 = {"ds": ds, "xades": xades}
-                signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
-                namespace = self._get_namespace(root_xml)
-
-                lineasDetalle = root_xml.xpath(
-                    "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
-
-                
-                invoice_lines = []   
-                account = self.env['account.account'].search([("code","=","0-511301")])
-                
-                
-                for linea in lineasDetalle: 
-                    
-                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
-                    tax = False
-                    if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
-                        if tax:
-                            tax = [(6,0,[tax.id])]
-                            
-                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'tax_ids': tax,
-                                        'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
-                                       }]
-                    invoice_lines.append(new_line)
-                
-                otros_cargos = root_xml.xpath(
-                    "xmlns:OtrosCargos", namespaces=namespace)
-                
-                for otros in otros_cargos:
-                    new_line =  [0, 0, {'name': otros.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'account_id': account.id,
-                                        'quantity': 1,
-                                        'price_unit':otros.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
-                                       }]
-                    invoice_lines.append(new_line)
-                    
-
-                record = self.env['account.move'].create({
-                    'partner_id': contacto.id,
-                    'ref': 'Factura importada desde correo consecutivo : {}'.format(next_number),
-                    'type' : 'in_invoice',
-                    'invoice_date':self.date,
-                    'invoice_line_ids':invoice_lines,
-                    'electronic_doc_id':self.id,
-                })
-                
-                self.update({'invoice_id':record.id})
-                
-            elif self.invoice_id and self.journal_id.sequence_id.prefix[8:10] != "07":
-                self.invoice_id.update({
-                    'electronic_doc_id':self.id,
-                })
-
 
     def _get_namespace(self, xml):
         name = ""
