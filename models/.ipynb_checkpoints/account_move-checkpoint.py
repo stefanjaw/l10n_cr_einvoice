@@ -104,6 +104,7 @@ class AccountMove(models.Model):
                 ('ME', 'Mensaje Aceptación'),
                 ('FE', 'Factura Electronica'),
                 ('FEC', 'Factura Electronica Compra'),
+                ('FEX', 'Factura Electronica Exportación'),
                 ('OTRO', 'Otros'),                
         ],
         default = 'OTRO',

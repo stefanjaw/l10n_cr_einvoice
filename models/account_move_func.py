@@ -35,6 +35,8 @@ class AccountMoveFunctions(models.Model):
             if len(self.journal_id.sequence_id.prefix) == 10 :
                 if self.journal_id.sequence_id.prefix[8:10] == '08':
                     self.fe_in_invoice_type = 'FEC'
+                elif self.journal_id.sequence_id.prefix[8:10] == '09':
+                    self.fe_in_invoice_type = 'FEX'
                 elif self.journal_id.sequence_id.prefix[8:10] == '01':
                     self.fe_in_invoice_type = 'FE'
                 else:
@@ -603,12 +605,15 @@ class AccountMoveFunctions(models.Model):
             
             if not self.company_id.email:
                  msg += 'En compañia, el correo electronico es requerido \n'
+            
+            if  self.name[8:10] != '09':
+            
+                if not self.partner_id.fe_identification_type:
+                    msg += 'En el cliente, falta el tipo de identificación \n'
+
+                if not self.partner_id.vat:
+                    msg += 'En el cliente, falta el campo NIF \n'
                 
-            if not self.partner_id.fe_identification_type:
-                msg += 'En el cliente, falta el tipo de identificación \n'
-                
-            if not self.partner_id.vat:
-                msg += 'En el cliente, falta el campo NIF \n'
             elif len(self.company_id.vat) < 9 and len(self.company_id.vat) >12:
                 msg += 'En el cliente, el largo del NIF debe ser entre 9 y 12 \n'
             
