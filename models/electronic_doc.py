@@ -229,6 +229,7 @@ class ElectronicDoc(models.Model):
                           ))
                     
     def agregar_contabilidad(self):
+        
         if self.estado == 'draft':
             raise ValidationError("Primero confirme este documento")
         if self.estado == 'accounting':

@@ -39,6 +39,8 @@ class AccountMoveFunctions(models.Model):
                     self.fe_in_invoice_type = 'FEX'
                 elif self.journal_id.sequence_id.prefix[8:10] == '01':
                     self.fe_in_invoice_type = 'FE'
+                elif self.journal_id.sequence_id.prefix[8:10] == '02':
+                    self.fe_in_invoice_type = 'ND'
                 else:
                     self.fe_in_invoice_type = 'OTRO'
             else:
@@ -1168,3 +1170,18 @@ class AccountMoveFunctions(models.Model):
             if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO':
                 log.info('-->consecutivo %s',invoice.name)
                 invoice.confirm_bill()
+                
+    def mostrar_wizard_nota_debito(self):
+        return {
+                'type': 'ir.actions.act_window',
+                'name': 'Nota Debíto',
+                'res_model': 'account.move.debit',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'views': [(False, 'form')],
+                'target': 'new',
+                'context': {
+                    'active_id':self.id,
+                    'default_debit_note': True,
+                 }
+             }    

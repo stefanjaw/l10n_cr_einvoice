@@ -105,6 +105,7 @@ class AccountMove(models.Model):
                 ('FE', 'Factura Electronica'),
                 ('FEC', 'Factura Electronica Compra'),
                 ('FEX', 'Factura Electronica Exportación'),
+                ('ND', 'Nota Débito'),   
                 ('OTRO', 'Otros'),                
         ],
         default = 'OTRO',
@@ -149,3 +150,5 @@ class AccountMove(models.Model):
     fe_doc_ref = fields.Char(string="Documento Referencia",states={'posted': [('readonly', True)]})
     
     electronic_doc_id = fields.Many2one('electronic.doc', string='XML',readonly = True, )
+    
+    debit_note = fields.Boolean(string='Nota Debito?', invisible = True, )

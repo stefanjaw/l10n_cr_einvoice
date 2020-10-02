@@ -23,3 +23,4 @@ from . import mail_thread
 from . import electronic_doc
 from . import account_journal
 from . import wizard_agregar_contabilidad
+from . import wizard_account_debit

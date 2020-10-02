@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_invoice_debit" model="ir.ui.view">
+            <field name="name">wizard.account.move.debit.form</field>
+            <field name="model">account.move.debit</field>
+            <field name="arch" type="xml">
+                <form string="debit note">
+                    <group>
+                       <group>
+                         <field name="fe_reason" string="Razón" required="1"/>
+                       </group>
+                        <group>
+                            <field name="journal_id" options="{'no_create': True, 'no_create_edit': True}"
+                                domain="[('debit_sequence', '=', True)]" required="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string='Add debit note' name="add_note" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_account_invoice_debit" model="ir.actions.act_window">
+            <field name="name">Debit Note</field>
+            <field name="res_model">account.move.debit</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_account_invoice_debit"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

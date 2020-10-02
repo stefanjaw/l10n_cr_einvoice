@@ -69,7 +69,7 @@
 </record>
 
     
- <!-- Inherit Form view  credit note-->   
+ <!-- Inherit Form view  credit note -->   
 <record id="l10n_cr_einvoice.account_move_form_credit_note" model="ir.ui.view">
     <field name="name">l10n_cr_einvoice.account.move.form.credit.note</field>
     <field name="model">account.move</field>
@@ -83,6 +83,47 @@
      </field>
     </field>
   </record>
+    
+    
+ <!-- debit note -->
+<record id="l10n_cr_einvoice.account_move_form_debit_note" model="ir.ui.view">
+    <field name="name">l10n_cr_einvoice.account.move.form.credit.note</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+         <xpath expr="//header/button[@name='action_reverse']" position="after">
+            <button name="mostrar_wizard_nota_debito" type="action" string="Add Debit Note"
+                  attrs="{'invisible': ['|', ('type', '=', 'in_refund'), ('state', 'not in', ('open', 'paid'))]}"/>
+        </xpath>
+        
+    <field name="journal_id" position="after">
+            <field name ="fe_current_country_company_code" invisible="1"/>
+            <field name="debit_note" invisible="True"/>
+            <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('debit_note','=',False)]}"/>
+            <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('debit_note','=',False)]}"/>
+            <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('debit_note','=',False)]}"/>                  
+     </field>
+    </field>
+  </record>
+ 
+ 
+  <record id="action_for_debit_notes" model="ir.actions.act_window">
+      <field name="name">Debit Notes</field>
+      <field name="res_model">account.move</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="account.view_invoice_tree"/>
+      <field name="domain">[('debit_note', '=', True)]</field>
+      <field name="context">{'default_type':'out_invoice','default_debit_note': True}</field>
+  </record>
+
+  <menuitem
+      id="menu_for_debit_note_invoices"
+      parent="account.menu_finance_receivables"
+      action="action_for_debit_notes"
+      sequence="5"
+  /> 
+    
+    
     
     
 </odoo>
