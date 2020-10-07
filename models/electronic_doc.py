@@ -89,8 +89,17 @@ class ElectronicDoc(models.Model):
     )
     
     fe_monto_total_impuesto = fields.Float(string="Monto Total Impuesto", )
-    fe_condicio_impuesto = fields.Char(string="Condición Impuesto", )
+    fe_condicio_impuesto =fields.Selection([ # 1570035130
+            ('01', 'General Credito IVA'),
+            ('02', 'General Crédito parcial del IVA'),
+            ('03', 'Bienes de Capital'),
+            ('04', 'Gasto corriente no genera crédito'),
+            ('05', 'Proporcionalidad'),
+        ], string="Mensaje", track_visibility="onchange",
+        string="Condición Impuesto",)
+    
     fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar", )
+    fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable", )
     fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
     
     display_name = fields.Char(

@@ -62,7 +62,15 @@ class AccountMoveFunctions(models.Model):
                 s._rate(date)
                     
             
-                       
+    @api.constrains('fe_doc_ref')
+    def _constrains_fe_doc_ref(self):
+         if self.name[8:10] == '03' or self.name[8:10] == '02':
+                doc = self.search([('name', '=', self.fe_doc_ref)])
+                if not doc:
+                    raise ValidationError('El documento de referencia no existe')
+                
+        
+    
     def _rate(self,date):
         rate_obj = self.env['res.currency.rate'].search([('name','=',date),('company_id','=',self.company_id.id)])
         if rate_obj:
@@ -536,7 +544,7 @@ class AccountMoveFunctions(models.Model):
             if not self.fe_receipt_status:
                 msg += 'Falta la situación del comprobante \n'
             
-            if self.name[8:10] == '03':
+            if self.name[8:10] == '03' or self.name[8:10] == '02':
                 if not self.fe_doc_ref:
                     msg += 'Falta el documento de referencia \n'
                 if not self.fe_tipo_documento_referencia:
@@ -1137,16 +1145,20 @@ class AccountMoveFunctions(models.Model):
                 else:
                     if len(s.fe_doc_ref) == 20:
                         origin_doc = s.search([('name', '=', s.fe_doc_ref)])
-                        origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
-                        s.invoice[s.fe_doc_type].update({
-                            'InformacionReferencia':{
-                            'TipoDoc':s.fe_tipo_documento_referencia,
-                            'Numero':origin_doc.name,
-                            'FechaEmision': origin_doc_fe_fecha_emision,
-                            'Codigo':s.fe_informacion_referencia_codigo or None,
-                            'Razon':s.ref,
-                            }
-                        })
+                        if origin_doc:
+                            origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
+                            s.invoice[s.fe_doc_type].update({
+                                'InformacionReferencia':{
+                                'TipoDoc':s.fe_tipo_documento_referencia,
+                                'Numero':origin_doc.name,
+                                'FechaEmision': origin_doc_fe_fecha_emision,
+                                'Codigo':s.fe_informacion_referencia_codigo or None,
+                                'Razon':s.ref,
+                                }
+                            })
+                        else:
+                            error = True
+                            msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
 
             if s.narration:
                 s.invoice[s.fe_doc_type].update({
@@ -1174,7 +1186,7 @@ class AccountMoveFunctions(models.Model):
     def mostrar_wizard_nota_debito(self):
         return {
                 'type': 'ir.actions.act_window',
-                'name': 'Nota Debíto',
+                'name': 'Nota Débito',
                 'res_model': 'account.move.debit',
                 'view_type': 'form',
                 'view_mode': 'form',
