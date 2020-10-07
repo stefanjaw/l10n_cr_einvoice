@@ -76,10 +76,11 @@
     <field name="inherit_id" ref="account.view_move_form"/>
     <field name="arch" type="xml">
       <field name="journal_id" position="after">
+        <field name = 'debit_note' invisible="True"/>
         <field name ="fe_current_country_company_code" invisible="1"/>
-        <field name="fe_doc_ref" attrs="{'invisible': ['|','|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',True)]}"/>
-        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund')]}"/>
-        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund')]}"/>                  
+        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>                  
      </field>
     </field>
   </record>
