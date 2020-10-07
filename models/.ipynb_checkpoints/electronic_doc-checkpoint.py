@@ -88,6 +88,11 @@ class ElectronicDoc(models.Model):
          default=lambda self: self.env.company.id 
     )
     
+    fe_monto_total_impuesto = fields.Float(string="Monto Total Impuesto", )
+    fe_condicio_impuesto = fields.Char(string="Condición Impuesto", )
+    fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar", )
+    fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
+    
     display_name = fields.Char(
         string='Name',
         compute='_compute_display_name',
