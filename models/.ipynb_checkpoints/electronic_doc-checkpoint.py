@@ -95,8 +95,7 @@ class ElectronicDoc(models.Model):
             ('03', 'Bienes de Capital'),
             ('04', 'Gasto corriente no genera crédito'),
             ('05', 'Proporcionalidad'),
-        ], string="Mensaje", track_visibility="onchange",
-        string="Condición Impuesto",)
+        ], string="Condición Impuesto", track_visibility="onchange",)
     
     fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar", )
     fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable", )
