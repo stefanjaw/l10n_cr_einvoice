@@ -98,8 +98,11 @@
          </xpath>
     </field>
   </record>
- 
- 
+    
+ <record id="account.action_move_out_invoice_type" model="ir.actions.act_window">
+      <field name="domain">[('type', '=', 'out_invoice'),('debit_note', '=', False)]</field>
+  </record>
+
   <record id="action_for_debit_notes" model="ir.actions.act_window">
       <field name="name">Debit Notes</field>
       <field name="res_model">account.move</field>
