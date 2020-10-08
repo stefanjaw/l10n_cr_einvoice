@@ -3,7 +3,7 @@ from odoo import api, fields, models, _
 class accountMoveDebit(models.TransientModel):
     _name = "account.move.debit"
     _description = "Debit Note"
-    fe_reason = fields.Char(string="Field name", )
+    fe_reason = fields.Char(string="reason", )
     journal_id = fields.Many2one("account.journal", string="Journal")
 
 
@@ -23,7 +23,7 @@ class accountMoveDebit(models.TransientModel):
         return {
             'name': _("Debit Notes"),
             'type': 'ir.actions.act_window',
-            'res_model': 'account.invoice',
+            'res_model': 'account.move',
             'view_type': 'form',
             'view_mode': 'tree,form',
             'domain': [('id', 'in', [debit_note.id])],

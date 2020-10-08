@@ -22,13 +22,5 @@
                 </form>
             </field>
         </record>
-
-        <record id="action_account_invoice_debit" model="ir.actions.act_window">
-            <field name="name">Debit Note</field>
-            <field name="res_model">account.move.debit</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_account_invoice_debit"/>
-            <field name="target">new</field>
-        </record>
     </data>
 </odoo>

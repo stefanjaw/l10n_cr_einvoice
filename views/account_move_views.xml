@@ -8,8 +8,8 @@
   <field name="arch" type="xml">
       
       <xpath expr="//header/button[@name='action_reverse']" position="after">
-            <button name="mostrar_wizard_nota_debito" type="action" string="Add Debit Note"
-            attrs="{'invisible': ['|', ('type', '=', 'in_refund'), ('state', 'not in', ('open', 'paid'))]}"/>
+            <button name="mostrar_wizard_nota_debito" type="object" string="Add Debit Note"
+            attrs="{'invisible': ['|', ('type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}"/>
       </xpath>
       
       <xpath expr="//page[last()]" position="after">
