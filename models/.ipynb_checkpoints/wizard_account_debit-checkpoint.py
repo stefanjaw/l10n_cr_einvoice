@@ -8,27 +8,17 @@ class accountMoveDebit(models.TransientModel):
 
 
     def add_note(self):
-        Invoice = self.env['account.move']
-        invoice_id = Invoice.browse(self.env.context.get('active_id'))
-
-        debit_note = Invoice.create({
-            'partner_id': invoice_id.partner_id.id,
-            'journal_id': self.journal_id.id,
-            'name':self.fe_reason,
-            'origin': invoice_id.number or "",
-            'type': 'out_invoice',
-            'debit_note': True
-        })
-
+        id = self.env.context.get('active_id')
+        doc_ref = self.env.context.get('doc_ref')
+        copy = self.env['account.move'].browse(id).copy({'debit_note':True,
+                                                         'journal_id':self.journal_id.id,
+                                                         'ref':self.fe_reason,
+                                                         'fe_doc_ref':doc_ref})
         return {
             'name': _("Debit Notes"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
+            'res_id':copy.id,
             'view_type': 'form',
-            'view_mode': 'tree,form',
-            'domain': [('id', 'in', [debit_note.id])],
-            'context': {
-                'tree_view_ref': 'account.view_invoice_tree',
-                'form_view_ref': 'account.view_move_form',
-            }
+            'view_mode': 'form',
         }

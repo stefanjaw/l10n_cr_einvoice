@@ -1194,6 +1194,6 @@ class AccountMoveFunctions(models.Model):
                 'target': 'new',
                 'context': {
                     'active_id':self.id,
-                    'default_debit_note': True,
+                    'doc_ref':self.name,
                  }
              }    
