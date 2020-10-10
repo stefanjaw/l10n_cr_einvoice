@@ -29,7 +29,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                 identificacion =  self.env['electronic.doc'].get_provider_identification(bill_dict, bill_type)
                 contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
                 if not contacto:
-                    nombre = self.get_provider(bill_dict,bill_type)
+                    nombre = self.env['electronic.doc'].get_provider(bill_dict,bill_type)
                     contacto = self.env['res.partner'].create({
                         'vat':identificacion,
                         'name': nombre,

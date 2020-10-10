@@ -249,19 +249,21 @@ class ElectronicDoc(models.Model):
             raise ValidationError("Este documento ya fue agregado en contabilidad")
         if self.sequence_id.prefix == '0010000107':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
-        return {
-                'type': 'ir.actions.act_window',
-                'name': 'Agregar documento a contabilidad',
-                'res_model': 'wizard.agregar.contabilidad',
-                'view_type': 'form',
-                'view_mode': 'form',
-                'views': [(False, 'form')],
-                'target': 'new',
-                'context': {
-                    'doc': self.id,
-                    'xml':self.xml_bill,
-                 }
-             }                                       
+            
+        if self.estado != 'draft' and if self.estado != 'accounting' and if self.sequence_id.prefix != '0010000107':
+            return {
+                    'type': 'ir.actions.act_window',
+                    'name': 'Agregar documento a contabilidad',
+                    'res_model': 'wizard.agregar.contabilidad',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'views': [(False, 'form')],
+                    'target': 'new',
+                    'context': {
+                        'doc': self.id,
+                        'xml':self.xml_bill,
+                     }
+                 }                                       
 
                     
     def confirmar(self):
