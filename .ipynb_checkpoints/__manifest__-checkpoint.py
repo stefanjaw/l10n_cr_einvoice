@@ -43,7 +43,7 @@
         'views/email_views.xml',
         'views/wizard_agregar_contabilidad_views.xml',
         'views/wizard_account_debit_views.xml',
-        #'demo/demo.xml', no funcionan bien los diarios hay que agregar las cuentas default
+        'data/sequence_data.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

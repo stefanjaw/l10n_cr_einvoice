@@ -75,7 +75,7 @@ class ElectronicDoc(models.Model):
 
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
     
-    journal_id = fields.Many2one('account.journal', string='Journal',)
+    sequence_id = fields.Many2one('ir.sequence', string='Secuencia',)
     
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )
@@ -111,13 +111,13 @@ class ElectronicDoc(models.Model):
     ]
 
 
-    @api.onchange("journal_id")
-    def _onchange_journal_id(self):
-        if self.journal_id.sequence_id.prefix == '0010000105':
+    @api.onchange("sequence_id")
+    def _onchange_sequence_id(self):
+        if self.sequence_id.prefix == '0010000105':
             self.update({'fe_msg_type':'1'})
-        elif self.journal_id.sequence_id.prefix == '0010000106':
+        elif self.sequence_id.prefix == '0010000106':
             self.update({'fe_msg_type':'2'})
-        elif self.journal_id.sequence_id.prefix == '0010000107':
+        elif self.sequence_id.prefix == '0010000107':
             self.update({'fe_msg_type':'3'})
         
     @api.depends('key', 'provider', 'date')
@@ -247,7 +247,7 @@ class ElectronicDoc(models.Model):
             raise ValidationError("Primero confirme este documento")
         if self.estado == 'accounting':
             raise ValidationError("Este documento ya fue agregado en contabilidad")
-        if self.journal_id.sequence_id.prefix == '0010000107':
+        if self.sequence_id.prefix == '0010000107':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
         return {
                 'type': 'ir.actions.act_window',
@@ -266,11 +266,11 @@ class ElectronicDoc(models.Model):
                     
     def confirmar(self):
         self.validar_xml_aceptacion
-        if self.journal_id:
-            next_number = self.journal_id.sequence_id.next_by_id()
+        if self.sequence_id:
+            next_number = self.sequence_id.next_by_id()
             self.update({
                 'consecutivo':next_number,
-                'journal_id':self.journal_id,
+                'sequence_id':self.sequence_id,
                 'fe_msg_type':self.fe_msg_type,
                 'fe_detail_msg':self.fe_detail_msg,
                 'estado':'posted'
@@ -544,7 +544,11 @@ class ElectronicDoc(models.Model):
                 'FechaEmisionDoc':fecha.split(' ')[0]+'T'+fecha.split(' ')[1]+'-06:00',
                 'Mensaje':self.fe_msg_type,
                 'DetalleMensaje':self.fe_detail_msg,
-                'MontoTotalImpuesto':bill_dic['FacturaElectronica']['ResumenFactura']['TotalImpuesto'],
+                'MontoTotalImpuesto':self.fe_monto_total_impuesto,
+                'MontoTotalAcreditar':self.fe_monto_total_impuesto_acreditar,
+                'ActividadEconomica':self.fe_actividad_economica,
+                'CondicionImpuesto':self.fe_condicio_imnpuesto,
+                'MontoTotalGastoAplicable':self.fe_monto_total_gasto_aplicable,
                 'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
                 'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
