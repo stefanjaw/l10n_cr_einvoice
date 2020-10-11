@@ -250,7 +250,7 @@ class ElectronicDoc(models.Model):
         if self.sequence_id.prefix == '0010000107':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
             
-        if self.estado != 'draft' and if self.estado != 'accounting' and if self.sequence_id.prefix != '0010000107':
+        if self.estado != 'draft' and self.estado != 'accounting' and self.sequence_id.prefix != '0010000107':
             return {
                     'type': 'ir.actions.act_window',
                     'name': 'Agregar documento a contabilidad',
