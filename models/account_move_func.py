@@ -46,8 +46,7 @@ class AccountMoveFunctions(models.Model):
             else:
                 self.fe_in_invoice_type = 'OTRO'
                 log.info('largo del prefijo del diario menor a 10')
-
-            
+                
     @api.onchange("currency_id","invoice_date",)
     def _onchange_currency_rate(self):
         for s in self:
@@ -60,8 +59,7 @@ class AccountMoveFunctions(models.Model):
                     date = s.invoice_date 
                                         
                 s._rate(date)
-                    
-            
+                            
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
          if self.name[8:10] == '03' or self.name[8:10] == '02':
