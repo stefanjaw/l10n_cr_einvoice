@@ -113,11 +113,11 @@ class ElectronicDoc(models.Model):
 
     @api.onchange("sequence_id")
     def _onchange_sequence_id(self):
-        if self.sequence_id.prefix == '0010000105':
+        if self.sequence_id.prefix[8:10] == '05':
             self.update({'fe_msg_type':'1'})
-        elif self.sequence_id.prefix == '0010000106':
+        elif self.sequence_id.prefix[8:10] == '06':
             self.update({'fe_msg_type':'2'})
-        elif self.sequence_id.prefix == '0010000107':
+        elif self.sequence_id.prefix[8:10] == '07':
             self.update({'fe_msg_type':'3'})
         
     @api.depends('key', 'provider', 'date')
@@ -250,7 +250,7 @@ class ElectronicDoc(models.Model):
         if self.sequence_id.prefix == '0010000107':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
             
-        if self.estado != 'draft' and self.estado != 'accounting' and self.sequence_id.prefix != '0010000107':
+        if self.estado != 'draft' and self.estado != 'accounting' and self.sequence_id.prefix[8:10] != '07':
             return {
                     'type': 'ir.actions.act_window',
                     'name': 'Agregar documento a contabilidad',
