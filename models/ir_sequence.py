@@ -6,6 +6,7 @@ class irSequence(models.Model):
     
     @api.depends("prefix",)
     def _compute_prefix_code(self):
-        if len(self.prefix) == 20:
+        if len(self.prefix) == 10:
             self.prefix_code = self.prefix[8:10]
+            
             

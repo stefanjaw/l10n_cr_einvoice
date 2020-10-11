@@ -113,12 +113,13 @@ class ElectronicDoc(models.Model):
 
     @api.onchange("sequence_id")
     def _onchange_sequence_id(self):
-        if self.sequence_id.prefix[8:10] == '05':
-            self.update({'fe_msg_type':'1'})
-        elif self.sequence_id.prefix[8:10] == '06':
-            self.update({'fe_msg_type':'2'})
-        elif self.sequence_id.prefix[8:10] == '07':
-            self.update({'fe_msg_type':'3'})
+        if self.sequence_id:
+            if self.sequence_id.prefix[8:10] == '05':
+                self.update({'fe_msg_type':'1'})
+            elif self.sequence_id.prefix[8:10] == '06':
+                self.update({'fe_msg_type':'2'})
+            elif self.sequence_id.prefix[8:10] == '07':
+                self.update({'fe_msg_type':'3'})
         
     @api.depends('key', 'provider', 'date')
     def _compute_display_name(self):
@@ -548,8 +549,8 @@ class ElectronicDoc(models.Model):
                 'DetalleMensaje':self.fe_detail_msg,
                 'MontoTotalImpuesto':self.fe_monto_total_impuesto,
                 'MontoTotalAcreditar':self.fe_monto_total_impuesto_acreditar,
-                'ActividadEconomica':self.fe_actividad_economica,
-                'CondicionImpuesto':self.fe_condicio_imnpuesto,
+                'ActividadEconomica':self.fe_actividad_economica.code,
+                'CondicionImpuesto':self.fe_condicio_impuesto,
                 'MontoTotalGastoAplicable':self.fe_monto_total_gasto_aplicable,
                 'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
