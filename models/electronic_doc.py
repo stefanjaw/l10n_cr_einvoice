@@ -156,6 +156,7 @@ class ElectronicDoc(models.Model):
                     self.receiver_number = self.get_receiver_identification(
                         dic, doc_type)
                     self.total_amount = self.get_total_amount(dic, doc_type)
+                    self.line_ids =  self.cargar_lineas_xml(self.xml_bill)  
                 else:
                     return {
                     'warning': {
@@ -287,7 +288,36 @@ class ElectronicDoc(models.Model):
         if form:
             name = form.group(0).split('}')[0].strip('{')
         return {'xmlns': name}
-   
+    def cargar_lineas_xml(self,xml):
+           root_xml = fromstring(base64.b64decode(xml))
+            ds = "http://www.w3.org/2000/09/xmldsig#"
+            xades = "http://uri.etsi.org/01903/v1.3.2#"
+            ns2 = {"ds": ds, "xades": xades}
+            signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
+            namespace = self.env['electronic.doc']._get_namespace(root_xml)
+
+            lineasDetalle = root_xml.xpath(
+                    "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
+            invoice_lines = []   
+            account = self.env['account.account'].search([("code","=","0-511301")])
+                
+                
+            for linea in lineasDetalle: 
+                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
+                    tax = False
+                    if percent:
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        if tax:
+                            tax = [(6,0,[tax.id])]
+                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'tax_ids': tax,
+                                        'account_id': account.id,
+                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
+                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
+                                       }]
+                    invoice_lines.append(new_line)
+            return invoice_lines
+        
     def create_electronic_doc(self, xml, xml_name):
 
         dic = self.convert_xml_to_dic(xml)
@@ -323,34 +353,8 @@ class ElectronicDoc(models.Model):
                     '\n "el documento XML Clave: %s no contiene nombre del proveedor \n',
                     key)
             
-            root_xml = fromstring(base64.b64decode(xml))
-            ds = "http://www.w3.org/2000/09/xmldsig#"
-            xades = "http://uri.etsi.org/01903/v1.3.2#"
-            ns2 = {"ds": ds, "xades": xades}
-            signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
-            namespace = self.env['electronic.doc']._get_namespace(root_xml)
-
-            lineasDetalle = root_xml.xpath(
-                    "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
-            invoice_lines = []   
-            account = self.env['account.account'].search([("code","=","0-511301")])
-                
-                
-            for linea in lineasDetalle: 
-                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
-                    tax = False
-                    if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
-                        if tax:
-                            tax = [(6,0,[tax.id])]
-                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'tax_ids': tax,
-                                        'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
-                                       }]
-                    invoice_lines.append(new_line)
-                    
+         
+            invoice_lines = self.cargar_lineas_xml(self.xml_bill)    
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
