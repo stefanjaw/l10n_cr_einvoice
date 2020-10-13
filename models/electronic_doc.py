@@ -54,7 +54,7 @@ class ElectronicDoc(models.Model):
                                 ])
 
 
-    estado = fields.Selection(selection=[
+    state = fields.Selection(selection=[
             ('draft', 'Draft'),
             ('posted', 'Posted'),
             ('accounting', 'Accounting')
@@ -246,14 +246,14 @@ class ElectronicDoc(models.Model):
                     
     def agregar_contabilidad(self):
         
-        if self.estado == 'draft':
+        if self.state == 'draft':
             raise ValidationError("Primero confirme este documento")
-        if self.estado == 'accounting':
+        if self.state == 'accounting':
             raise ValidationError("Este documento ya fue agregado en contabilidad")
         if self.sequence_id.prefix[8:10] == '07':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
             
-        if self.estado != 'draft' and self.estado != 'accounting' and self.sequence_id.prefix[8:10] != '07':
+        if self.state != 'draft' and self.state != 'accounting' and self.sequence_id.prefix[8:10] != '07':
             return {
                     'type': 'ir.actions.act_window',
                     'name': 'Agregar documento a contabilidad',
@@ -278,7 +278,7 @@ class ElectronicDoc(models.Model):
                 'sequence_id':self.sequence_id,
                 'fe_msg_type':self.fe_msg_type,
                 'fe_detail_msg':self.fe_detail_msg,
-                'estado':'posted'
+                'state':'posted'
             }) 
 
     def _get_namespace(self, xml):
@@ -535,7 +535,7 @@ class ElectronicDoc(models.Model):
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
-        if self.estado == 'draft':
+        if self.state == 'draft':
            raise exceptions.Warning('VALIDE primero este documento')
         if self.fe_xml_hacienda:
            raise exceptions.Warning("Ya se tiene la RESPUESTA de Hacienda")
@@ -654,7 +654,7 @@ class ElectronicDoc(models.Model):
                 
     def get_bill(self):
         for s in self:
-            if s.estado == 'draft':
+            if s.state == 'draft':
               raise exceptions.Warning('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
             log.info('--> 1569447129')
@@ -743,7 +743,7 @@ class ElectronicDoc(models.Model):
                 
     @api.model
     def cron_send_bill(self):
-        invoice_list = self.env['electronic.doc'].search(['&',('fe_server_state','=',False),('estado','=','posted')])
+        invoice_list = self.env['electronic.doc'].search(['&',('fe_server_state','=',False),('state','=','posted')])
         log.info('-->invoice_list %s',invoice_list)
         for invoice in invoice_list:
             if invoice.company_id.country_id.code == 'CR':
@@ -752,7 +752,7 @@ class ElectronicDoc(models.Model):
     @api.model
     def cron_get_bill(self):
         log.info('--> cron_get_bills')
-        list = self.env['electronic.doc'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('estado','=','posted'),
+        list = self.env['electronic.doc'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','posted'),
         ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
         for item in list:
             if item.company_id.country_id.code == 'CR':

@@ -6,8 +6,8 @@
       <form string="">
           
           <header>
-               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('estado','=','posted')]}"/> 
-               <field name="estado" widget="statusbar" statusbar_visible="draft,posted,accounting"/>
+               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('state','=','posted')]}"/> 
+               <field name="state" widget="statusbar" statusbar_visible="draft,posted,accounting"/>
           </header>
           
         <sheet>
@@ -22,8 +22,8 @@
             <field name="key" invisible='1'/>
             <field name="xml_bill_name" invisible='1'/>
             <field name="xml_acceptance_name" invisible='1'/>
-            <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('estado', '=' ,'posted')]}"/>
-            <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('estado', '=' ,'posted')]}"/>
+            <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('state', '=' ,'posted')]}"/>
+            <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('state', '=' ,'posted')]}"/>
           </group>
             
           <group>  
@@ -48,15 +48,15 @@
                 <field name="total_amount" invisible='1'/>
               </group>
               <group>
-                  <field name="invoice_id" attrs="{'invisible': [('estado','!=','accounting')]}"/>
-                  <field name="sequence_id" required='1' attrs="{'readonly': [('estado','=','posted')]}" domain= '[["prefix_code","in",["05","06","07"]]]'/>
+                  <field name="invoice_id" attrs="{'invisible': [('state','!=','accounting')]}"/>
+                  <field name="sequence_id" required='1' attrs="{'readonly': [('state','=','posted')]}" domain= '[["prefix_code","in",["05","06","07"]]]'/>
                   <field name = "fe_msg_type"  required='1' readonly = 'True' />
                   <field name = "fe_msg_type"  invisible = 'True' />
-                  <field name = "fe_detail_msg"  attrs="{'readonly': [('estado','=','posted')],'required':[('fe_msg_type','!=','1')]}" />                <field name = "fe_monto_total_impuesto" required="True"  attrs="{'readonly': [('estado','=','posted')]}"/>
-                  <field name = "fe_condicio_impuesto" required="True"  attrs="{'readonly': [('estado','=','posted')]}"/>
-                  <field name = "fe_monto_total_impuesto_acreditar" required="True"  attrs="{'readonly': [('estado','=','posted')]}"/>
-                  <field name = "fe_monto_total_gasto_aplicable" required="True"  attrs="{'readonly': [('estado','=','posted')]}"/>
-                  <field name = "fe_actividad_economica" required="True"  attrs="{'readonly': [('estado','=','posted')]}"/>
+                  <field name = "fe_detail_msg"  attrs="{'readonly': [('state','=','posted')],'required':[('fe_msg_type','!=','1')]}" />                <field name = "fe_monto_total_impuesto" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
+                  <field name = "fe_condicio_impuesto" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
+                  <field name = "fe_monto_total_impuesto_acreditar" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
+                  <field name = "fe_monto_total_gasto_aplicable" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
+                  <field name = "fe_actividad_economica" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
                   <field name="fe_server_state" readonly='1'/>
               </group>
           </group>
@@ -116,7 +116,7 @@
     <field name="model">electronic.doc</field>
     <field name="arch" type="xml">
       <tree string="">
-        <field name="estado"/>  
+        <field name="state"/>  
         <field name="consecutivo"/>
         <field name="key"/>
         <field name = "fe_msg_type"/>
