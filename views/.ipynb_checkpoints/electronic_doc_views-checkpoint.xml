@@ -70,7 +70,7 @@
             </page>
             <page string="Lineas">
               <group>
-                  <field name="invoice_lines">
+                  <field name="line_ids">
                         <tree>
                             <field name = 'name'/>
                             <field name = 'quantity'/>
