@@ -288,8 +288,9 @@ class ElectronicDoc(models.Model):
         if form:
             name = form.group(0).split('}')[0].strip('{')
         return {'xmlns': name}
+    
     def cargar_lineas_xml(self,xml):
-           root_xml = fromstring(base64.b64decode(xml))
+            root_xml = fromstring(base64.b64decode(xml))
             ds = "http://www.w3.org/2000/09/xmldsig#"
             xades = "http://uri.etsi.org/01903/v1.3.2#"
             ns2 = {"ds": ds, "xades": xades}
