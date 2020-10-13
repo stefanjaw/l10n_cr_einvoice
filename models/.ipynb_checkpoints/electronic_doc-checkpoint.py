@@ -100,6 +100,8 @@ class ElectronicDoc(models.Model):
     fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar", )
     fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable", )
     fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
+    line_ids = fields.One2many('account.move.line', 'electronic_doc_id', string='Lineas', copy=True, readonly=True,
+        states={'draft': [('readonly', False)]})
     
     display_name = fields.Char(
         string='Name',
@@ -248,7 +250,7 @@ class ElectronicDoc(models.Model):
             raise ValidationError("Primero confirme este documento")
         if self.estado == 'accounting':
             raise ValidationError("Este documento ya fue agregado en contabilidad")
-        if self.sequence_id.prefix == '0010000107':
+        if self.sequence_id.prefix[8:10] == '07':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
             
         if self.estado != 'draft' and self.estado != 'accounting' and self.sequence_id.prefix[8:10] != '07':
@@ -320,7 +322,35 @@ class ElectronicDoc(models.Model):
                 log.info(
                     '\n "el documento XML Clave: %s no contiene nombre del proveedor \n',
                     key)
+            
+            root_xml = fromstring(base64.b64decode(xml))
+            ds = "http://www.w3.org/2000/09/xmldsig#"
+            xades = "http://uri.etsi.org/01903/v1.3.2#"
+            ns2 = {"ds": ds, "xades": xades}
+            signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
+            namespace = self.env['electronic.doc']._get_namespace(root_xml)
 
+            lineasDetalle = root_xml.xpath(
+                    "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
+            invoice_lines = []   
+            account = self.env['account.account'].search([("code","=","0-511301")])
+                
+                
+            for linea in lineasDetalle: 
+                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
+                    tax = False
+                    if percent:
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        if tax:
+                            tax = [(6,0,[tax.id])]
+                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'tax_ids': tax,
+                                        'account_id': account.id,
+                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
+                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
+                                       }]
+                    invoice_lines.append(new_line)
+                    
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
@@ -332,6 +362,7 @@ class ElectronicDoc(models.Model):
                 'date': date,
                 'doc_type': doc_type,
                 'total_amount': total_amount,
+                'line_ids': invoice_lines,
                 'xslt': xslt,
             })
         else:

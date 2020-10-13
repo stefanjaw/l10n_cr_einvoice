@@ -62,10 +62,24 @@
           </group>
             
           <notebook>
-            <page string="Factura">
+            <page string="XSLT">
               <group>
                 <field name="xslt" readonly='1' required='1'/>
                 <field name="xslt" invisible='1'/>
+              </group>
+            </page>
+            <page string="Lineas">
+              <group>
+                  <field name="invoice_lines">
+                        <tree>
+                            <field name = 'name'/>
+                            <field name = 'quantity'/>
+                            <field name = 'price_unit'/>
+                            <field name = 'tax_ids'/>
+                            <field name = 'price_subtotal'/>
+                            <field name = 'is_selected'/>
+                        </tree>
+                  </field>
               </group>
             </page>
             <page string="Facturacion electrónica">
