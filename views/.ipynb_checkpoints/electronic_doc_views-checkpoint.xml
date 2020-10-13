@@ -69,18 +69,16 @@
               </group>
             </page>
             <page string="Lineas">
-              <group>
                   <field name="line_ids">
                         <tree>
-                            <field name = 'name'/>
-                            <field name = 'quantity'/>
-                            <field name = 'price_unit'/>
-                            <field name = 'tax_ids'/>
-                            <field name = 'price_subtotal'/>
-                            <field name = 'is_selected'/>
+                            <field name = 'name' readonly = 'True'/>
+                            <field name = 'quantity' readonly = 'True'/>
+                            <field name = 'price_unit' readonly = 'True'/>
+                            <field name = 'tax_ids' readonly = 'True'/>
+                            <field name = 'price_subtotal' readonly = 'True'/>
+                            <field name = 'is_selected' readonly = 'False'/>
                         </tree>
                   </field>
-              </group>
             </page>
             <page string="Facturacion electrónica">
           <form>
