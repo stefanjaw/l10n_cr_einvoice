@@ -15,10 +15,10 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=False)
     
-     @api.depends("price_subtotal", "tax_amount" )
-    def _compute_subtotal_linea(self):
+    @api.depends("price_subtotal", "tax_amount" )
+    def _compute_total_linea(self):
         for record in self:
-            record.price_total = record.subtotal + record.tax_amount
+            record.price_total = record.price_subtotal + record.tax_amount
     
     @api.depends("quantity", "price_unit" )
     def _compute_subtotal_linea(self):
@@ -31,4 +31,5 @@ class ElectronicDocLine(models.Model):
             total = 0
             for tax in record.tax_ids:
                 total = total + record.price_subtotal * (tax.amount/100)
+            record.tax_amount = total
                 
