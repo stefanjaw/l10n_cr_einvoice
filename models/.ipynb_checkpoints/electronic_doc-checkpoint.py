@@ -145,18 +145,18 @@ class ElectronicDoc(models.Model):
                 dic = self.convert_xml_to_dic(self.xml_bill)
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE':
-                    self.key = self.get_key(dic, doc_type)
-                    self.xslt = self.transform_to_xslt(self.xml_bill, doc_type)
-                    self.electronic_doc_bill_number = self.get_bill_number(
-                        dic, doc_type)
-                    self.date = self.get_date(dic, doc_type)
-                    self.doc_type = doc_type
-                    self.provider = self.get_provider(dic, doc_type)
-                    self.receiver_name = self.get_receiver_name(dic, doc_type)
-                    self.receiver_number = self.get_receiver_identification(
-                        dic, doc_type)
-                    self.total_amount = self.get_total_amount(dic, doc_type)
-                    self.line_ids =  self.cargar_lineas_xml(self.xml_bill)  
+                    self.write({
+                        'key':self.get_key(dic, doc_type),
+                        'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
+                        'electronic_doc_bill_number':self.get_bill_number(dic, doc_type),
+                        'date':self.get_date(dic, doc_type),
+                        'doc_type':doc_type,
+                        'provider':self.get_provider(dic, doc_type),
+                        'receiver_name':self.get_receiver_name(dic, doc_type),
+                        'receiver_number':self.get_receiver_identification(dic, doc_type),
+                        'total_amount':self.get_total_amount(dic, doc_type),
+                        'line_ids':self.cargar_lineas_xml(self.xml_bill),
+                    })
                 else:
                     return {
                     'warning': {
