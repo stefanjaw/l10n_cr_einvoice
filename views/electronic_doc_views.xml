@@ -70,12 +70,14 @@
             </page>
             <page string="Lineas">
                   <field name="line_ids">
-                        <tree>
+                        <tree editable="True" create="false" delete="false">
                             <field name = 'name' readonly = 'True'/>
                             <field name = 'quantity' readonly = 'True'/>
                             <field name = 'price_unit' readonly = 'True'/>
-                            <field name = 'tax_ids' readonly = 'True'/>
+                            <field name = 'tax_ids' widget="many2many_tags" readonly = 'True'/>
+                            <field name = 'tax_amount' readonly = 'True'/>
                             <field name = 'price_subtotal' readonly = 'True'/>
+                            <field name = 'price_total' readonly = 'True'/>
                             <field name = 'is_selected' readonly = 'False'/>
                         </tree>
                   </field>
