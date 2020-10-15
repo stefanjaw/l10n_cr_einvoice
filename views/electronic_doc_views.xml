@@ -155,5 +155,21 @@
       </field>
     </record>
     
+    <record model="ir.ui.view" id="l10n_cr_einvoice.doc_lines">
+        <field name="name">l10n_cr_einvoice.doc_lines</field>
+        <field name="model">electronic.doc.line</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                     <field name="name" readonly="True"/>
+                     <field name="quantity" readonly="True"/>
+                     <field name="price_unit" readonly="True"/>
+                     <field name="tax_ids" widget="many2many_tags" readonly="True"/>
+                     <field name="price_total" readonly="True"/>
+                </group>
+            </form>
+        </field>
+    </record>
     
 </odoo>
