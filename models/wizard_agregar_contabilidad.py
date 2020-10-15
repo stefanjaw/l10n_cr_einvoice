@@ -48,7 +48,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                 
                 invoice_lines = []   
                 
-                
+                account_id = self.env['account.account'].search([("code","=","0-511301")])
                 for linea in doc.line_ids.search([('is_selected','=',True)]): 
                     taxes = []
                     for tax in linea.tax_ids:
@@ -68,7 +68,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                 
                 for otros in otros_cargos:
                     new_line =  [0, 0, {'name': otros.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'account_id': account.id,
+                                        'account_id': account_id.id,
                                         'quantity': 1,
                                         'price_unit':otros.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
                                        }]
