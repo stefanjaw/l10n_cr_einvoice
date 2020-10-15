@@ -47,23 +47,19 @@ class wizardAgregarContabilidad(models.TransientModel):
 
                 
                 invoice_lines = []   
-                account = self.env['account.account'].search([("code","=","0-511301")])
                 
                 
-                for linea in lineasDetalle: 
-                    
-                    percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
-                    tax = False
-                    if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
-                        if tax:
-                            tax = [(6,0,[tax.id])]
-                            
-                    new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'tax_ids': tax,
-                                        'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
+                for linea in doc.line_ids.search([('is_selected','=',True)]): 
+                    taxes = []
+                    for tax in linea.tax_ids:
+                        taxes.append(tax.id)
+                        
+                    tax_ids = [(6,0,taxes)]        
+                    new_line =  [0, 0, {'name': linea.name,
+                                        'tax_ids': tax_ids,
+                                        'account_id': linea.account_id.id,
+                                        'quantity': linea.quantity,
+                                        'price_unit':linea.price_unit,
                                        }]
                     invoice_lines.append(new_line)
                 
@@ -99,7 +95,7 @@ class wizardAgregarContabilidad(models.TransientModel):
         
         
         doc.update({
-            'estado':'accounting',
+            'state':'accounting',
         })
         
         
