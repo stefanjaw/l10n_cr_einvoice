@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
 from datetime import datetime,timezone
+from odoo.exceptions import ValidationError
 import lxml.etree as ET
 import xmltodict
 import logging
@@ -49,19 +50,20 @@ class wizardAgregarContabilidad(models.TransientModel):
                 invoice_lines = []   
                 
                 account_id = self.env['account.account'].search([("code","=","0-511301")])
-                for linea in doc.line_ids.search([('is_selected','=',True)]): 
-                    taxes = []
-                    for tax in linea.tax_ids:
-                        taxes.append(tax.id)
-                        
-                    tax_ids = [(6,0,taxes)]        
-                    new_line =  [0, 0, {'name': linea.name,
-                                        'tax_ids': tax_ids,
-                                        'account_id': linea.account_id.id,
-                                        'quantity': linea.quantity,
-                                        'price_unit':linea.price_unit,
-                                       }]
-                    invoice_lines.append(new_line)
+                for linea in doc.line_ids:
+                    if linea.is_selected:
+                        taxes = []
+                        for tax in linea.tax_ids:
+                            taxes.append(tax.id)
+
+                        tax_ids = [(6,0,taxes)]        
+                        new_line =  [0, 0, {'name': linea.name,
+                                            'tax_ids': tax_ids,
+                                            'account_id': linea.account_id.id,
+                                            'quantity': linea.quantity,
+                                            'price_unit':linea.price_unit,
+                                           }]
+                        invoice_lines.append(new_line)
                 
                 otros_cargos = root_xml.xpath(
                     "xmlns:OtrosCargos", namespaces=namespace)

@@ -6,7 +6,7 @@
       <form string="">
           
           <header>
-               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('state','=','posted')]}"/> 
+               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('state','in',['posted','accounting'])]}"/> 
                <field name="state" widget="statusbar" statusbar_visible="draft,posted,accounting"/>
           </header>
           
