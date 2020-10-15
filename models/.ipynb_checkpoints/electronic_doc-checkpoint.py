@@ -100,7 +100,7 @@ class ElectronicDoc(models.Model):
     fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar",compute = '_compute_impuesto_acreditar' )
     fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable",compute = '_compute_gasto_aplicable' )
     fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
-    line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True, readonly=True,
+    line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True, readonly=True,ondelete="cascade",
         states={'draft': [('readonly', False)]})
     
     display_name = fields.Char(
@@ -175,7 +175,7 @@ class ElectronicDoc(models.Model):
                         'receiver_number':self.get_receiver_identification(dic, doc_type),
                         'total_amount':self.get_total_amount(dic, doc_type),
                         'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type),
-                        'line_ids': [(6, 0, list)]
+                        'line_ids':[(6, 0, list)],
                     })
                                         
                 else:

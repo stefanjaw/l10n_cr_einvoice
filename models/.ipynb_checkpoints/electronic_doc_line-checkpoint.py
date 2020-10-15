@@ -2,7 +2,7 @@ from odoo import api, exceptions, fields, models, _
 
 class ElectronicDocLine(models.Model):
     _name = 'electronic.doc.line'
-    electronic_doc_id = fields.Many2one('electroni.doc',string='documento electronico')
+    electronic_doc_id = fields.Many2one('electronic.doc',string='documento electronico')
     name = fields.Char(string='Descripción')
     quantity = fields.Float(string='Cantidad')
     price_unit = fields.Float(string='Precio')
