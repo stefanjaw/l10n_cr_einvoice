@@ -8,7 +8,7 @@
   <field name="arch" type="xml">
     <field name="name" position="after">
       <field name="fe_condition_sale" required="True"/>
-      <field name="payment_term_hacienda" required="True"/>
+      <field name="payment_term_hacienda" attrs="{'required':[('fe_condition_sale','=','02')]}"/>
     </field>
   </field>
 </record>
