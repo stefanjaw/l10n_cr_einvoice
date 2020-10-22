@@ -518,7 +518,7 @@ class AccountMoveFunctions(models.Model):
             
             if not self.invoice_payment_term_id:
                 msg += 'Falta el plazo de pago \n'
-            elif len(self.invoice_payment_term_id.name) > 10:
+            elif len(self.invoice_payment_term_id.payment_term_hacienda) > 10:
                 msg += 'El nombre del plazo de pago debe ser menor aun largo de 10 \n'
                 
             if not self.name:
@@ -911,8 +911,8 @@ class AccountMoveFunctions(models.Model):
 
             s.invoice[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
 
-            if s.invoice_payment_term_id.name:
-                s.invoice[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.name})
+            if s.invoice_payment_term_id.payment_term_hacienda:
+                s.invoice[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.payment_term_hacienda})
             if s.fe_condicion_impuesto:
                 s.invoice[s.fe_doc_type].update({'CondicionImpuesto':s.fe_condicion_impuesto})
             
