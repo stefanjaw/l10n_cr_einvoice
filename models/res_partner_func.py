@@ -39,4 +39,5 @@ class ResPartnerFunctions(models.Model):
                 
             if json_response.get("code") == 404:
                 return
-            return self.update({"name": json_response["nombre"],"fe_identification_type":json_response["tipoIdentificacion"]} )
+            if "nombre" in json_response.keys():
+                return self.update({"name": json_response["nombre"],"fe_identification_type":json_response["tipoIdentificacion"]} )
