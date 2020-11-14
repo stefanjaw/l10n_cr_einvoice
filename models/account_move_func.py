@@ -372,8 +372,7 @@ class AccountMoveFunctions(models.Model):
 
     def confirm_bill(self):
         log.info('--> factelec-Invoice-confirm_bill')
-        if s.fe_server_state:
-            return
+
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
@@ -742,7 +741,7 @@ class AccountMoveFunctions(models.Model):
     def get_invoice(self):
         for s in self:
             if not s.fe_server_state:
-                return
+                raise exceptions.Warning('Porfavor envie el documento antes de consultarlo')
             if s.state == 'draft':
               raise exceptions.Warning('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
