@@ -58,11 +58,11 @@ class AccountMove(models.Model):
             ],
     )
 
-    fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
-    fe_xml_sign = fields.Binary(string="XML firmado", )
-    fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda", )
-    fe_xml_hacienda = fields.Binary(string="XML Hacienda", )# 1570034790
-    fe_server_state = fields.Char(string="Estado Hacienda", )
+    fe_name_xml_sign = fields.Char(string="nombre xml firmado",copy=False )
+    fe_xml_sign = fields.Binary(string="XML firmado",copy=False )
+    fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda",copy=False )
+    fe_xml_hacienda = fields.Binary(string="XML Hacienda",copy=False )# 1570034790
+    fe_server_state = fields.Char(string="Estado Hacienda",copy=False )
 
     #FIELDS FOR SUPPLIER INVOICE
     fe_xml_supplier = fields.Binary(string="Factura XML", states={'posted': [('readonly', True)]}) # 1569524296
