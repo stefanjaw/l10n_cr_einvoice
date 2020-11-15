@@ -17,6 +17,15 @@ class cabys(models.Model):
     cabys_category_7 = fields.Char(string='Categoría 7')
     cabys_category_8 = fields.Char(string='Categoría 8')
     display_name = fields.Char(compute='_compute_display_name',)
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        args = args or []
+        recs = self.browse()
+        if not recs:
+               recs = self.search([('display_name', operator, name)] + args, limit=limit)
+        return recs.name_get()
+
     @api.depends('code','name')
     def _compute_display_name(self):
         for record in self:
