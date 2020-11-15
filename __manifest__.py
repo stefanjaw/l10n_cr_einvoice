@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Costa Rica - Electronic Invoice",
+    'name': "Costa Rica - Electronic Invoicing",
 
-    'summary': """Costa Rica - Electronic Invoice.""",
+    'summary': """Costa Rica - Electronic Invoicing.""",
 
     'description': """
-        Costa Rica - Electronic Invoice.
+        Costa Rica - Electronic Invoicing.
     """,
 
     'author': "Avalantec",
