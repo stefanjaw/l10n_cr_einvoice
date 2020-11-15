@@ -45,6 +45,7 @@
         'views/wizard_agregar_contabilidad_views.xml',
         'views/wizard_account_debit_views.xml',
         'data/sequence_data.xml',
+        'data/cabys.code.csv',
     ],
     # only loaded in demonstration mode
     'demo': [

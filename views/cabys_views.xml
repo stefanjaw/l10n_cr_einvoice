@@ -66,6 +66,6 @@
     </record>
 
     <menuitem name="Código Cabys" id="cabys_menu" parent="account.menu_finance_configuration" action="cabys_action"
-    sequence="1"/>
+    sequence="0"/>
 
 </odoo>
