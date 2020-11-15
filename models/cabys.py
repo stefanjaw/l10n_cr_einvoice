@@ -16,7 +16,7 @@ class cabys(models.Model):
     cabys_category_6 = fields.Char(string='Categoría 6')
     cabys_category_7 = fields.Char(string='Categoría 7')
     cabys_category_8 = fields.Char(string='Categoría 8')
-    display_name = fields.Char(compute='_compute_display_name',)
+    display_name = fields.Char(compute='_compute_display_name',store=True)
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
