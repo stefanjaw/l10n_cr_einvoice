@@ -26,3 +26,4 @@ from . import wizard_agregar_contabilidad
 from . import wizard_account_debit
 from . import ir_sequence
 from . import electronic_doc_line
+from . import cabys
