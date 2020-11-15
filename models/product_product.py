@@ -26,7 +26,7 @@ class productProduct(models.Model):
     def _compute_cabys_code_id(self):
         for record in self:
                 record.cabys_code_id = record.product_tmpl_id.cabys_code_id
-    @api.one
+                
     def _set_cabys_code(self):
         self.product_tmpl_id.cabys_code_id = self.cabys_code_id
     
