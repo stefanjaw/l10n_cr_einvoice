@@ -35,7 +35,7 @@ class productProduct(models.Model):
         for record in self:
             if len(record.product_tmpl_id.product_variant_ids) == 1:
                 record.fe_unidad_medida_comercial = record.product_tmpl_id.fe_unidad_medida_comercial
-    @api.one
+
     def _set_fe_unidad_comercial(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_unidad_comercial = self.fe_unidad_comercial
@@ -45,7 +45,7 @@ class productProduct(models.Model):
         for record in self:
             if len(record.product_tmpl_id.product_variant_ids) == 1:
                 record.fe_codigo_comercial_codigo = record.product_tmpl_id.fe_codigo_comercial_codigo
-    @api.one
+
     def _set_fe_codigo_comercial_codigo(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_codigo_comercial_codigo = self.fe_codigo_comercial_codigo
@@ -55,7 +55,7 @@ class productProduct(models.Model):
         for record in self:
             if len(record.product_tmpl_id.product_variant_ids) == 1:
                 record.fe_codigo_comercial_tipo = record.product_tmpl_id.fe_codigo_comercial_tipo
-    @api.one
+
     def _set_fe_codigo_comercial_tipo(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_codigo_comercial_tipo = self.fe_codigo_comercial_tipo

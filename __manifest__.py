@@ -45,8 +45,9 @@
         'data/sequence_data.xml',
         'data/cabys.code.csv',
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        #'demo/demo.xml',
-    ],
+    'external_dependencies': {
+        "python": [
+            'xmltodict',
+        ],
+    },
 }
