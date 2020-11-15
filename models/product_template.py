@@ -20,3 +20,5 @@ class ProductTemplate(models.Model):
     fe_codigo_comercial_codigo = fields.Char(size = 20, string="Commercial Code" )
 
     fe_unidad_medida_comercial = fields.Char(string='Unidad de Medida Comercial',size=20)
+
+    cabys_code_id = fields.Many2one('cabys.code', string='Código cabys')

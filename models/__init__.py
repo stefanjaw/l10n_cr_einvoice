@@ -14,6 +14,7 @@ from . import account_payment
 from . import currency
 from . import currency_rate
 from . import product_template
+from . import product_product
 from . import res_country_state
 from . import account_move_reversal
 from . import account_move_reversal_func
