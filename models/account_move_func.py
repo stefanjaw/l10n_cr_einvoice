@@ -887,7 +887,7 @@ class AccountMoveFunctions(models.Model):
                     'OtrasSenas':s.partner_id.street or '',
                 }})
 
-            if s.partner_id.barrio_id.code:
+            if  s.partner_id.state_id.fe_code and s.partner_id.barrio_id.code:
                 s.invoice[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_id.code})
 
             #if s.partner_id.fe_receptor_otras_senas_extranjero:
