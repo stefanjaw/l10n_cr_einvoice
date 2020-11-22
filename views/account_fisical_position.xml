@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Fiscal Position -->
+
+    <record id="view_fiscal_position_form_inherited" model="ir.ui.view">
+        <field name="name">account.fiscal.position.form.inherited.localization</field>
+        <field name="model">account.fiscal.position</field>
+        <field name="inherit_id" ref="account.view_account_position_form"/>
+        <field name="arch" type="xml">
+            <field name="auto_apply" position="after">
+                <field name="fiscal_position_type"/>
+                <field name="document_number"/>
+                <field name="institution_name"/>
+                <field name="issued_date"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

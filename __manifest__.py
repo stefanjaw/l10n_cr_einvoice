@@ -40,6 +40,7 @@
         'views/electronic_doc_views.xml',
         'views/email_views.xml',
         'views/cabys_views.xml',
+        'views/account_fisical_position.xml',
         'views/wizard_agregar_contabilidad_views.xml',
         'views/wizard_account_debit_views.xml',
         'data/sequence_data.xml',

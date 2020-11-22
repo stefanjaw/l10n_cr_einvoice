@@ -1025,6 +1025,15 @@ class AccountMoveFunctions(models.Model):
                             LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
+                            if self.fiscal_position_id:
+                                inv_lines[arrayCount]['Impuesto'].update(dict({'TipoDocumento': self.fiscal_position_id.fiscal_position_type or ''}))
+                                inv_lines[arrayCount]['Impuesto'].update(dict({'NumeroDocumento': self.fiscal_position_id.document_number or ''}))
+                                inv_lines[arrayCount]['Impuesto'].update(dict({'NombreInstitucion': self.fiscal_position_id.institution_name or ''}))
+                                inv_lines[arrayCount]['Impuesto'].update(dict({'FechaEmision': self.fiscal_position_id.institution_name or ''}))
+                                fiscal_tax_amount = sum([round(tax.tax_src_id.amount, 4) for tax in self.fiscal_position_id.tax_ids])
+                                inv_lines[arrayCount]['Impuesto'].update(dict({'MontoImpuesto':  str(int(fiscal_tax_amount)) or '0'}))
+
+   
                             LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
                             inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
                         #Si esta exonerado al 100% se debe colocar 0-Zero
