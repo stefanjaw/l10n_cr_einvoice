@@ -28,3 +28,4 @@ from . import wizard_account_debit
 from . import ir_sequence
 from . import electronic_doc_line
 from . import cabys
+from . import account_fisical_position
