@@ -516,7 +516,7 @@ class AccountMoveFunctions(models.Model):
                 msg += 'El codigo de la actividad económica debe ser de un largo de 6 \n'
             
             if not self.invoice_payment_term_id.payment_term_hacienda:
-                msg += 'Falta el plazo de pago \n'
+                msg += 'En el plazo de pago falta el plazo credito hacienda \n'
             elif len(self.invoice_payment_term_id.payment_term_hacienda) > 10:
                 msg += 'El nombre del plazo de pago debe ser menor aun largo de 10 \n'
                 
