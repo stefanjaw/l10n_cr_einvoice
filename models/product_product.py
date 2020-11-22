@@ -38,7 +38,7 @@ class productProduct(models.Model):
 
     def _set_fe_unidad_comercial(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
-            self.product_tmpl_id.fe_unidad_comercial = self.fe_unidad_comercial
+            self.product_tmpl_id.fe_unidad_medida_comercial = self.fe_unidad_medida_comercial
 
     @api.depends('product_tmpl_id', 'product_tmpl_id.fe_codigo_comercial_codigo')
     def _compute_fe_codigo_comercial_codigo(self):
