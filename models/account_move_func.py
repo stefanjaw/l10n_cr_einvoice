@@ -1013,14 +1013,22 @@ class AccountMoveFunctions(models.Model):
                             TotalOtrosCargos += MontoCargo
 
                         else:
-
-                            LineaImpuestoTarifa = round(tax_id.amount,2)
-
-                            inv_lines[arrayCount]['Impuesto'] = {
-                                'Codigo':tax_id.tarifa_impuesto,
-                                'CodigoTarifa':tax_id.codigo_impuesto,
-                                'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
-                                }
+                            
+                            if self.fiscal_position_id:
+                                old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)]).tax_src_id
+                                LineaImpuestoTarifa = round(old_tax.amount,2)
+                                inv_lines[arrayCount]['Impuesto'] = {
+                                    'Codigo':old_tax.tarifa_impuesto,
+                                    'CodigoTarifa':old_tax.codigo_impuesto,
+                                    'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
+                                    }
+                            else:
+                                LineaImpuestoTarifa = round(tax_id.amount,2)
+                                inv_lines[arrayCount]['Impuesto'] = {
+                                    'Codigo':tax_id.tarifa_impuesto,
+                                    'CodigoTarifa':tax_id.codigo_impuesto,
+                                    'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
+                                    }
 
                             LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))

@@ -13,7 +13,7 @@ class ElectronicDocLine(models.Model):
         domain=[('deprecated', '=', False)])
     price_subtotal = fields.Float(string='Subtotal',compute="_compute_subtotal_linea")
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
-    is_selected = fields.Boolean(string = 'seleccionar',default=False)
+    is_selected = fields.Boolean(string = 'seleccionar',default=True)
     
     @api.depends("price_subtotal", "tax_amount" )
     def _compute_total_linea(self):
