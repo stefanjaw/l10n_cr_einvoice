@@ -164,7 +164,7 @@ class ElectronicDoc(models.Model):
                 dic = self.convert_xml_to_dic(self.xml_bill)
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
-                    list = self.crear_lineas_xml(self.xml_bill)
+                    list_lineas = self.crear_lineas_xml(self.xml_bill)
                     self.write({
                         'key':self.get_key(dic, doc_type),
                         'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
@@ -176,7 +176,7 @@ class ElectronicDoc(models.Model):
                         'receiver_number':self.get_receiver_identification(dic, doc_type),
                         'total_amount':self.get_total_amount(dic, doc_type),
                         'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type),
-                        'line_ids':[(6, 0, list)],
+                        'line_ids':[(6, 0, list_lineas)],
                     })
                                         
                 else:
