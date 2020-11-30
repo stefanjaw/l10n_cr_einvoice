@@ -651,7 +651,7 @@ class AccountMoveFunctions(models.Model):
            vat = vat.replace(' ','')
            vat_complete = "0" * (12 - len(vat)) + vat
            clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
-              + str(vat_complete) + str(self.name) + str(self.fe_receipt_status) \
+              + str(vat_complete) + str(self.name) + str(self.fe_receipt_status or '1') \
               + str("87654321")
            self.fe_clave = clave
 
