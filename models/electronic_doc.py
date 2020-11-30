@@ -49,6 +49,7 @@ class ElectronicDoc(models.Model):
                                 selection=[
                                     ('TE', 'Tiquete Electronico'),
                                     ('FE', 'Factura Electronica'),
+                                    ('NC', 'Nota Crédito Electronica'),
                                     ('MH', 'Aceptacion Ministerio Hacienda'),
                                     ('OT', 'Otro'),
                                 ])
