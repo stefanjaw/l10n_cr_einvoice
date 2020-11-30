@@ -84,6 +84,7 @@ class ElectronicDoc(models.Model):
     fe_xml_hacienda = fields.Binary(string="XML Hacienda", )# 1570034790
     fe_server_state = fields.Char(string="Estado Hacienda", )
     company_id = fields.Many2one(
+        string="Compañia",
         'res.company',
         'Company',
          default=lambda self: self.env.company.id 
