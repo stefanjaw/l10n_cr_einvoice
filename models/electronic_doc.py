@@ -660,7 +660,7 @@ class ElectronicDoc(models.Model):
         bill_dic = self.convert_xml_to_dic(self.xml_bill)
         doc_type = self.get_doc_type(bill_dic)
         key = self.get_key(bill_dic, doc_type)
-
+        raise exceptions.Warning((key+" "+bill_dic.keys()))
         if key in bill_dic.keys():
             tz = pytz.timezone('America/Costa_Rica')
             fecha = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
