@@ -10,8 +10,7 @@ class wizardReversal(models.TransientModel):
         action = super(wizardReversal, self).reverse_moves()
         moves = self.env['account.move'].browse(self.env.context['active_ids']) if self.env.context.get('active_model') == 'account.move' else self.move_id
         for move in moves:
-            if move.state == "posted":
-                move._generar_clave()
+            move._generar_clave()
         return action
 
     
