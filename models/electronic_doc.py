@@ -322,6 +322,9 @@ class ElectronicDoc(models.Model):
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
             account = self.env['account.account'].search([("code","=","0-511301"),("company_id","=",self.company_id.id)])
+            if not account:
+                  account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
+
                 
                 
             for linea in lineasDetalle: 
