@@ -500,6 +500,18 @@ class ElectronicDoc(models.Model):
             key = 'NotaCreditoElectronica'
         return dic[key]['Clave']
 
+
+    def get_inverse_doc_type(self, dic, doc_type):
+        if (doc_type == 'TE'):
+            key = 'TiqueteElectronico'
+        elif (doc_type == 'MH'):
+            key = 'MensajeHacienda'
+        elif (doc_type == 'FE'):
+            key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
+        return key
+
     def get_bill_number(self, dic, doc_type):
         try:
             if (doc_type == 'TE'):
@@ -659,8 +671,7 @@ class ElectronicDoc(models.Model):
 
         bill_dic = self.convert_xml_to_dic(self.xml_bill)
         doc_type = self.get_doc_type(bill_dic)
-        key = self.get_key(bill_dic, doc_type)
-        raise exceptions.Warning((key+" "+str(bill_dic.keys())))
+        key = self.get_inverse_doc_type(bill_dic, doc_type)
         if key in bill_dic.keys():
             tz = pytz.timezone('America/Costa_Rica')
             fecha = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
