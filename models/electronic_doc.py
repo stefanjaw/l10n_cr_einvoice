@@ -322,7 +322,9 @@ class ElectronicDoc(models.Model):
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
             account = self.env['account.account'].search([("code","=","0-511301"),("company_id","=",self.company_id.id)])
-            raise ValidationError(account)
+            if not account:
+                  account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
+
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     tax = False
@@ -330,6 +332,7 @@ class ElectronicDoc(models.Model):
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",self.company_id.id)])
                         if tax:
                             tax = [(6,0,[tax.ids])]
+                    raise ValidationError(tax)
                     line = self.env['electronic.doc.line'].create({'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
