@@ -78,6 +78,7 @@
                             <field name = 'tax_amount' readonly = 'True'/>
                             <field name = 'price_subtotal' readonly = 'True'/>
                             <field name = 'price_total' readonly = 'True'/>
+                            <field name="state" invisible="True" />
                             <field name = 'is_selected'  attrs="{'readonly': [('state','=','posted')]}"/>
                         </tree>
                   </field>
