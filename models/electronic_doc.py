@@ -176,7 +176,7 @@ class ElectronicDoc(models.Model):
                         'receiver_number':self.get_receiver_identification(dic, doc_type),
                         'total_amount':self.get_total_amount(dic, doc_type),
                         'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type),
-                        'line_ids':[(6, 0, list_lineas)],
+                        'line_ids':list_lineas,
                     })
                                         
                 else:
@@ -333,14 +333,14 @@ class ElectronicDoc(models.Model):
                         if tax:
                             tax = [(6,0,[tax.ids])]
 
-                    line = self.env['electronic.doc.line'].create({
+                            line =  ( 0,0,{
                                         'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
                                         'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
                                         'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
-                                       })
-                    invoice_lines.append(line.id)
+                                        })
+                    invoice_lines.append(line)
             return invoice_lines
         
     def cargar_lineas_xml(self,xml):
