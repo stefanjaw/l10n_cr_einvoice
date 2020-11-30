@@ -14,7 +14,11 @@ class ElectronicDocLine(models.Model):
     price_subtotal = fields.Float(string='Subtotal',compute="_compute_subtotal_linea")
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
-    state = fields.Char(string='state',related='electronic_id.state')
+    state = fields.Char(compute='_compute_state', string='Line state')
+    
+    @api.depends('electronic_doc_id.state')
+    def _compute_state(self):
+        self.state = self.electronic_doc_id.state
     
     @api.depends("price_subtotal", "tax_amount" )
     def _compute_total_linea(self):
