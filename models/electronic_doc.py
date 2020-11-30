@@ -332,7 +332,7 @@ class ElectronicDoc(models.Model):
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",self.company_id.id)])
                         if tax:
                             tax = [(6,0,[tax.ids])]
-                    raise ValidationError(tax)
+                    raise ValidationError(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text)
                     line = self.env['electronic.doc.line'].create({'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
