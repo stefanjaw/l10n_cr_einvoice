@@ -165,6 +165,7 @@ class ElectronicDoc(models.Model):
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
+                    raise ValidationError(list_lineas)
                     self.write({
                         'key':self.get_key(dic, doc_type),
                         'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
