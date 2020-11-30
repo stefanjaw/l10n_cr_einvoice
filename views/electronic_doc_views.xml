@@ -126,7 +126,7 @@
         <field string="Aceptación" name="has_acceptance"/>
         <field name="total_amount"/>
         <field name="doc_type"/>
-         <field name="company_id"/>
+         <field String="Compañia" name="company_id"/>
       </tree>
     </field>
   </record>
