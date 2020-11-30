@@ -27,7 +27,7 @@ class wizardAgregarContabilidad(models.TransientModel):
     def agregar(self):
         doc = self.env['electronic.doc'].search([("id","=",self._context['doc'])])
         if doc.company_id != self.company_id:
-            raise ValidationError("Este documento pertenece a la compañía {} si desea agregarlo a contabilidad por favor cámbiese a esta".format(doc.company_id))
+            raise ValidationError("Este documento pertenece a la compañía {} si desea agregarlo a contabilidad por favor cámbiese a esta".format(doc.company_id.name))
         if self.opciones == '1':
                 xml = self._context['xml']
                 bill_dict = self.env['electronic.doc'].convert_xml_to_dic(xml)
