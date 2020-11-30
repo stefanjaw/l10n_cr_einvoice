@@ -328,9 +328,9 @@ class ElectronicDoc(models.Model):
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     tax = False
                     if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",self.company_id.id)])
                         if tax:
-                            tax = [(6,0,[tax.id])]
+                            tax = [(6,0,[tax.ids])]
                     line = self.env['electronic.doc.line'].create({'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
