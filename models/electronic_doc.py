@@ -342,7 +342,7 @@ class ElectronicDoc(models.Model):
                                     }
 
                             line =  [0,0,obj]
-                    raise ValidationError(obj)                    
+                    raise ValidationError(str(obj))                    
                     invoice_lines.append(line)
             return invoice_lines
         
