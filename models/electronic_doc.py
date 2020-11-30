@@ -162,7 +162,7 @@ class ElectronicDoc(models.Model):
             if 'xml' in self.xml_bill_name:
                 dic = self.convert_xml_to_dic(self.xml_bill)
                 doc_type = self.get_doc_type(dic)
-                if doc_type == 'TE' or doc_type == 'FE':
+                if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
                     list = self.crear_lineas_xml(self.xml_bill)
                     self.write({
                         'key':self.get_key(dic, doc_type),
@@ -454,6 +454,12 @@ class ElectronicDoc(models.Model):
                 ET.parse(
                     ruta
                 ))
+        elif (doc_type == 'NC'):
+            ruta = path._path[0]+"/nc.xslt"
+            transform = ET.XSLT(
+                ET.parse(
+                    ruta
+                ))
         nuevodom = transform(dom)
         return ET.tostring(nuevodom, pretty_print=True)
 
@@ -464,6 +470,7 @@ class ElectronicDoc(models.Model):
         tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
         tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronica'
         tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
+        tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
         try:
             if 'TiqueteElectronico' in dic.keys():
                 if dic['TiqueteElectronico']['@xmlns'] == tag_TE:
@@ -474,6 +481,9 @@ class ElectronicDoc(models.Model):
             elif 'MensajeHacienda' in dic.keys():
                 if dic['MensajeHacienda']['@xmlns'] == tag_MH:
                     return 'MH'
+            elif 'NotaCreditoElectronica' in dic.keys():
+                if dic['NotaCreditoElectronica']['@xmlns'] == tag_NC:
+                    return 'NC'
         except Exception as e:
             log.info('\n "erro al obtener tipo de archivo xml %s"\n', e)
             return False
@@ -485,6 +495,8 @@ class ElectronicDoc(models.Model):
             key = 'MensajeHacienda'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['Clave']
 
     def get_bill_number(self, dic, doc_type):
@@ -504,6 +516,8 @@ class ElectronicDoc(models.Model):
             key = 'MensajeHacienda'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['Emisor']['Nombre']
     
     def get_provider_identification(self, dic, doc_type):
@@ -515,6 +529,8 @@ class ElectronicDoc(models.Model):
                 key = 'MensajeHacienda'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['Emisor']['Identificacion']['Numero']
 
         except:
@@ -527,6 +543,8 @@ class ElectronicDoc(models.Model):
             key = 'MensajeHacienda'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['FechaEmision']
 
     def get_receiver_identification(self, dic, doc_type):
@@ -538,6 +556,8 @@ class ElectronicDoc(models.Model):
                 key = 'MensajeHacienda'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['Receptor']['Identificacion']['Numero']
 
         except:
@@ -551,6 +571,8 @@ class ElectronicDoc(models.Model):
                 key = 'MensajeHacienda'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['Receptor']['Nombre']
 
         except:
@@ -564,6 +586,8 @@ class ElectronicDoc(models.Model):
             key = 'TiqueteElectronico'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['ResumenFactura']['TotalComprobante']
     
     def get_total_tax(self, dic, doc_type):
@@ -571,6 +595,8 @@ class ElectronicDoc(models.Model):
             key = 'TiqueteElectronico'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['ResumenFactura']['TotalImpuesto']
     
     def convert_xml_to_dic(self, xml):
@@ -629,14 +655,16 @@ class ElectronicDoc(models.Model):
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
 
         bill_dic = self.convert_xml_to_dic(self.xml_bill)
+        doc_type = self.get_doc_type(bill_dic)
+        key = self.get_key(bill_dic, doc_type)
 
-        if 'FacturaElectronica' in bill_dic.keys():
+        if key in bill_dic.keys():
             tz = pytz.timezone('America/Costa_Rica')
             fecha = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
             json = {'MensajeReceptor':{
-                'Clave':bill_dic['FacturaElectronica']['Clave'],
-                'NumeroCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Numero'],
-                'TipoCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Tipo'],
+                'Clave':bill_dic[key]['Clave'],
+                'NumeroCedulaEmisor':bill_dic[key]['Emisor']['Identificacion']['Numero'],
+                'TipoCedulaEmisor':bill_dic[key]['Emisor']['Identificacion']['Tipo'],
                 'FechaEmisionDoc':fecha.split(' ')[0]+'T'+fecha.split(' ')[1]+'-06:00',
                 'Mensaje':self.fe_msg_type,
                 'DetalleMensaje':self.fe_detail_msg,
@@ -645,9 +673,9 @@ class ElectronicDoc(models.Model):
                 'ActividadEconomica':self.fe_actividad_economica.code,
                 'CondicionImpuesto':self.fe_condicio_impuesto,
                 'MontoTotalGastoAplicable':self.fe_monto_total_gasto_aplicable,
-                'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
+                'TotalFactura':bill_dic[key]['ResumenFactura']['TotalComprobante'],
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
-                'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
+                'TipoCedulaReceptor':bill_dic[key]['Receptor']['Identificacion']['Tipo'],
                 'NumeroConsecutivoReceptor':self.consecutivo,
                 }}
             return json
