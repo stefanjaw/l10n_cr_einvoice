@@ -29,3 +29,4 @@ from . import ir_sequence
 from . import electronic_doc_line
 from . import cabys
 from . import account_fisical_position
+from . import wizard_account_move_reversal
