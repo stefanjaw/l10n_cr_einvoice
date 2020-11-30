@@ -506,6 +506,8 @@ class ElectronicDoc(models.Model):
                 key = 'TiqueteElectronico'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['NumeroConsecutivo']
         except Exception as e:
             return False
