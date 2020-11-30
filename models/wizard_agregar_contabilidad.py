@@ -84,6 +84,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                     'invoice_date':doc.date,
                     'invoice_line_ids':invoice_lines,
                     'electronic_doc_id':doc.id,
+                    'company_id':doc.company_id,
                 })
                 
                 doc.update({'invoice_id':record.id})
