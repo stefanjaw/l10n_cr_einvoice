@@ -332,7 +332,7 @@ class ElectronicDoc(models.Model):
                     if percent:
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",self.company_id.id)])
                         if tax:
-                            tax = [(6,0,[tax.ids])]
+                            tax = [(6,0,tax.ids)]
                             obj =  {
                                     'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                     'tax_ids': tax,
@@ -341,8 +341,7 @@ class ElectronicDoc(models.Model):
                                     'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
                                     }
 
-                            line =  [0,0,obj]
-                    raise ValidationError(str(obj))                    
+                            line =  [0,0,obj]                
                     invoice_lines.append(line)
             return invoice_lines
         
