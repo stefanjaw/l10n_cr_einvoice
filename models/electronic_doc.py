@@ -341,6 +341,7 @@ class ElectronicDoc(models.Model):
                                         'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
                                         'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
                                         })
+                    raise ValidationError(line)                    
                     invoice_lines.append(line)
             return invoice_lines
         
