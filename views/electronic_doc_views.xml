@@ -72,17 +72,24 @@
                   <field name="line_ids">
                         <tree editable="bottom" create="false" delete="false">
                             <field name = 'name' readonly = 'True'/>
+                            <field name = 'name' invisible = 'True'/>
                             <field name = 'quantity' readonly = 'True'/>
+                            <field name = 'quantity' invisible = 'True'/>
                             <field name = 'price_unit' readonly = 'True'/>
+                            <field name = 'price_unit' invisible = 'True'/>
                             <field name = 'tax_ids' widget="many2many_tags" readonly = 'True'/>
+                            <field name = 'tax_ids' widget="many2many_tags" invisible = 'True'/>
                             <field name = 'tax_amount' readonly = 'True'/>
+                            <field name = 'tax_amount' invisible = 'True'/>
                             <field name = 'price_subtotal' readonly = 'True'/>
+                            <field name = 'price_subtotal' invisible = 'True'/>
                             <field name = 'price_total' readonly = 'True'/>
+                            <field name = 'price_total' invisible = 'True'/>
                             <field name="state" invisible="True" />
                             <field name = 'is_selected'  attrs="{'readonly': [('state','=','posted')]}"/>
+                            <field name = 'is_selected'  invisible="True"/>
                         </tree>
                   </field>
-                  <field name="line_ids" invisible="True" />
             </page>
             <page string="Facturacion electrónica">
           <form>
