@@ -82,11 +82,15 @@ class wizardAgregarContabilidad(models.TransientModel):
                                        }]
                     invoice_lines.append(new_line)
                     
+                if doc.doc_type == 'FE' or doc.doc_type == 'TE':
+                     doc_type = 'in_invoice'
+                elif doc.doc_type == 'NC':
+                     doc_type = 'in_refund'
 
                 record = self.env['account.move'].create({
                     'partner_id': contacto.id,
-                    'ref': 'Factura importada desde correo consecutivo : {}'.format(doc.consecutivo),
-                    'type' : 'in_invoice',
+                    'ref': 'Factura consecutivo : {}'.format(doc.consecutivo),
+                    'type' : doc_type,
                     'invoice_date':doc.date,
                     'invoice_line_ids':invoice_lines,
                     'electronic_doc_id':doc.id,
@@ -98,7 +102,7 @@ class wizardAgregarContabilidad(models.TransientModel):
         elif self.opciones == '2':
              self.invoice_id.update({
                     'electronic_doc_id':doc.id,
-                    'ref': 'Factura importada desde correo consecutivo : {}'.format(doc.consecutivo),
+                    'ref': 'Factura consecutivo : {}'.format(doc.consecutivo),
                 })
              doc.update({'invoice_id':self.invoice_id})
         
