@@ -28,6 +28,7 @@
                                   <field name="description" required='1'/>
                              </tree>
                             </field>
+                            <field name="fecth_server"/>
                          </group>
                       </sheet>
                   </form>
