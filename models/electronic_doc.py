@@ -409,7 +409,7 @@ class ElectronicDoc(models.Model):
                     key)
             
          
-            invoice_lines = self.cargar_lineas_xml(self.xml_bill,company)    
+            invoice_lines = self.cargar_lineas_xml(xml,company)    
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
