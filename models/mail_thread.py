@@ -31,7 +31,7 @@ class mailThread(models.AbstractModel):
             if msg_dict.get('message_id', ''):
                 self.env['email'].create_email(msg_dict)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
-
+                
                 mail_to = msg_dict.get('to', '')
                 email = mail_to.split('<')[1].split('>')[0]
                 fetch = self.env['fetchmail.server'].search([('user','=',email)])
