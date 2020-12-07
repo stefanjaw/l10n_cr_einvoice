@@ -5,6 +5,7 @@ import lxml.etree as ET
 import xmltodict
 import logging
 import base64
+import re
 
 from io import BytesIO
 
@@ -31,9 +32,11 @@ class mailThread(models.AbstractModel):
             if msg_dict.get('message_id', ''):
                 self.env['email'].create_email(msg_dict)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
-
-                mail_to = msg_dict.get('to', '')
-                email = mail_to.split('<')[1].split('>')[0]
+                mail_to = msg_dict.get('to', '') 
+                m = re.search('<(.+?)>', mail_to)
+                if m:
+                    email = m.group(1)
+                log.info(email)
                 fetch = self.env['fetchmail.server'].search([('user','=',email)])
                 company = self.env['res.company'].search([('fecth_server','=',fetch)])
                 self.env['electronic.doc'].automatic_bill_creation(docs,company)
