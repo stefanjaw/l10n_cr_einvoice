@@ -33,11 +33,8 @@ class mailThread(models.AbstractModel):
                 self.env['email'].create_email(msg_dict)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
                 mail_to = msg_dict.get('to', '') 
-                m = re.search('<(.+?)>', mail_to)
-                if m:
-                    email = m.group(1)
-                log.info(email)
-                fetch = self.env['fetchmail.server'].search([('user','=',email)])
+                log.info(mail_to)
+                fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
                 company = self.env['res.company'].search([('fecth_server','=',fetch)])
                 self.env['electronic.doc'].automatic_bill_creation(docs,company)
 
