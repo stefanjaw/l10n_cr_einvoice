@@ -36,7 +36,7 @@ class mailThread(models.AbstractModel):
                 email = mail_to.split('<')[1].split('>')[0]
                 fetch = self.env['fetchmail.server'].search([('user','=',email)])
                 company = self.env['res.company'].search([('fecth_server','=',fetch)])
-                self.env['electronic.doc'].automatic_bill_creation(docs)
+                self.env['electronic.doc'].automatic_bill_creation(docs,company)
 
         return RecordModel.create(data)
 

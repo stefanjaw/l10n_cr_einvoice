@@ -343,7 +343,7 @@ class ElectronicDoc(models.Model):
                     invoice_lines.append(line)
             return invoice_lines
         
-    def cargar_lineas_xml(self,xml):
+    def cargar_lineas_xml(self,xml,company_id=False):
             root_xml = fromstring(base64.b64decode(xml))
             ds = "http://www.w3.org/2000/09/xmldsig#"
             xades = "http://uri.etsi.org/01903/v1.3.2#"
@@ -354,14 +354,14 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['account.account'].search([("code","=","0-511301")])
+            account = self.env['account.account'].search([("code","=","0-511301"),("company_id","=",company_id)])
                 
                 
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     tax = False
                     if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",company_id)])
                         if tax:
                             tax = [(6,0,[tax.id])]
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
@@ -373,7 +373,7 @@ class ElectronicDoc(models.Model):
                     invoice_lines.append(new_line)
             return invoice_lines
         
-    def create_electronic_doc(self, xml, xml_name):
+    def create_electronic_doc(self, xml, xml_name,company=False):
 
         dic = self.convert_xml_to_dic(xml)
         doc_type = self.get_doc_type(dic)
@@ -409,10 +409,11 @@ class ElectronicDoc(models.Model):
                     key)
             
          
-            invoice_lines = self.cargar_lineas_xml(self.xml_bill)    
+            invoice_lines = self.cargar_lineas_xml(self.xml_bill,company)    
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
+                'company_id':company.id or False,
                 'receiver_number': receiver_number,
                 'receiver_name': receiver_name,
                 'electronic_doc_bill_number': bill_number,
@@ -621,7 +622,7 @@ class ElectronicDoc(models.Model):
         dic = xmltodict.parse(base64.b64decode(xml))
         return dic
 
-    def automatic_bill_creation(self, docs_tuple):
+    def automatic_bill_creation(self, docs_tuple,company=None):
         for doc_list in docs_tuple:
             for item in doc_list:
 
@@ -631,7 +632,7 @@ class ElectronicDoc(models.Model):
                 doc_type = self.get_doc_type(dic)
 
                 if doc_type == 'FE' or doc_type == 'TE':
-                    self.create_electronic_doc(xml, xml_name)
+                    self.create_electronic_doc(xml, xml_name,company)
 
                 elif doc_type == 'MH':
                     self.add_acceptance(xml, xml_name)
