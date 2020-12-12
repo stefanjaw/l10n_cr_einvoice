@@ -993,6 +993,7 @@ class AccountMoveFunctions(models.Model):
                     ## COMIENZA TAXES y OTROS CARGOS
 
                     for tax_id in i.tax_ids :
+                        MontoExoneracion = 0
                         MontoCargo = 0
                         LineaImpuestoMonto = 0
 
@@ -1042,11 +1043,12 @@ class AccountMoveFunctions(models.Model):
                                 exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
                                 exoneration['FechaEmision'] = self.fiscal_position_id.institution_name or ''
                                 exoneration['PorcentajeExoneracion'] =  percent or '0'
-                                exoneration['MontoExoneracion'] =  '0'
+                                MontoExoneracion = percent * LineaSubTotal
+                                exoneration['MontoExoneracion'] =  MontoExoneracion
                                 inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
 
    
-                            LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
+                            LineaImpuestoNeto = round(LineaImpuestoMonto - MontoExoneracion,5) # - LineaImpuestoExoneracion
                             inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
                         #Si esta exonerado al 100% se debe colocar 0-Zero
 
