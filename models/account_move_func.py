@@ -1043,7 +1043,7 @@ class AccountMoveFunctions(models.Model):
                                 exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
                                 exoneration['FechaEmision'] = self.fiscal_position_id.institution_name or ''
                                 exoneration['PorcentajeExoneracion'] =  percent or '0'
-                                MontoExoneracion = LineaSubTotal * ( percent / fisical.tax_src_id.amount)
+                                MontoExoneracion = LineaSubTotal * ( percent / 100)
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
                                 inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
 
