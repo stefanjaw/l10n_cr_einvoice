@@ -1036,12 +1036,14 @@ class AccountMoveFunctions(models.Model):
                             if self.fiscal_position_id:
                                 tax_dest_id = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
                                 percent = tax_dest_id.tax_src_id.amount - tax_dest_id.amount
-                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'TipoDocumento': self.fiscal_position_id.fiscal_position_type or ''}))
-                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'NumeroDocumento': self.fiscal_position_id.document_number or ''}))
-                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'NombreInstitucion': self.fiscal_position_id.institution_name or ''}))
-                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'FechaEmision': self.fiscal_position_id.institution_name or ''}))
-                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'PorcentajeExoneracion':  percent or '0'}))
-                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'MontoExoneracion':  '0' or '0'}))
+                                exoneration = {}
+                                exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
+                                exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
+                                exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
+                                exoneration['FechaEmision'] = self.fiscal_position_id.institution_name or ''
+                                exoneration['PorcentajeExoneracion'] =  percent or '0'
+                                exoneration['MontoExoneracion':  '0' or '0'
+                                inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
 
    
                             LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
