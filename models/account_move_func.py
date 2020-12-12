@@ -1034,8 +1034,8 @@ class AccountMoveFunctions(models.Model):
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
                             if self.fiscal_position_id:
-                                tax_dest_id = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
-                                percent = tax_dest_id.tax_src_id.amount - tax_dest_id.amount
+                                fisical = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
+                                percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
                                 exoneration = {}
                                 exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
                                 exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
