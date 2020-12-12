@@ -1034,12 +1034,14 @@ class AccountMoveFunctions(models.Model):
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
                             if self.fiscal_position_id:
-                                inv_lines[arrayCount]['Impuesto'].update(dict({'TipoDocumento': self.fiscal_position_id.fiscal_position_type or ''}))
-                                inv_lines[arrayCount]['Impuesto'].update(dict({'NumeroDocumento': self.fiscal_position_id.document_number or ''}))
-                                inv_lines[arrayCount]['Impuesto'].update(dict({'NombreInstitucion': self.fiscal_position_id.institution_name or ''}))
-                                inv_lines[arrayCount]['Impuesto'].update(dict({'FechaEmision': self.fiscal_position_id.institution_name or ''}))
-                                fiscal_tax_amount = sum([round(tax.tax_src_id.amount, 4) for tax in self.fiscal_position_id.tax_ids])
-                                inv_lines[arrayCount]['Impuesto'].update(dict({'MontoImpuesto':  str(int(fiscal_tax_amount)) or '0'}))
+                                tax_dest_id = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
+                                percent = tax_dest_id.tax_src_id.amount - tax_dest_id.amount
+                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'TipoDocumento': self.fiscal_position_id.fiscal_position_type or ''}))
+                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'NumeroDocumento': self.fiscal_position_id.document_number or ''}))
+                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'NombreInstitucion': self.fiscal_position_id.institution_name or ''}))
+                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'FechaEmision': self.fiscal_position_id.institution_name or ''}))
+                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'PorcentajeExoneracion':  percent or '0'}))
+                                inv_lines[arrayCount]['Impuesto']['Exoneracion'].update(dict({'MontoExoneracion':  '0' or '0'}))
 
    
                             LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
