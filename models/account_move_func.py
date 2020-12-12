@@ -1103,7 +1103,7 @@ class AccountMoveFunctions(models.Model):
             TotalGravado = TotalServGravados + TotalMercanciasGravadas
             TotalExento = TotalServExentos + TotalMercanciasExentas
             TotalExonerado = TotalServExonerado + TotalMercExonerada
-            TotalVenta = TotalGravado + TotalExento #+ TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
+            TotalVenta = TotalGravado + TotalExento + TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
             TotalVentaNeta = TotalVenta - TotalDescuentos
 
             if TotalServGravados:
