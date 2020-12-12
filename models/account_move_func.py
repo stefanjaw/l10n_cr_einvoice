@@ -945,7 +945,7 @@ class AccountMoveFunctions(models.Model):
                 MontoTotalLinea = 0
                 LineaImpuestoNeto = 0
                 MontoExoneracion = 0
-                tax_amount = 0
+                percent = 0
 
                 inv_lines.append({'NumeroLinea':NumeroLinea})
 
@@ -1069,13 +1069,19 @@ class AccountMoveFunctions(models.Model):
                 if i.product_id.type == 'service':
                     #asking for tax for know if the product is Tax Free
                     if i.tax_ids:
-                        TotalServGravados = TotalServGravados + LineaMontoTotal
+                        if self.fiscal_position_id:
+                            TotalServGravados = TotalServGravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                        else:
+                            TotalServGravados = TotalServGravados + LineaMontoTotal
                     else:
                         TotalServExentos = TotalServExentos + LineaMontoTotal
                     #  XXXX PENDIENTE LOS ServExonerados
                 else:
                     if i.tax_ids:
-                        TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
+                         if self.fiscal_position_id:
+                            TotalMercanciasGravadas = TotalMercanciasGravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                         else:
+                            TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
                     else:
                         TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
                     #   XXXX PENDIENTE LOS MercanciasExoneradas
