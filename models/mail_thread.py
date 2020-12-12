@@ -30,12 +30,12 @@ class mailThread(models.AbstractModel):
             data[name_field] = msg_dict.get('subject', '')
         if msg_dict:
             if msg_dict.get('message_id', ''):
-                self.env['email'].create_email(msg_dict)
-                docs = self.order_documents(msg_dict.get('attachments', ''))
                 mail_to = msg_dict.get('to', '') 
                 log.info(mail_to)
                 fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
                 company = self.env['res.company'].search([('fecth_server','=',fetch.id)])
+                self.env['email'].create_email(msg_dict,company)
+                docs = self.order_documents(msg_dict.get('attachments', ''))
                 self.env['electronic.doc'].automatic_bill_creation(docs,company)
 
         return RecordModel.create(data)

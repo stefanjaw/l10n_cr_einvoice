@@ -11,7 +11,9 @@
             <button name="mostrar_wizard_nota_debito" type="object" string="Add Debit Note"
             attrs="{'invisible': ['|', ('type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}"/>
       </xpath>
-      
+      <field name="product_uom_id" position="attributes">
+        <attribute name="groups"></attribute>
+      </field>
       <xpath expr="//page[last()]" position="after">
         <field name ="fe_current_country_company_code" invisible="1"/>
         <page string="Facturacion electrónica" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}">

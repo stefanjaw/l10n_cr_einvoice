@@ -20,6 +20,11 @@ class email(models.Model):
     to = fields.Char()
     subject = fields.Char()
     body = fields.Html()
+    company_id = fields.Many2one(
+        'res.company',
+        'Company',
+         default=lambda self: self.env.company.id,
+    )
     attachments = fields.One2many('email.attach',
                                   'email_id',
                                   string='Archivos adjuntos')
@@ -32,7 +37,7 @@ class email(models.Model):
     def _compute_display_name(self):
         self.display_name = '{0} {1}'.format(self.email_from, self.date)
         
-    def create_email(self, msg_dict):
+    def create_email(self, msg_dict,company):
 
         id = msg_dict.get('message_id', '')
         if id or id != '':
@@ -56,6 +61,7 @@ class email(models.Model):
                         'email_from': email_from,
                         'body': body,
                         'to': to,
+                        'company_id':company.id,
                     })
 
                     attach_model = self.env['email.attach']
