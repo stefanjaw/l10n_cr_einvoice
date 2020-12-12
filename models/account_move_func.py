@@ -1041,7 +1041,7 @@ class AccountMoveFunctions(models.Model):
                                 exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
                                 exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
                                 exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
-                                exoneration['FechaEmision'] = self.fiscal_position_id.institution_name or ''
+                                exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
                                 exoneration['PorcentajeExoneracion'] =  percent or '0'
                                 MontoExoneracion = round(LineaSubTotal * ( percent / 100),5)
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
