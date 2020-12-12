@@ -944,6 +944,8 @@ class AccountMoveFunctions(models.Model):
                 LineaMontoDescuento = 0
                 MontoTotalLinea = 0
                 LineaImpuestoNeto = 0
+                MontoExoneracion = 0
+                tax_amount = 0
 
                 inv_lines.append({'NumeroLinea':NumeroLinea})
 
@@ -993,7 +995,6 @@ class AccountMoveFunctions(models.Model):
                     ## COMIENZA TAXES y OTROS CARGOS
 
                     for tax_id in i.tax_ids :
-                        MontoExoneracion = 0
                         MontoCargo = 0
                         LineaImpuestoMonto = 0
 
@@ -1046,6 +1047,12 @@ class AccountMoveFunctions(models.Model):
                                 MontoExoneracion = round(LineaSubTotal * ( percent / 100),5)
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
                                 inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
+                                if i.product_id.type == 'service':
+                                    TotalServExonerado = TotalServExonerado + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                else:
+                                    TotalMercExonerada = TotalMercExonerada + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+
+                                
 
    
                             LineaImpuestoNeto = round(LineaImpuestoMonto - MontoExoneracion,5) # - LineaImpuestoExoneracion
