@@ -28,7 +28,7 @@
                                   <field name="description" required='1'/>
                              </tree>
                             </field>
-                            <field name="fecth_server"/>
+                            <field name="fecth_server" required="True"/>
                          </group>
                       </sheet>
                   </form>
