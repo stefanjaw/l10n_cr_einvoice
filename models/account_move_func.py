@@ -390,19 +390,24 @@ class AccountMoveFunctions(models.Model):
         self.source_date = self.invoice_date
 
         if country_code == 'CR':
-            self._validate_company()
-            self.validar_datos_factura()
-            self._validate_invoice_line()
-
-            if self.name[8:10] == "01":                    #FACTURA ELECTRONICA
+            if self.name[8:10] == "01": 
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                   #FACTURA ELECTRONICA
                 self.fe_doc_type = "FacturaElectronica"
                 self._cr_post_server_side()
 
-            elif self.name[8:10] == "02":                  #NOTA DEBITO ELECTRONICA
+            elif self.name[8:10] == "02":
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                  #NOTA DEBITO ELECTRONICA
                 self.fe_doc_type = "NotaDebitoElectronica"
                 self._cr_post_server_side()
 
-            elif self.name[8:10] == "03":                  #NOTA CREDITO ELECTRONICA
+            elif self.name[8:10] == "03": 
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                 #NOTA CREDITO ELECTRONICA
                 self.fe_doc_type = "NotaCreditoElectronica"
                 self._cr_post_server_side()
 
@@ -419,11 +424,17 @@ class AccountMoveFunctions(models.Model):
                    self.fe_fecha_emision_doc = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                    self._cr_post_server_side()
 
-            elif self.name[8:10] == "08":                    #FACTURA ELECTRONICA COMPRA
+            elif self.name[8:10] == "08":  
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                  #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaCompra"
                 self._cr_post_server_side()
 
-            elif self.name[8:10] == "09":                    #FACTURA ELECTRONICA COMPRA
+            elif self.name[8:10] == "09":
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                    #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaExportacion"
                 self._cr_post_server_side()
 
