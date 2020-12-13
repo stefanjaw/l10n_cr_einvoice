@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import _, api, fields, models
+import logging
+
+log = logging.getLogger(__name__)
 
 class productProduct(models.Model):
     _inherit = 'product.product'
@@ -10,7 +13,8 @@ class productProduct(models.Model):
         ('03', 'Reference Code Assigned by the Industry'),
         ('04', 'Code used Internally'),
         ('99', 'Other'),
-    ], string="Type of the Comercial Code", track_visibility='onchange',)
+    ], string="Type of the Comercial Code", track_visibility='onchange',
+    compute="_compute_fe_codigo_comercial_tipo",inverse="_set_fe_codigo_comercial_tipo")
 
     fe_codigo_comercial_codigo = fields.Char(size = 20, string="Commercial Code",compute='_compute_fe_codigo_comercial_codigo',
     inverse="_set_fe_codigo_comercial_codigo" )
@@ -48,6 +52,17 @@ class productProduct(models.Model):
     def _set_fe_codigo_comercial_codigo(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_codigo_comercial_codigo = self.fe_codigo_comercial_codigo
+
+    @api.depends('product_tmpl_id', 'product_tmpl_id.fe_codigo_comercial_tipo')
+    def _compute_fe_codigo_comercial_tipo(self):
+        for record in self:
+            if len(record.product_tmpl_id.product_variant_ids) == 1:
+                record.fe_codigo_comercial_tipo = record.product_tmpl_id.fe_codigo_comercial_tipo or ''
+
+    def _set_fe_codigo_comercial_tipo(self):
+        if len(self.product_tmpl_id.product_variant_ids) == 1:
+            log.info("---------set-----------{}".format(self.product_tmpl_id.product_variant_ids))
+            self.product_tmpl_id.fe_codigo_comercial_tipo = self.fe_codigo_comercial_tipo or ''
 
 
     
