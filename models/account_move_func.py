@@ -1231,9 +1231,16 @@ class AccountMoveFunctions(models.Model):
         log.info('-->invoice_list %s',invoice_list)
         for invoice in invoice_list:
             if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO':
-                log.info('-->consecutivo %s',invoice.name)
-                invoice.confirm_bill()
-                
+                try:
+                    log.info('-->consecutivo %s',invoice.name)
+                    invoice.confirm_bill()
+                except Exception as ex:
+                    invoice.write_chatter(ex)
+                    invoice.update({
+                        'fe_server_state':'error'
+                    })
+
+        
     def mostrar_wizard_nota_debito(self):
         return {
                 'type': 'ir.actions.act_window',
