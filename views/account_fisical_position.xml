@@ -9,10 +9,10 @@
         <field name="inherit_id" ref="account.view_account_position_form"/>
         <field name="arch" type="xml">
             <field name="auto_apply" position="after">
-                <field name="fiscal_position_type"/>
-                <field name="document_number"/>
-                <field name="institution_name"/>
-                <field name="issued_date"/>
+                <field name="fiscal_position_type" required="True"/>
+                <field name="document_number" required="True"/>
+                <field name="institution_name" required="True"/>
+                <field name="issued_date" required="True"/>
             </field>
         </field>
     </record>

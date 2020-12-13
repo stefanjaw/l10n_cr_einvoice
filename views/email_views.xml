@@ -9,6 +9,7 @@
                <field name="email_from"/>
                <field name="subject"/>
                <field name="date"/>
+               <field name="company_id"/>
             </tree>
         </field>
     </record>
@@ -51,7 +52,7 @@
         <field name="name">Listado Emails</field>
         <field name="res_model">email</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('company_id', '=', [user.company_id.id])]</field>
+        <field name="domain">[('company_id', 'in', company_ids)]</field>
         <field name="context">{}</field>
     </record>
 
