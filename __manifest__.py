@@ -43,7 +43,7 @@
         'views/account_fisical_position.xml',
         'views/wizard_agregar_contabilidad_views.xml',
         'views/wizard_account_debit_views.xml',
-        'data/sequence_data.xml',
+        'data/rules.xml',
         'data/cabys.code.csv',
     ],
     'external_dependencies': {

@@ -52,7 +52,7 @@
         <field name="name">Listado Emails</field>
         <field name="res_model">email</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('company_id', 'in', company_ids)]</field>
+        <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
 
