@@ -486,7 +486,7 @@ class AccountMoveFunctions(models.Model):
         for line in self.invoice_line_ids:
 
             if line.product_uom_id.uom_mh not in units:
-                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda".format(line.product_uom_id.uom_mh)))
+                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad correspondiente".format(line.product_uom_id.uom_mh)))
 
             if not line.product_id.cabys_code_id:
                 raise exceptions.Warning(("El producto {0} no contiene código CABYS".format(line.product_id.name)))
