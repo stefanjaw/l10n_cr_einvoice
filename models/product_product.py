@@ -38,20 +38,28 @@ class productProduct(models.Model):
         for record in self:
             if len(record.product_tmpl_id.product_variant_ids) == 1:
                 record.fe_unidad_medida_comercial = record.product_tmpl_id.fe_unidad_medida_comercial
+            else:
+                record.fe_unidad_medida_comercial = record.fe_unidad_medida_comercial
 
     def _set_fe_unidad_comercial(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_unidad_medida_comercial = self.fe_unidad_medida_comercial
+        else:
+            self.product_tmpl_id.fe_unidad_medida_comercial =  self.product_tmpl_id.fe_unidad_medida_comercial
 
     @api.depends('product_tmpl_id', 'product_tmpl_id.fe_codigo_comercial_codigo')
     def _compute_fe_codigo_comercial_codigo(self):
         for record in self:
             if len(record.product_tmpl_id.product_variant_ids) == 1:
                 record.fe_codigo_comercial_codigo = record.product_tmpl_id.fe_codigo_comercial_codigo
+            else:
+                record.fe_codigo_comercial_codigo = record.fe_codigo_comercial_codigo
 
     def _set_fe_codigo_comercial_codigo(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_codigo_comercial_codigo = self.fe_codigo_comercial_codigo
+        else:
+            self.product_tmpl_id.fe_codigo_comercial_codigo = self.product_tmpl_id.fe_codigo_comercial_codigo
 
     @api.depends('product_tmpl_id', 'product_tmpl_id.fe_codigo_comercial_tipo')
     def _compute_fe_codigo_comercial_tipo(self):
