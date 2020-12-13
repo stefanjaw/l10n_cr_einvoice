@@ -31,3 +31,4 @@ from . import cabys
 from . import account_fisical_position
 from . import wizard_account_move_reversal
 from . import fetch_email
+from . import uom_uom

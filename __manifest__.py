@@ -33,6 +33,7 @@
         'views/account_payment_term_views.xml',
         'views/account_tax_views.xml',
         'views/product_template_views.xml',
+        'views/uom_views.xml',
         'views/cron_job_views.xml',
         'views/res_country_state_views.xml',
         'views/account_move_reversal_views.xml',
