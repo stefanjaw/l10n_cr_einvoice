@@ -57,12 +57,15 @@ class productProduct(models.Model):
     def _compute_fe_codigo_comercial_tipo(self):
         for record in self:
             if len(record.product_tmpl_id.product_variant_ids) == 1:
-                record.fe_codigo_comercial_tipo = record.product_tmpl_id.fe_codigo_comercial_tipo or ''
+                record.fe_codigo_comercial_tipo = record.product_tmpl_id.fe_codigo_comercial_tipo
+            else:
+                record.fe_codigo_comercial_tipo = record.fe_codigo_comercial_tipo
 
     def _set_fe_codigo_comercial_tipo(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
-            log.info("---------set-----------{}".format(self.product_tmpl_id.product_variant_ids))
-            self.product_tmpl_id.fe_codigo_comercial_tipo = self.fe_codigo_comercial_tipo or ''
+            self.product_tmpl_id.fe_codigo_comercial_tipo = self.fe_codigo_comercial_tipo
+        else:
+            self.product_tmpl_id.fe_codigo_comercial_tipo = self.product_tmpl_id.fe_codigo_comercial_tipo
 
 
     
