@@ -59,13 +59,13 @@ class productProduct(models.Model):
             if len(record.product_tmpl_id.product_variant_ids) == 1:
                 record.fe_codigo_comercial_tipo = record.product_tmpl_id.fe_codigo_comercial_tipo
             else:
-                record.fe_codigo_comercial_tipo = ''
+                record.fe_codigo_comercial_tipo = record.fe_codigo_comercial_tipo
 
     def _set_fe_codigo_comercial_tipo(self):
         if len(self.product_tmpl_id.product_variant_ids) == 1:
             self.product_tmpl_id.fe_codigo_comercial_tipo = self.fe_codigo_comercial_tipo
         else:
-            self.product_tmpl_id.fe_codigo_comercial_tipo = ''
+            self.product_tmpl_id.fe_codigo_comercial_tipo = self.product_tmpl_id.fe_codigo_comercial_tipo
 
 
     
