@@ -49,7 +49,8 @@ class AccountMoveFunctions(models.Model):
                 
     @api.onchange("currency_id","invoice_date",)
     def _onchange_currency_rate(self):
-        for s in self:
+        #buscar error con respecto a dolares
+        '''for s in self:
             log.info('-->577381353')
             if s.currency_id.name == "USD": 
                 date = None
@@ -58,7 +59,7 @@ class AccountMoveFunctions(models.Model):
                 else:
                     date = s.invoice_date 
                                         
-                s._rate(date)
+                s._rate(date)'''
                             
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
