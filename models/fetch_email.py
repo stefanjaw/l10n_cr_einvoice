@@ -9,8 +9,9 @@ class FetchEmail(models.Model):
 
     @api.constrains('user')
     def _constrains_user(self):
-        record = self.env['fetchmail.server'].search([('user','=',self.user)])
+        #Probar validacion se dispara aun que exista solo un fetch email
+        '''record = self.env['fetchmail.server'].search([('user','=',self.user)])
         if record:
-           raise ValidationError('La direccion de correo {} no se puede utilizar ya que se configuro en otro Servidores de correo entrante'.format(self.user))
+           raise ValidationError('La direccion de correo {} no se puede utilizar ya que se configuro en otro Servidores de correo entrante'.format(self.user))'''
 
     
