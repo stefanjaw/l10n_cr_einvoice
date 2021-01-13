@@ -46,6 +46,7 @@
         'views/wizard_account_debit_views.xml',
         'data/rules.xml',
         'data/cabys.code.csv',
+        'data/ir.sequence.csv',
     ],
     'external_dependencies': {
         "python": [
