@@ -15,6 +15,14 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
+
+    @api.onchange('tax_ids')
+    def _onchange_tax_ids(self):
+        for record in self:
+            total = 0
+            for tax in record.tax_ids:
+                total = total + record.price_subtotal * (tax.amount/100)
+            record.tax_amount = total
     
     @api.depends('electronic_doc_id.state')
     def _compute_state(self):
