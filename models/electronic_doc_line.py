@@ -1,4 +1,6 @@
 from odoo import api, exceptions, fields, models, _
+import logging
+log = logging.getLogger(__name__)
 
 class ElectronicDocLine(models.Model):
     _name = 'electronic.doc.line'
@@ -23,6 +25,7 @@ class ElectronicDocLine(models.Model):
     )
 
     def tax_domain(self):
+        log.info('===id==={}=======nombre==={}==='.format(self.company_id.id,self.company_id.name))
         return [('type_tax_use','=','purchase'),('company_id','=',self.company_id.id)]
 
     @api.onchange('tax_ids')
