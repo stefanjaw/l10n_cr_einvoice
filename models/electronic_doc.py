@@ -26,7 +26,7 @@ class ElectronicDoc(models.Model):
     _rec_name = 'display_name'
     _inherit = ['mail.thread']
     
-    invoice_id = fields.Many2one('account.move', string='invoice',readonly = True,)
+    invoice_id = fields.Many2one('account.move', string='Invoice',readonly = True,)
     key = fields.Char(string="Clave")
     consecutivo = fields.Char(string="Consecutivo")
     electronic_doc_bill_number = fields.Char(string="Numero Factura", )
