@@ -11,7 +11,7 @@ class ActivityCode(models.Model):
         string="Compañia",
         comodel_name="res.company",
         ondelete="set null",
-        default= lambda self: self.env.company_id.id,
+        default= lambda self: self.env.company.id,
     )
     invoice_ids = fields.One2many(
         string="Invoice",

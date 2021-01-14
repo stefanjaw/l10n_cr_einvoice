@@ -1,0 +1,4 @@
+id,name,company_id:id,implementation,prefix,padding,number_increment,code,number_next_actual,use_date_range,active
+sequence_0010000105_base_main_company,Mensaje Aceptacion,base.main_company,no_gap,0010000105,10,1,,1,,1
+sequence_0010000106_base_main_company,Mensaje Aceptacion Parcial,base.main_company,no_gap,0010000106,10,1,,1,,1
+sequence_0010000107_base_main_company,Mensaje Rechazo,base.main_company,no_gap,0010000107,10,1,,1,,1

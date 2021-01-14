@@ -8,7 +8,7 @@
   <field name="inherit_id" ref="base.view_country_state_form"/>
   <field name="arch" type="xml">
     <field name="code" position="after">
-       <field name="fe_code"  required='1'/>
+       <field name="fe_code"  required='0'/>
     </field>
   </field>
 </record>
@@ -19,7 +19,7 @@
   <field name="inherit_id" ref="base.view_country_state_tree"/>
   <field name="arch" type="xml">
     <field name="code" position="after">
-       <field name="fe_code" required='1'/>
+       <field name="fe_code" required='0'/>
     </field>
  </field>
 </record>
