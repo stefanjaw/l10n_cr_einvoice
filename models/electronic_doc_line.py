@@ -21,8 +21,8 @@ class ElectronicDocLine(models.Model):
 
 
     def tax_domain(self):
-        log.info('===id==={}=======nombre==={}==='.format(self.electronic_doc_id.company_id.id ,self.electronic_doc_id.company_id.name))
-        return [('type_tax_use','=','purchase'),('company_id','=',self.electronic_doc_id.company_id.id)]
+        #agreger filtro por compañia luego
+        return [('type_tax_use','=','purchase')]
 
     @api.onchange('tax_ids')
     def _onchange_tax_ids(self):
