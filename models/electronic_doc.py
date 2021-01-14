@@ -393,6 +393,7 @@ class ElectronicDoc(models.Model):
             xml_bill_name = xml_name
             date = self.get_date(dic, doc_type)
             total_amount = self.get_total_amount(dic, doc_type)
+            fe_monto_total_impuesto = self.get_total_tax(dic, doc_type),
 
             "UC05C"
             xslt = self.transform_to_xslt(xml, doc_type)
@@ -422,6 +423,7 @@ class ElectronicDoc(models.Model):
                 'date': date,
                 'doc_type': doc_type,
                 'total_amount': total_amount,
+                'fe_monto_total_impuesto':fe_monto_total_impuesto,
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
