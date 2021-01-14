@@ -11,10 +11,6 @@ import base64
 import pytz
 import json
 import requests
-
-
-
-
 from io import BytesIO
 
 log = logging.getLogger(__name__)

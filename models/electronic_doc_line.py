@@ -21,6 +21,7 @@ class ElectronicDocLine(models.Model):
         'Company',
          default=lambda self: self.env.company.id,
     )
+
     def tax_domain(self):
         return [('type_tax_use','=','purchase'),('company_id','=',self.company_id.id)]
 
