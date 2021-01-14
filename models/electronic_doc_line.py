@@ -6,7 +6,8 @@ class ElectronicDocLine(models.Model):
     name = fields.Char(string='Descripción')
     quantity = fields.Float(string='Cantidad')
     price_unit = fields.Float(string='Precio')
-    tax_ids = fields.Many2many('account.tax', string='Taxes', help="Taxes that apply on the base amount")
+    tax_ids = fields.Many2many('account.tax', string='Taxes', help="Taxes that apply on the base amount",
+    domain=lambda self: self.tax_domain())
     tax_amount = fields.Float('Monto Impuesto',compute="_compute_monto_impuesto")
     account_id = fields.Many2one('account.account', string='Account',
         index=True, ondelete="restrict", check_company=True,
@@ -15,6 +16,13 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
+    company_id = fields.Many2one(
+        'res.company',
+        'Company',
+         default=lambda self: self.env.company.id,
+    )
+    def tax_domain(self):
+        return [('type_tax_use','=','purchase'),('company_id','=',self.company_id)]
 
     @api.onchange('tax_ids')
     def _onchange_tax_ids(self):

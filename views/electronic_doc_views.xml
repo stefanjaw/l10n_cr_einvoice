@@ -79,7 +79,7 @@
                             <field name = 'quantity' invisible = 'True'/>
                             <field name = 'price_unit' readonly = 'True'/>
                             <field name = 'price_unit' invisible = 'True'/>
-                            <field name = 'tax_ids' widget="many2many_tags" domain="[('type_tax_use','=','purchase')]"/>
+                            <field name = 'tax_ids' widget="many2many_tags"/>
                             <field name = 'tax_amount' readonly = 'True'/>
                             <field name = 'tax_amount' invisible = 'True'/>
                             <field name = 'price_subtotal' readonly = 'True'/>
