@@ -138,7 +138,7 @@ class ElectronicDoc(models.Model):
                 if line.is_selected:
                     impuesto = impuesto + line.tax_amount
             self.fe_monto_total_impuesto_acreditar = impuesto
-            
+
     @api.onchange("sequence_id")
     def _onchange_sequence_id(self):
         if self.sequence_id:
@@ -426,6 +426,7 @@ class ElectronicDoc(models.Model):
                 'company_id':company.id or False,
                 'receiver_number': receiver_number,
                 'receiver_name': receiver_name,
+                'fe_monto_total_impuesto': fe_monto_total_impuesto,
                 'electronic_doc_bill_number': bill_number,
                 'xml_bill': xml,
                 'xml_bill_name': xml_bill_name,
