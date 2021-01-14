@@ -22,7 +22,7 @@ class ElectronicDocLine(models.Model):
          default=lambda self: self.env.company.id,
     )
     def tax_domain(self):
-        return [('type_tax_use','=','purchase'),('company_id','=',self.company_id)]
+        return [('type_tax_use','=','purchase'),('company_id','=',self.company_id.id)]
 
     @api.onchange('tax_ids')
     def _onchange_tax_ids(self):
