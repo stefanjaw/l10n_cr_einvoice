@@ -130,6 +130,14 @@ class ElectronicDoc(models.Model):
                     impuesto = impuesto + line.tax_amount
             self.fe_monto_total_impuesto_acreditar = impuesto
             
+    @api.onchange('line_ids')
+    def _onchange_line_ids(self):
+        for record in self:
+            impuesto = 0
+            for line in record.line_ids:
+                if line.is_selected:
+                    impuesto = impuesto + line.tax_amount
+            self.fe_monto_total_impuesto_acreditar = impuesto
             
     @api.onchange("sequence_id")
     def _onchange_sequence_id(self):
