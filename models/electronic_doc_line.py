@@ -18,15 +18,11 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
-    company_id = fields.Many2one(
-        'res.company',
-        'Company',
-         default=lambda self: self.env.company.id,
-    )
+
 
     def tax_domain(self):
-        log.info('===id==={}=======nombre==={}==='.format(self.company_id.id,self.company_id.name))
-        return [('type_tax_use','=','purchase'),('company_id','=',self.company_id.id)]
+        log.info('===id==={}=======nombre==={}==='.format(self.electronic_doc_id.company_id.id ,self.electronic_doc_id.company_id.name))
+        return [('type_tax_use','=','purchase'),('company_id','=',self.electronic_doc_id.company_id.id)]
 
     @api.onchange('tax_ids')
     def _onchange_tax_ids(self):
