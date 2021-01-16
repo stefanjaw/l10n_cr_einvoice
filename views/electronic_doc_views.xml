@@ -44,6 +44,8 @@
 
                 <field name="doc_type"  readonly='1' required='1'/>
                 <field name="doc_type"  invisible='1'/>
+                <field name ="currency_id" readonly='1' required='1'/>
+                <field name ="currency_id" invisible='1'/>
                 <field name="total_amount" readonly='1'/>
                 <field name="total_amount" invisible='1'/>
               </group>

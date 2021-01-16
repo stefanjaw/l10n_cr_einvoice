@@ -98,7 +98,7 @@ class ElectronicDoc(models.Model):
     fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable",compute = '_compute_gasto_aplicable' )
     fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
     line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True,ondelete="cascade",)
-    
+    currency_id = fields.Many2one('res.currency', string='Moneda')
     display_name = fields.Char(
         string='Name',
         compute='_compute_display_name',
@@ -168,9 +168,12 @@ class ElectronicDoc(models.Model):
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
+                    xml_currency = self.get_currency(dic, doc_type)
+                    currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
                     self.write({
                         'key':self.get_key(dic, doc_type),
                         'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
+                        'currency_id':currency_id,
                         'electronic_doc_bill_number':self.get_bill_number(dic, doc_type),
                         'date':self.get_date(dic, doc_type),
                         'doc_type':doc_type,
@@ -426,6 +429,8 @@ class ElectronicDoc(models.Model):
             date = self.get_date(dic, doc_type)
             total_amount = self.get_total_amount(dic, doc_type)
             fe_monto_total_impuesto = self.get_total_tax(dic, doc_type)
+            xml_currency = self.get_currency(dic, doc_type)
+            currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
             log.info("============taxes=========={}".format(fe_monto_total_impuesto))
 
             "UC05C"
@@ -447,6 +452,7 @@ class ElectronicDoc(models.Model):
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
+                'currency_id':currency_id,
                 'company_id':company.id or False,
                 'receiver_number': receiver_number,
                 'receiver_name': receiver_name,
@@ -573,6 +579,18 @@ class ElectronicDoc(models.Model):
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
         return dic[key]['Emisor']['Nombre']
+
+
+    def get_currency(self, dic, doc_type):
+        if (doc_type == 'TE'):
+            key = 'TiqueteElectronico'
+        elif (doc_type == 'MH'):
+            key = 'MensajeHacienda'
+        elif (doc_type == 'FE'):
+            key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
+        return dic[key]['ResumenFactura']['CodigoTipoMoneda']['CodigoMoneda']
     
     def get_provider_identification(self, dic, doc_type):
         #this method validate that exist a receiver number
