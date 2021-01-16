@@ -93,6 +93,7 @@ class wizardAgregarContabilidad(models.TransientModel):
 
                 record = self.env['account.move'].create({
                     'partner_id': contacto.id,
+                    'currency_id':doc.currency_id.id,
                     'ref': 'Factura consecutivo : {}'.format(doc.consecutivo),
                     'type' : doc_type,
                     'invoice_date':doc.date,
