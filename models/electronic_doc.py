@@ -452,7 +452,7 @@ class ElectronicDoc(models.Model):
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
-                'currency_id':currency_id,
+                'currency_id':currency_id.id,
                 'company_id':company.id or False,
                 'receiver_number': receiver_number,
                 'receiver_name': receiver_name,
