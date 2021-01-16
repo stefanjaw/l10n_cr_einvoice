@@ -22,8 +22,8 @@
             <field name="key" invisible='1'/>
             <field name="xml_bill_name" invisible='1'/>
             <field name="xml_acceptance_name" invisible='1'/>
-            <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('state', '=' ,'posted')]}"/>
-            <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('state', '=' ,'posted')]}"/>
+            <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+            <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
           </group>
             
           <group>  
@@ -52,15 +52,15 @@
               <group>
                   <field name="company_id" invisible="True"/>
                   <field name="invoice_id" attrs="{'invisible': [('state','!=','accounting')]}"/>
-                  <field name="sequence_id" required='1' attrs="{'readonly': [('state','=','posted')]}" domain= '[ ["prefix_code","in",["05","06","07"]],["company_id","=",company_id] ]'/>
+                  <field name="sequence_id" required='1' attrs="{'readonly': [('state','in',['posted','accounting'])]}" domain= '[ ["prefix_code","in",["05","06","07"]],["company_id","=",company_id] ]'/>
                   <field name = "fe_msg_type"  required='1' readonly = 'True' />
                   <field name = "fe_msg_type"  invisible = 'True' />
-                  <field name = "fe_detail_msg"  attrs="{'readonly': [('state','=','posted')],'required':[('fe_msg_type','!=','1')]}" />                
-                  <field name = "fe_monto_total_impuesto" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
-                  <field name = "fe_condicio_impuesto" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
-                  <field name = "fe_monto_total_impuesto_acreditar" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
-                  <field name = "fe_monto_total_gasto_aplicable" required="True"  attrs="{'readonly': [('state','=','posted')]}"/>
-                  <field name = "fe_actividad_economica" required="True"  attrs="{'readonly': [('state','=','posted')]}" domain= '[ ["company_id","=",company_id] ]'/>
+                  <field name = "fe_detail_msg"  attrs="{'readonly': [('state','in',['posted','accounting'])],'required':[('fe_msg_type','!=','1')]}" />                
+                  <field name = "fe_monto_total_impuesto" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_condicio_impuesto" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_monto_total_impuesto_acreditar" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_monto_total_gasto_aplicable" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_actividad_economica" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}" domain= '[ ["company_id","=",company_id] ]'/>
                   <field name="fe_server_state" readonly='1'/>
               </group>
           </group>
@@ -81,7 +81,7 @@
                             <field name = 'quantity' invisible = 'True'/>
                             <field name = 'price_unit' readonly = 'True'/>
                             <field name = 'price_unit' invisible = 'True'/>
-                            <field name = 'tax_ids' widget="many2many_tags"/>
+                            <field name = 'tax_ids' widget="many2many_tags" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
                             <field name = 'tax_amount' readonly = 'True'/>
                             <field name = 'tax_amount' invisible = 'True'/>
                             <field name = 'price_subtotal' readonly = 'True'/>
