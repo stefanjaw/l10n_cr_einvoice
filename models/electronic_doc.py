@@ -335,7 +335,9 @@ class ElectronicDoc(models.Model):
                     if percent:
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",self.company_id.id)])
                         if tax:
-                            tax = [(6,0,tax.ids)]
+                            if len(tax)>1:
+                                tax = tax[0]
+                            tax = [(6,0,[tax.id])]
                     obj =  {
                             'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                             'tax_ids': tax,
@@ -346,7 +348,7 @@ class ElectronicDoc(models.Model):
 
                     line =  [0,0,obj]                
                     invoice_lines.append(line)
-                    
+
             otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
             for otro in otros_cargos:
                 new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
