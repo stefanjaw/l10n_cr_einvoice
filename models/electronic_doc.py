@@ -313,6 +313,7 @@ class ElectronicDoc(models.Model):
         if form:
             name = form.group(0).split('}')[0].strip('{')
         return {'xmlns': name}
+        
     def crear_lineas_xml(self,xml):
             root_xml = fromstring(base64.b64decode(xml))
             ds = "http://www.w3.org/2000/09/xmldsig#"

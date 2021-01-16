@@ -867,7 +867,7 @@ class AccountMoveFunctions(models.Model):
 
             if s.company_id.fe_comercial_name:
                 s.invoice[s.fe_doc_type]['Emisor'].update({'NombreComercial':s.company_id.fe_comercial_name})
-
+            
             s.invoice[s.fe_doc_type]['Emisor'].update({'Ubicacion':{
             'Provincia':s.company_id.state_id.fe_code,
             'Canton':s.company_id.canton_id.code,

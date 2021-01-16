@@ -30,7 +30,11 @@ class mailThread(models.AbstractModel):
             data[name_field] = msg_dict.get('subject', '')
         if msg_dict:
             if msg_dict.get('message_id', ''):
-                mail_to = msg_dict.get('to', '') 
+                mail_to = msg_dict.get('to', '')
+                if '<' in mail_to and '>' in mail_to:
+                    result = re.search('<(.*)>', mail_to)
+                    mail_to = result.group(1)
+
                 log.info(mail_to)
                 fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
                 company = self.env['res.company'].search([('fecth_server','=',fetch.id)])
