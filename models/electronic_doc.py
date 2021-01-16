@@ -336,7 +336,7 @@ class ElectronicDoc(models.Model):
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     tax = False
                     if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",self.company_id.id)])
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text.replace(',','.')),("company_id","=",self.company_id.id)])
                         if tax:
                             if len(tax)>1:
                                 tax = tax[0]
@@ -345,8 +345,8 @@ class ElectronicDoc(models.Model):
                             'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                             'tax_ids': tax,
                             'account_id': account.id,
-                            'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                            'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
+                            'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text.replace(',','.'),
+                            'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text.replace(',','.'),
                             }
 
                     line =  [0,0,obj]                
@@ -382,7 +382,7 @@ class ElectronicDoc(models.Model):
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     tax = False
                     if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",company_id.id)])
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text.replace(',','.')),("company_id","=",company_id.id)])
                         if tax:
                             if len(tax)>1:
                                 tax = tax[0]
@@ -390,18 +390,18 @@ class ElectronicDoc(models.Model):
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
+                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text.replace(',','.'),
+                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text.replace(',','.'),
                                        }]
                     invoice_lines.append(new_line)
 
             otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
             for otro in otros_cargos:
-                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text.replace(',','.'),
                                         'tax_ids': False,
                                         'account_id': account.id,
                                         'quantity': '1',
-                                        'price_unit':otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
+                                        'price_unit':otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text.replace(',','.'),
                                        }]
                 invoice_lines.append(new_line)
             
