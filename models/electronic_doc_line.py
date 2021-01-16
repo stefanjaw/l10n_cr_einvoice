@@ -22,7 +22,7 @@ class ElectronicDocLine(models.Model):
 
     def tax_domain(self):
         #agreger filtro por compañia luego
-        return [('type_tax_use','=','purchase'),('company_id','=',self.env.company_id.id)]
+        return [('type_tax_use','=','purchase'),('company_id','=',self.env.company.id)]
 
     @api.onchange('tax_ids')
     def _onchange_tax_ids(self):
