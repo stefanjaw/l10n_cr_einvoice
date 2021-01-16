@@ -131,7 +131,7 @@
         <field name="state"/>  
         <field name="consecutivo"/>
         <field name="key"/>
-        <field name = "fe_msg_type"/>
+        <!--<field name = "fe_msg_type"/>-->
         <field name="date"/>
         <field name="provider"/>
         <field name="receiver_name"/>
