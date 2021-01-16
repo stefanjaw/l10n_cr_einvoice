@@ -346,6 +346,17 @@ class ElectronicDoc(models.Model):
 
                     line =  [0,0,obj]                
                     invoice_lines.append(line)
+                    
+            otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
+            for otro in otros_cargos:
+                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'tax_ids': False,
+                                        'account_id': account.id,
+                                        'quantity': '1',
+                                        'price_unit':otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
+                                       }]
+                invoice_lines.append(new_line)
+
             return invoice_lines
         
     def cargar_lineas_xml(self,xml,company_id=False):
@@ -378,6 +389,18 @@ class ElectronicDoc(models.Model):
                                         'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
                                        }]
                     invoice_lines.append(new_line)
+
+            otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
+            for otro in otros_cargos:
+                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'tax_ids': False,
+                                        'account_id': account.id,
+                                        'quantity': '1',
+                                        'price_unit':otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
+                                       }]
+                invoice_lines.append(new_line)
+            
+
             return invoice_lines
         
     def create_electronic_doc(self, xml, xml_name,company=False):
