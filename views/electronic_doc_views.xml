@@ -89,7 +89,7 @@
                             <field name = 'price_total' readonly = 'True'/>
                             <field name = 'price_total' invisible = 'True'/>
                             <field name="state" invisible="True" />
-                            <field name = 'is_selected'  attrs="{'readonly': [('state','=','posted')]}"/>
+                            <field name = 'is_selected'  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
                             <field name = 'is_selected'  invisible="True"/>
                         </tree>
                   </field>
