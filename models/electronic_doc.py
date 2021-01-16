@@ -180,8 +180,8 @@ class ElectronicDoc(models.Model):
                         'provider':self.get_provider(dic, doc_type),
                         'receiver_name':self.get_receiver_name(dic, doc_type),
                         'receiver_number':self.get_receiver_identification(dic, doc_type),
-                        'total_amount':self.get_total_amount(dic, doc_type),
-                        'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type),
+                        'total_amount':self.get_total_amount(dic, doc_type).replace(',','.'),
+                        'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type).replace(',','.'),
                         'line_ids':list_lineas,
                     })
                                         
@@ -427,8 +427,8 @@ class ElectronicDoc(models.Model):
             xml_bill = xml
             xml_bill_name = xml_name
             date = self.get_date(dic, doc_type)
-            total_amount = self.get_total_amount(dic, doc_type)
-            fe_monto_total_impuesto = self.get_total_tax(dic, doc_type)
+            total_amount = self.get_total_amount(dic, doc_type).replace(',','.')
+            fe_monto_total_impuesto = self.get_total_tax(dic, doc_type).replace(',','.')
             xml_currency = self.get_currency(dic, doc_type)
             currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
             log.info("============taxes=========={}".format(fe_monto_total_impuesto))
