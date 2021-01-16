@@ -313,7 +313,7 @@ class ElectronicDoc(models.Model):
         if form:
             name = form.group(0).split('}')[0].strip('{')
         return {'xmlns': name}
-        
+
     def crear_lineas_xml(self,xml):
             root_xml = fromstring(base64.b64decode(xml))
             ds = "http://www.w3.org/2000/09/xmldsig#"
@@ -368,6 +368,8 @@ class ElectronicDoc(models.Model):
                     if percent:
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text),("company_id","=",company_id.id)])
                         if tax:
+                            if len(tax)>1:
+                                tax = tax[0]
                             tax = [(6,0,[tax.id])]
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
