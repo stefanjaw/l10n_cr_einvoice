@@ -35,7 +35,7 @@ class mailThread(models.AbstractModel):
                     result = re.search('<(.*)>', mail_to)
                     mail_to = result.group(1)
 
-                log.info(mail_to)
+                log.info("=====mail_to===={}".format(mail_to))
                 fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
                 company = self.env['res.company'].search([('fecth_server','=',fetch.id)])
                 self.env['email'].create_email(msg_dict,company)
