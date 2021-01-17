@@ -421,9 +421,9 @@ class ElectronicDoc(models.Model):
                                        ('doc_type', '=', doc_type)])):
             "UC05A"
             provider = self.get_provider(dic, doc_type)
-            receiver_number = self.get_receiver_identification(dic, doc_type)
+            receiver_number = self.get_receiver_identification(dic, doc_type) or company.vat or False
             receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
-            bill_number = self.get_bill_number(dic, doc_type) or company.vat or False
+            bill_number = self.get_bill_number(dic, doc_type) 
             xml_bill = xml
             xml_bill_name = xml_name
             date = self.get_date(dic, doc_type)
