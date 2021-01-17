@@ -464,7 +464,7 @@ class ElectronicDoc(models.Model):
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
-            log.info("============Comprobante========{}===Creado".format(bill_number))
+            log.info("============Comprobante=={}======{}===Creado".format(bill_number,comprobante))
         else:
             self.key = ""
             "UC09"
