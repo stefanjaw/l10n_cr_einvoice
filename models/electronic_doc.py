@@ -447,8 +447,9 @@ class ElectronicDoc(models.Model):
                     '\n "el documento XML Clave: %s no contiene nombre del receptor \n',
                     key)
             
-         
+            log.info("============lines==========")   
             invoice_lines = self.cargar_lineas_xml(xml,company)    
+            log.info("============lines=========={}".format( str(invoice_lines)))   
             electronic_doc.create({
                 'key': key,
                 'provider': provider,
@@ -466,6 +467,7 @@ class ElectronicDoc(models.Model):
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
+            log.info("============Create==========")   
         else:
             self.key = ""
             "UC09"
