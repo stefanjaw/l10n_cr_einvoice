@@ -422,7 +422,7 @@ class ElectronicDoc(models.Model):
             "UC05A"
             provider = self.get_provider(dic, doc_type)
             receiver_number = self.get_receiver_identification(dic, doc_type)
-            receiver_name = self.get_receiver_name(dic, doc_type)
+            receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
             bill_number = self.get_bill_number(dic, doc_type)
             xml_bill = xml
             xml_bill_name = xml_name
@@ -441,7 +441,7 @@ class ElectronicDoc(models.Model):
                     '\n "el documento XML Clave: %s no contiene numero del proveedor \n',
                     key)
             "UC05C"
-            if (not receiver_name):
+            if not receiver_name:
                 receiver_name = ''
                 log.info(
                     '\n "el documento XML Clave: %s no contiene nombre del proveedor \n',
