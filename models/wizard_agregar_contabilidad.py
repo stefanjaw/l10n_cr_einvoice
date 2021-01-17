@@ -74,17 +74,6 @@ class wizardAgregarContabilidad(models.TransientModel):
                                             'price_unit':linea.price_unit,
                                            }]
                         invoice_lines.append(new_line)
-                
-                '''otros_cargos = root_xml.xpath(
-                    "xmlns:OtrosCargos", namespaces=namespace)
-                
-                for otros in otros_cargos:
-                    new_line =  [0, 0, {'name': otros.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'account_id': account_id.id,
-                                        'quantity': 1,
-                                        'price_unit':otros.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
-                                       }]
-                    invoice_lines.append(new_line)'''
                     
                 if doc.doc_type == 'FE' or doc.doc_type == 'TE':
                      doc_type = 'in_invoice'
