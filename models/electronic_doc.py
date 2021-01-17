@@ -431,8 +431,7 @@ class ElectronicDoc(models.Model):
             fe_monto_total_impuesto = self.get_total_tax(dic, doc_type).replace(',','.')
             xml_currency = self.get_currency(dic, doc_type)
             currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
-            log.info("============taxes=========={}".format(fe_monto_total_impuesto))
-
+            
             "UC05C"
             xslt = self.transform_to_xslt(xml, doc_type)
             if (not receiver_number):
@@ -446,10 +445,8 @@ class ElectronicDoc(models.Model):
                 log.info(
                     '\n "el documento XML Clave: %s no contiene nombre del receptor \n',
                     key)
-            
-            log.info("============lines==========")   
-            invoice_lines = self.cargar_lineas_xml(xml,company)    
-            log.info("============lines=========={}".format( str(invoice_lines)))   
+             
+            invoice_lines = self.cargar_lineas_xml(xml,company)      
             comprobante = electronic_doc.create({
                 'key': key,
                 'provider': provider,
@@ -467,8 +464,7 @@ class ElectronicDoc(models.Model):
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
-            log.info("============Create=========={}".format(comprobante)) 
-            log.info("============Create=========={}".format(str(comprobante)))   
+            log.info("============Comprobante========{}===Creado".format(bill_number))
         else:
             self.key = ""
             "UC09"
