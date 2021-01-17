@@ -467,6 +467,7 @@ class ElectronicDoc(models.Model):
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
+            log.info("============Create=========={}".format(comprobante)) 
             log.info("============Create=========={}".format(str(comprobante)))   
         else:
             self.key = ""
