@@ -178,8 +178,8 @@ class ElectronicDoc(models.Model):
                         'date':self.get_date(dic, doc_type),
                         'doc_type':doc_type,
                         'provider':self.get_provider(dic, doc_type),
-                        'receiver_name':self.get_receiver_name(dic, doc_type),
-                        'receiver_number':self.get_receiver_identification(dic, doc_type),
+                        'receiver_name':self.get_receiver_name(dic, doc_type) or self.env.user.company.name,
+                        'receiver_number':self.get_receiver_identification(dic, doc_type) or self.env.user.company.vat,
                         'total_amount':self.get_total_amount(dic, doc_type).replace(',','.'),
                         'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type).replace(',','.'),
                         'line_ids':list_lineas,
@@ -438,13 +438,13 @@ class ElectronicDoc(models.Model):
             if (not receiver_number):
                 receiver_number = ''
                 log.info(
-                    '\n "el documento XML Clave: %s no contiene numero del proveedor \n',
+                    '\n "el documento XML Clave: %s no contiene numero del receptor \n',
                     key)
             "UC05C"
             if not receiver_name:
                 receiver_name = ''
                 log.info(
-                    '\n "el documento XML Clave: %s no contiene nombre del proveedor \n',
+                    '\n "el documento XML Clave: %s no contiene nombre del receptor \n',
                     key)
             
          
