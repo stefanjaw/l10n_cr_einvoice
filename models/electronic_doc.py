@@ -450,7 +450,7 @@ class ElectronicDoc(models.Model):
             log.info("============lines==========")   
             invoice_lines = self.cargar_lineas_xml(xml,company)    
             log.info("============lines=========={}".format( str(invoice_lines)))   
-            electronic_doc.create({
+            comprobante = electronic_doc.create({
                 'key': key,
                 'provider': provider,
                 'currency_id':currency_id.id,
@@ -467,7 +467,7 @@ class ElectronicDoc(models.Model):
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
-            log.info("============Create==========")   
+            log.info("============Create=========={}".format(str(comprobante)))   
         else:
             self.key = ""
             "UC09"
