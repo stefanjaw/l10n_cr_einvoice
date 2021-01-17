@@ -446,7 +446,8 @@ class ElectronicDoc(models.Model):
                     '\n "el documento XML Clave: %s no contiene nombre del receptor \n',
                     key)
              
-            invoice_lines = self.cargar_lineas_xml(xml,company)      
+            invoice_lines = self.cargar_lineas_xml(xml,company) 
+                 
             comprobante = electronic_doc.create({
                 'key': key,
                 'provider': provider,
