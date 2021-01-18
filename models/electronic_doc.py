@@ -470,7 +470,7 @@ class ElectronicDoc(models.Model):
             self.key = ""
             "UC09"
             log.info(
-                '\n "el documento XML Clave: %s tipo %s ya se encuentra en la base de datos \n',
+                '\n "el documento XML Clave: %s tipo %s ya se encuentra en la base de datos. Refresque la Pantalla\n',
                 key, doc_type)
 
     def add_acceptance(self, xml_acceptance, xml_acceptance_name):
