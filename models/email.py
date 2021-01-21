@@ -70,7 +70,7 @@ class email(models.Model):
                     for item in list_attachments:
                         doc = base64.b64encode(item.content)
                         "UC03"
-                        if ('.xml' in item.fname):
+                        if ('.xml' in item.fname.lower()):
                             dic = self.env['electronic.doc'].convert_xml_to_dic(
                                 doc)
                             doc_type = self.env['electronic.doc'].get_doc_type(dic)
