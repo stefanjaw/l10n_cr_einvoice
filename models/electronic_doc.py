@@ -73,7 +73,8 @@ class ElectronicDoc(models.Model):
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
     
     sequence_id = fields.Many2one('ir.sequence', string='Secuencia')
-    
+    fe_name_pdf = fields.Char(string="nombre pdf", )
+    fe_pdf = fields.Binary(string="pdf", )
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )
     fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda", )
