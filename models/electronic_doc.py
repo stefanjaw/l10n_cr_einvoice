@@ -487,6 +487,14 @@ class ElectronicDoc(models.Model):
                 'xml_acceptance_name': xml_acceptance_name or '{}_aceptacion.xml'.format(key),
             })
 
+    def add_pdf(self,key,pdf):
+        document = self.env['electronic.doc'].search([('key', '=', key)])
+        if (document):
+            document.update({
+                'fe_pdf': pdf,
+                'fe_name_pdf': '{}.pdf'.format(key),
+            })
+
     def transform_to_xslt(self, root_xml, doc_type):
         dom = ET.fromstring(base64.b64decode(root_xml))
         if (doc_type == 'FE'):
@@ -678,18 +686,28 @@ class ElectronicDoc(models.Model):
 
     def automatic_bill_creation(self, docs_tuple,company=None):
         for doc_list in docs_tuple:
+            clave = False
             for item in doc_list:
                 log.info("=====parse========{}".format(item))
-                xml = base64.b64encode(item.content)
-                xml_name = item.fname
-                dic = self.convert_xml_to_dic(xml)
-                doc_type = self.get_doc_type(dic)
 
-                if doc_type == 'FE' or doc_type == 'TE':
-                    self.create_electronic_doc(xml, xml_name,company)
+                if '.xml' in str(item.fname).lower():
+                    xml = base64.b64encode(item.content)
+                    xml_name = item.fname
+                    dic = self.convert_xml_to_dic(xml)
+                    doc_type = self.get_doc_type(dic)
+                    if doc_type == 'FE' or doc_type == 'TE':
+                        clave = self.get_key(dic,doc_type)
+                        self.create_electronic_doc(xml, xml_name,company)
 
-                elif doc_type == 'MH':
-                    self.add_acceptance(xml, xml_name)
+                    elif doc_type == 'MH':
+                        self.add_acceptance(xml, xml_name)
+                        
+                if '.pdf' in str(item.fname).lower() and clave:
+                    pdf = item.content
+                    self.add_pdf(clave,pdf)
+
+             
+
                     
                     
     def send_bill(self):
