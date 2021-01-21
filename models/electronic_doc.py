@@ -679,7 +679,7 @@ class ElectronicDoc(models.Model):
     def automatic_bill_creation(self, docs_tuple,company=None):
         for doc_list in docs_tuple:
             for item in doc_list:
-
+                log.info("=====parse========{}".format(item))
                 xml = base64.b64encode(item.content)
                 xml_name = item.fname
                 dic = self.convert_xml_to_dic(xml)
