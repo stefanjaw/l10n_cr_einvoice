@@ -25,7 +25,7 @@
             <field name="fe_name_pdf" invisible='1'/>
             <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
             <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
-            <field name="fe_pdf" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+            <field name="fe_pdf" widget="download_link" filename='fe_name_pdf' options="{'filename': 'fe_name_pdf'}" class="oe_inline" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
           </group>
             
           <group>  
