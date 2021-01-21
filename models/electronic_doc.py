@@ -686,8 +686,8 @@ class ElectronicDoc(models.Model):
         return dic
 
     def automatic_bill_creation(self, docs_tuple,company=None):
+        clave = False
         for doc_list in docs_tuple:
-            clave = False
             for item in doc_list:
 
                 if '.xml' in str(item.fname).lower():
@@ -702,7 +702,6 @@ class ElectronicDoc(models.Model):
                     elif doc_type == 'MH':
                         self.add_acceptance(xml, xml_name)
 
-                log.info("pdf ======={}====clave=={}".format(str(item.fname).lower(),clave))
                 if '.pdf' in str(item.fname).lower() and clave:
                     pdf = item.content
                     self.add_pdf(clave,pdf)
