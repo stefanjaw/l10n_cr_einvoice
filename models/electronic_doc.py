@@ -689,7 +689,9 @@ class ElectronicDoc(models.Model):
         for doc_list in docs_tuple:
             clave = False
             for item in doc_list:
-              
+                
+                log.info("pdf ======={}".format(str(item.fname).lower()))
+
                 if '.xml' in str(item.fname).lower():
                     xml = base64.b64encode(item.content)
                     xml_name = item.fname
@@ -701,9 +703,8 @@ class ElectronicDoc(models.Model):
 
                     elif doc_type == 'MH':
                         self.add_acceptance(xml, xml_name)
-                        
+
                 if '.pdf' in str(item.fname).lower() and clave:
-                    log.info("pdf ======={}".format(clave))
                     pdf = item.content
                     self.add_pdf(clave,pdf)
 
