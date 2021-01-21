@@ -51,7 +51,7 @@ class mailThread(models.AbstractModel):
         others = []
 
         for item in attachments:
-            if ('.xml' in item.fname):
+            if ('.xml' in str(item.fname).lower()):
                 doc = base64.b64encode(item.content)
                 dic = self.env['electronic.doc'].convert_xml_to_dic(doc)
                 doc_type = electronic_doc.get_doc_type(dic)
