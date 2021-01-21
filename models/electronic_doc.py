@@ -488,10 +488,11 @@ class ElectronicDoc(models.Model):
             })
 
     def add_pdf(self,key,pdf):
+        log.info("=====pdf========{}".format(key))
         document = self.env['electronic.doc'].search([('key', '=', key)])
         if (document):
             document.update({
-                'fe_pdf': pdf,
+                'fe_pdf': base64.b64encode(pdf),
                 'fe_name_pdf': '{}.pdf'.format(key),
             })
 
@@ -688,8 +689,7 @@ class ElectronicDoc(models.Model):
         for doc_list in docs_tuple:
             clave = False
             for item in doc_list:
-                log.info("=====parse========{}".format(item))
-
+              
                 if '.xml' in str(item.fname).lower():
                     xml = base64.b64encode(item.content)
                     xml_name = item.fname
