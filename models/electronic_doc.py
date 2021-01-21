@@ -703,6 +703,7 @@ class ElectronicDoc(models.Model):
                         self.add_acceptance(xml, xml_name)
                         
                 if '.pdf' in str(item.fname).lower() and clave:
+                    log.info("pdf ======={}".format(clave))
                     pdf = item.content
                     self.add_pdf(clave,pdf)
 
