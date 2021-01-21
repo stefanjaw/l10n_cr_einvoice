@@ -744,7 +744,7 @@ class ElectronicDoc(models.Model):
                 'ActividadEconomica':self.fe_actividad_economica.code,
                 'CondicionImpuesto':self.fe_condicio_impuesto,
                 'MontoTotalGastoAplicable':'{0:.5f}'.format(self.fe_monto_total_gasto_aplicable),
-                'TotalFactura':'{0:.5f}'.format(float(bill_dic[key]['ResumenFactura']['TotalComprobante'])),
+                'TotalFactura':'{0:.5f}'.format(float(bill_dic[key]['ResumenFactura']['TotalComprobante'].replace(',','.'))),
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
                 'TipoCedulaReceptor':bill_dic[key]['Receptor']['Identificacion']['Tipo'],
                 'NumeroConsecutivoReceptor':self.consecutivo,
