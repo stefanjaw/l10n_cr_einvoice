@@ -447,7 +447,7 @@ class ElectronicDoc(models.Model):
                     key)
              
             invoice_lines = self.cargar_lineas_xml(xml,company) 
-                 
+            log.info("============lineas=={}======{}===Creado".format(bill_number,str(invoice_lines)))    
             comprobante = electronic_doc.create({
                 'key': key,
                 'provider': provider,
