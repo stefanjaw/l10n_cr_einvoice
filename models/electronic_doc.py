@@ -163,7 +163,7 @@ class ElectronicDoc(models.Model):
     @api.onchange("xml_bill")
     def _onchange_load_xml(self):
         if self.xml_bill:
-            if 'xml' in self.xml_bill_name.lower():
+            if '.xml' in self.xml_bill_name.lower():
                 dic = self.convert_xml_to_dic(self.xml_bill)
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
@@ -255,7 +255,7 @@ class ElectronicDoc(models.Model):
     def validar_xml_aceptacion(self):
          for record in self:
             if record.xml_acceptance:
-                if 'xml' in record.xml_acceptance_name.lower():
+                if '.xml' in record.xml_acceptance_name.lower():
                     dic = record.convert_xml_to_dic(record.xml_acceptance)
                     doc_type = record.get_doc_type(dic)
                     if doc_type != 'MH':
