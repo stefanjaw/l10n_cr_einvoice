@@ -942,19 +942,26 @@ class ElectronicDoc(models.Model):
                 item.get_bill()
 
     def format_to_valid_float(self,str_number):
-        if '.' in str_number:
-            if ',' in str_number:
-                return str_number.replace(',','')
+        new_str = ''
+        comma = 0
+        dot = 0
+        for i in str_number:
+            if i == ',':
+                comma = comma + 1
+            elif i == '.':
+                dot = dot + 1
+        if comma > 0 and dot > 0:
+            if comma < dot:
+                new_str = str_number.replace(".","").replace(",",".")
+            if comma > dot:
+                new_str = str_number.replace(",","")
+        elif comma > 1 and dot == 0:
+            new_str = str_number.replace(",","")
+        elif dot > 1 and comma == 0:
+            new_str = str_number.replace(".","")
         else:
-            if ',' in str_number:
-                array = str_number.split(',')
-                new_string = ''
-                for i,number in enumerate(array):
-                    if i+1 == len(array):
-                        new_string = new_string +"."+number
-
-                    else:
-                        new_string = new_string + number
-                return new_string
+             new_str = str_number.replace(",",".")
+             
+        return new_str
 
 
