@@ -181,8 +181,8 @@ class ElectronicDoc(models.Model):
                         'provider':self.get_provider(dic, doc_type),
                         'receiver_name':self.get_receiver_name(dic, doc_type) or self.env.user.company_id.name,
                         'receiver_number':self.get_receiver_identification(dic, doc_type) or self.env.user.company_id.vat,
-                        'total_amount':self.get_total_amount(dic, doc_type).replace(',','.'),
-                        'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type).replace(',','.'),
+                        'total_amount':self.format_to_valid_float(self.get_total_amount(dic, doc_type)),
+                        'fe_monto_total_impuesto':self.format_to_valid_float(self.get_total_tax(dic, doc_type)),
                         'line_ids':list_lineas,
                     })
                                         
@@ -346,8 +346,8 @@ class ElectronicDoc(models.Model):
                             'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                             'tax_ids': tax,
                             'account_id': account.id,
-                            'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text.replace(',','.'),
-                            'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text.replace(',','.'),
+                            'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
+                            'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                             }
 
                     line =  [0,0,obj]                
@@ -391,18 +391,18 @@ class ElectronicDoc(models.Model):
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text.replace(',','.'),
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text.replace(',','.'),
+                                        'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
+                                        'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                                        }]
                     invoice_lines.append(new_line)
 
             otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
             for otro in otros_cargos:
-                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text.replace(',','.'),
+                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': False,
                                         'account_id': account.id,
                                         'quantity': '1',
-                                        'price_unit':otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text.replace(',','.'),
+                                        'price_unit':self.format_to_valid_float(otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text),
                                        }]
                 invoice_lines.append(new_line)
             
@@ -428,8 +428,8 @@ class ElectronicDoc(models.Model):
             xml_bill = xml
             xml_bill_name = xml_name
             date = self.get_date(dic, doc_type)
-            total_amount = self.get_total_amount(dic, doc_type).replace(',','.')
-            fe_monto_total_impuesto = self.get_total_tax(dic, doc_type).replace(',','.')
+            total_amount = self.format_to_valid_float(self.get_total_amount(dic, doc_type))
+            fe_monto_total_impuesto = self.format_to_valid_float(self.get_total_tax(dic, doc_type))
             xml_currency = self.get_currency(dic, doc_type)
             currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
             
@@ -765,7 +765,7 @@ class ElectronicDoc(models.Model):
                 'ActividadEconomica':self.fe_actividad_economica.code,
                 'CondicionImpuesto':self.fe_condicio_impuesto,
                 'MontoTotalGastoAplicable':'{0:.5f}'.format(self.fe_monto_total_gasto_aplicable),
-                'TotalFactura':'{0:.5f}'.format(float(bill_dic[key]['ResumenFactura']['TotalComprobante'].replace(',','.'))),
+                'TotalFactura':'{0:.5f}'.format(float(self.format_to_valid_float(bill_dic[key]['ResumenFactura']['TotalComprobante']))),
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
                 'TipoCedulaReceptor':bill_dic[key]['Receptor']['Identificacion']['Tipo'],
                 'NumeroConsecutivoReceptor':self.consecutivo,
@@ -940,3 +940,21 @@ class ElectronicDoc(models.Model):
             if item.company_id.country_id.code == 'CR':
                 log.info(' item name %s',item.consecutivo)
                 item.get_bill()
+
+    def format_to_valid_float(self,str_number):
+        if '.' in str_number:
+            if ',' in str_number:
+                return str_number.replace(',','')
+        else:
+            if ',' in str_number:
+                array = str_number.split(',')
+                new_string = ''
+                for i,number in enumerate(array):
+                    if i+1 == len(array):
+                        new_string = new_string +"."+number
+
+                    else:
+                        new_string = new_string + number
+                return new_string
+
+
