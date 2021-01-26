@@ -65,9 +65,9 @@ class ElectronicDoc(models.Model):
     xslt = fields.Html(string="Representacion Grafica", )
 
     fe_msg_type = fields.Selection([ # 1570035130
-            ('1', 'Accept'),
-            ('2', 'Partially Accept'),
-            ('3', 'Reject'),
+            ('1', 'Aceptado'),
+            ('2', 'Aceptación parcial'),
+            ('3', 'Rechazado'),
         ], string="Mensaje", track_visibility="onchange",)
 
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
