@@ -41,6 +41,6 @@ class ResCompany(models.Model):
         for record in self:
             company = record.env['res.company'].search([('fecth_server','=',record.fecth_server.id),('id','!=',record.id)])
             if company:
-                raise ValidationError('El servidor de correo {} no se puede utilizar ya que se configuro en otro Servidores de correo entrante'.format(record.fecth_server.name))
+                raise ValidationError('El servidor de correo {} no se puede utilizar ya que se configuro en otra compañia'.format(record.fecth_server.name))
 
     
