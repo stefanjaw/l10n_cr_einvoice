@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-
+from odoo.exceptions import ValidationError
 import logging
 
 log = logging.getLogger(__name__)
@@ -35,5 +35,12 @@ class ResCompany(models.Model):
     fe_url_server = fields.Char(string="Url del server para facturar",default='http://localhost/api/v1/billing/')
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
     fecth_server = fields.Many2one('fetchmail.server', string='Servidor Correo')
+
+    @api.constrains('fecth_server')
+    def _constrains_fecth_server(self):
+        for record in self:
+            company = record.env['res.company'].search([('fecth_server','=',record.fecth_server),('id','!=',record.id)])
+            if company:
+                raise ValidationError('El servidor de correo {} no se puede utilizar ya que se configuro en otro Servidores de correo entrante'.format(self.fecth_server.name))
 
     
