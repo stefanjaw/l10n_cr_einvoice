@@ -1204,7 +1204,7 @@ class AccountMoveFunctions(models.Model):
             else:
                 s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
 
-            if s.name[8:10] == "02" or s.name[8:10] == "03":
+            if s.name[8:10] == "02" or s.name[8:10] == "03" or  s.name[8:10] == "08":
                 if not s.fe_doc_ref:
                     error = True
                     msg = 'Indique el NUMERO CONSECUTIVO de REFERENCIA\n'
