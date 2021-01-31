@@ -332,8 +332,6 @@ class ElectronicDoc(models.Model):
             account = self.env.company.default_account_for_invoice_email
             if not account:
                   account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
-            else:
-                account = account.property_account_expense_categ_id
 
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
@@ -381,10 +379,7 @@ class ElectronicDoc(models.Model):
             account = company_id.default_account_for_invoice_email
             if not account:
                   account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
-            else:
-                account = account.property_account_expense_categ_id
-                
-                
+                                
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     tax = False
