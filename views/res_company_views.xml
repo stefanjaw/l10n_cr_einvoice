@@ -29,6 +29,7 @@
                              </tree>
                             </field>
                             <field name="fecth_server" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
+                            <field name="default_account_for_invoice_email" domain="[('internal_type','=','other'),('deprecated','=',False)]" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}" />
                          </group>
                       </sheet>
                   </form>
