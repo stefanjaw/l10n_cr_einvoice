@@ -1225,6 +1225,17 @@ class AccountMoveFunctions(models.Model):
                         else:
                             error = True
                             msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
+                    else:
+                        s.invoice[s.fe_doc_type].update({
+                                'InformacionReferencia':{
+                                'TipoDoc':s.fe_tipo_documento_referencia,
+                                'Numero':s.fe_doc_ref,
+                                'FechaEmision':s.fecha_factura_simplificada.astimezone(tz=pytz.timezone('America/Costa_Rica')).strftime("%Y-%m-%dT%H:%M:%S-6:00"),
+                                'Codigo':s.fe_informacion_referencia_codigo or None,
+                                'Razon':s.ref,
+                                }
+                            })
+
 
             if s.narration:
                 s.invoice[s.fe_doc_type].update({

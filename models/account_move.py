@@ -152,3 +152,5 @@ class AccountMove(models.Model):
     electronic_doc_id = fields.Many2one('electronic.doc', string='XML',readonly = True, )
     
     debit_note = fields.Boolean(string='Nota Debito?', invisible = True, default = False )
+
+    fecha_factura_simplificada = fields.Datetime(string='Fecha Emisión')
