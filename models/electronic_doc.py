@@ -329,9 +329,11 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['account.account'].search([("code","=","0-511301"),("company_id","=",self.company_id.id)])
+            account = self.env['product.category'].search([("name","=","Saleable")])
             if not account:
                   account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
+            else:
+                account = account.property_account_expense_categ_id
 
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
@@ -376,7 +378,11 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['account.account'].search([("code","=","0-511301"),("company_id","=",company_id.id)])
+            account = self.env['product.category'].search([("name","=","Saleable")])
+            if not account:
+                  account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
+            else:
+                account = account.property_account_expense_categ_id
                 
                 
             for linea in lineasDetalle: 
