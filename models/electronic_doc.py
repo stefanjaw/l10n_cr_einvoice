@@ -329,7 +329,7 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['product.category'].search([("name","=","Saleable")])
+            account = self.env.company.default_account_for_invoice_email
             if not account:
                   account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
             else:
@@ -378,7 +378,7 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['product.category'].search([("name","=","Saleable")])
+            account = company_id.default_account_for_invoice_email
             if not account:
                   account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
             else:
