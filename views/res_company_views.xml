@@ -28,7 +28,7 @@
                                   <field name="description" required='1'/>
                              </tree>
                             </field>
-                            <field name="fecth_server" required="True"/>
+                            <field name="fecth_server" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
                          </group>
                       </sheet>
                   </form>
