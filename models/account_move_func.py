@@ -581,7 +581,7 @@ class AccountMoveFunctions(models.Model):
                 msg += 'Falta la fecha de emisión \n'
                 
             if not self.invoice_payment_term_id.fe_condition_sale:
-                msg += 'En el plazo de pago falta sale type \n'
+                msg += 'Falta definir en el plazo de pago la condición de venta\n'
             
             if not self.fe_payment_type:
                 msg += 'Falta el tipo de pago \n'
