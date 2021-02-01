@@ -30,22 +30,22 @@ class AccountMoveFunctions(models.Model):
     
 
     @api.model
-    def _get_default_journal(self):
+    def default_fe_in_invoice_type(self):
         journal = super(AccountMoveFunctions, self)._get_default_journal()
         log.info('---------------{}'.format(journal.sequence_id.prefix))
         if len(journal.sequence_id.prefix) == 10 :
                 if journal.sequence_id.prefix[8:10] == '08':
-                    self.fe_in_invoice_type = 'FEC'
+                   return 'FEC'
                 elif journal.sequence_id.prefix[8:10] == '09':
-                    self.fe_in_invoice_type = 'FEX'
+                    return 'FEX'
                 elif journal.sequence_id.prefix[8:10] == '01':
-                    self.fe_in_invoice_type = 'FE'
-                    log.info('---------------{}'.format(self.fe_in_invoice_type))
+                    log.info('---------------FE-------')
+                    return 'FE'
                 elif journal.sequence_id.prefix[8:10] == '02':
-                    self.fe_in_invoice_type = 'ND'
+                    return 'ND'
                 else:
-                    self.fe_in_invoice_type = 'OTRO'
-        return journal
+                    return 'OTRO'
+
 
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):

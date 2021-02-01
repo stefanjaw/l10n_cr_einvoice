@@ -108,7 +108,7 @@ class AccountMove(models.Model):
                 ('ND', 'Nota Débito'),   
                 ('OTRO', 'Otros'),                
         ],
-        default = 'OTRO',
+       default=lambda self: self.default_fe_in_invoice_type(),
     )
 
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
