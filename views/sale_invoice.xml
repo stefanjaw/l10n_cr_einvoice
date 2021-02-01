@@ -4,8 +4,9 @@
   <field name="model">sale.advance.payment.inv</field>
   <field name="inherit_id" ref="sale.view_sale_advance_payment_inv"/>
   <field name="arch" type="xml">
-  <field name="create_invoices" position="replace">
-        <button name="create_invoices" string="Create and View Invoice" type="object" context="{'open_invoices': True,'default_journal_id':False}" class="btn-primary"/>
-   </field>
+    <field name="create_invoices" position="replace">
+            <button name="create_invoices" string="Create and View Invoice" type="object" context="{'open_invoices': True,'default_journal_id':False}" class="btn-primary"/>
+    </field>
+  </field>
 </record>
 </odoo>
