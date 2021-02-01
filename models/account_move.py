@@ -143,7 +143,7 @@ class AccountMove(models.Model):
                 ('02', 'Genera Crédito parcial del IVA'),
                 ('03', 'Bienes de Capital'),
                 ('04', 'Gasto corriente no genera crédito'),
-                ('04', 'Proporcionalidad'),
+                ('05', 'Proporcionalidad'),
         ],
     )
     
