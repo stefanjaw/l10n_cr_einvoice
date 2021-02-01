@@ -28,6 +28,23 @@ TYPE2REFUND = {
 class AccountMoveFunctions(models.Model):
     _inherit = "account.move"
     
+
+    @api.model
+    def _get_default_journal(self):
+        journal = super(AccountMoveFunctions, self)._get_default_journal()
+        if len(journal.sequence_id.prefix) == 10 :
+                if self.journal.sequence_id.prefix[8:10] == '08':
+                    self.fe_in_invoice_type = 'FEC'
+                elif self.journal.sequence_id.prefix[8:10] == '09':
+                    self.fe_in_invoice_type = 'FEX'
+                elif self.journal.sequence_id.prefix[8:10] == '01':
+                    self.fe_in_invoice_type = 'FE'
+                elif self.journal.sequence_id.prefix[8:10] == '02':
+                    self.fe_in_invoice_type = 'ND'
+                else:
+                    self.fe_in_invoice_type = 'OTRO'
+        return journal
+
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):
         self.fe_in_invoice_type = 'OTRO'
