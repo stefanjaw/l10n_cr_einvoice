@@ -33,13 +33,13 @@ class AccountMoveFunctions(models.Model):
     def _get_default_journal(self):
         journal = super(AccountMoveFunctions, self)._get_default_journal()
         if len(journal.sequence_id.prefix) == 10 :
-                if self.journal.sequence_id.prefix[8:10] == '08':
+                if journal.sequence_id.prefix[8:10] == '08':
                     self.fe_in_invoice_type = 'FEC'
-                elif self.journal.sequence_id.prefix[8:10] == '09':
+                elif journal.sequence_id.prefix[8:10] == '09':
                     self.fe_in_invoice_type = 'FEX'
-                elif self.journal.sequence_id.prefix[8:10] == '01':
+                elif journal.sequence_id.prefix[8:10] == '01':
                     self.fe_in_invoice_type = 'FE'
-                elif self.journal.sequence_id.prefix[8:10] == '02':
+                elif journal.sequence_id.prefix[8:10] == '02':
                     self.fe_in_invoice_type = 'ND'
                 else:
                     self.fe_in_invoice_type = 'OTRO'
