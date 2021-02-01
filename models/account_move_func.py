@@ -32,6 +32,7 @@ class AccountMoveFunctions(models.Model):
     @api.model
     def _get_default_journal(self):
         journal = super(AccountMoveFunctions, self)._get_default_journal()
+        log.info('---------------{}'.format(journal.sequence_id.prefix))
         if len(journal.sequence_id.prefix) == 10 :
                 if journal.sequence_id.prefix[8:10] == '08':
                     self.fe_in_invoice_type = 'FEC'
@@ -39,6 +40,7 @@ class AccountMoveFunctions(models.Model):
                     self.fe_in_invoice_type = 'FEX'
                 elif journal.sequence_id.prefix[8:10] == '01':
                     self.fe_in_invoice_type = 'FE'
+                    log.info('---------------{}'.format(self.fe_in_invoice_type))
                 elif journal.sequence_id.prefix[8:10] == '02':
                     self.fe_in_invoice_type = 'ND'
                 else:
