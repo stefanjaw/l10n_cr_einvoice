@@ -41,7 +41,10 @@
             <h3><field name="fe_clave" readonly="1" attrs="{'invisible': [('state','=','draft')]}" /></h3>
             <field name="fe_clave" invisible="1"/>
       </field>
-
+       
+       <field name="ref" position="attributes">
+           <attribute name="attrs">{'required':[('fe_doc_ref','!=',False),('type','!=','in_invoice')]}</attribute>
+       </field>
       <field name="journal_id" position="replace">
         <field name="journal_id"  options="{'no_create': True}" domain="[('type', '=?', invoice_filter_type_domain)]" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
         <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')]}"/>
