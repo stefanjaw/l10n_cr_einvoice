@@ -1,0 +1,11 @@
+<odoo>
+<record id="l10n_cr_einvoice_sale_advance_payment_inv_inherit" model="ir.ui.view">
+  <field name="name">l10n.cr.einvoice.sale.advance.payment.inv.inherit</field>
+  <field name="model">sale.advance.payment.inv</field>
+  <field name="inherit_id" ref="sale.view_sale_advance_payment_inv"/>
+  <field name="arch" type="xml">
+  <field name="create_invoices" position="replace">
+        <button name="create_invoices" string="Create and View Invoice" type="object" context="{'open_invoices': True,'default_journal_id':False}" class="btn-primary"/>
+   </field>
+</record>
+</odoo>
