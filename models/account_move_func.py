@@ -799,6 +799,8 @@ class AccountMoveFunctions(models.Model):
                  raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
 
             if s.name[8:10] == "05":
+              if not s.fe_clave:
+                  log.info("soy un documento 05 sin clave {}".format(s.name))
                url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave+'-'+s.name)
             else:
                url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave)
