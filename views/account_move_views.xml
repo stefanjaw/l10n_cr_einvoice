@@ -50,7 +50,7 @@
         <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')]}"/>
         <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/>
         <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/> 
-        <field name="fecha_factura_simplificada" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/>    
+        <field name="fecha_factura_simplificada" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False),('fe_in_invoice_type','=','FEC')]}"/>
       </field>
       
       <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
