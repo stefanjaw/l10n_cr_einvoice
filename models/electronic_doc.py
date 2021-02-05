@@ -601,6 +601,11 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronica'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
+        if dic['ResumenFactura'].get('CodigoTipoMoneda') == None:
+            return 'CRC'
+        elif dic['ResumenFactura'].get('CodigoTipoMoneda').get('CodigoMoneda') == None:
+            return 'CRC'
+            
         return dic[key]['ResumenFactura']['CodigoTipoMoneda']['CodigoMoneda']
     
     def get_provider_identification(self, dic, doc_type):
