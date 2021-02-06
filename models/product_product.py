@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 import logging
 
 log = logging.getLogger(__name__)
@@ -74,6 +75,12 @@ class productProduct(models.Model):
             self.product_tmpl_id.fe_codigo_comercial_tipo = self.fe_codigo_comercial_tipo
         else:
             self.product_tmpl_id.fe_codigo_comercial_tipo = self.product_tmpl_id.fe_codigo_comercial_tipo
+
+    @api.constrains('name')
+    def _constrains_name(self):
+        for record in self:
+            if len(record.name) > 200:
+                raise ValidationError("El nombre del registro no puede ser mayor a 200 caracteres.")
 
 
     
