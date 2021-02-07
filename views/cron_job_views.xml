@@ -4,7 +4,7 @@
     <field name="active" eval="True"/>
     <field name="state" eval="'code'"/>
     <field name="priority" eval="5"/>
-          <field name="interval_number">1</field>
+          <field name="interval_number">3</field>
           <field name="interval_type">minutes</field>
           <field name="numbercall">-1</field>
           <field name="doall" eval="False"/>
@@ -18,7 +18,7 @@
     <field name="active" eval="True"/>
     <field name="state" eval="'code'"/>
     <field name="priority" eval="5"/>
-          <field name="interval_number">1</field>
+          <field name="interval_number">3</field>
           <field name="interval_type">minutes</field>
           <field name="numbercall">-1</field>
           <field name="doall" eval="False"/>
@@ -32,7 +32,7 @@
     <field name="active" eval="True"/>
     <field name="state" eval="'code'"/>
     <field name="priority" eval="5"/>
-          <field name="interval_number">1</field>
+          <field name="interval_number">3</field>
           <field name="interval_type">minutes</field>
           <field name="numbercall">-1</field>
           <field name="doall" eval="False"/>
@@ -46,7 +46,7 @@
     <field name="active" eval="True"/>
     <field name="state" eval="'code'"/>
     <field name="priority" eval="5"/>
-          <field name="interval_number">1</field>
+          <field name="interval_number">3</field>
           <field name="interval_type">minutes</field>
           <field name="numbercall">-1</field>
           <field name="doall" eval="False"/>
