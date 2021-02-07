@@ -849,12 +849,16 @@ class AccountMoveFunctions(models.Model):
     def cron_get_server_bills(self):
         log.info('--> cron_get_server_bills')
         list = self.env['account.move'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','posted'),
-        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
+        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=','error'),('fe_server_state','!=','Importada Manual'),('fe_server_state','!=',False)])
 
         for item in list:
             if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO' and item.journal_id.type == 'sale':
-                log.info(' item name %s',item.name)
-                item.get_invoice()
+                if item.fe_clave:
+                    log.info(' item name %s',item.name)
+                    item.get_invoice()
+                else:
+                    log.info(' item name no tiene clave %s',item.name)
+
                
 
     def write_chatter(self,body):
@@ -1274,7 +1278,7 @@ class AccountMoveFunctions(models.Model):
     @api.model
     def cron_send_json(self):
         log.info('--> factelec-Invoice-build_json')
-        invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted')])
+        invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted'),('fe_server_state','!=','Importada Manual')])
         log.info('-->invoice_list %s',invoice_list)
         for invoice in invoice_list:
             if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO' and invoice.journal_id.type == 'sale':
