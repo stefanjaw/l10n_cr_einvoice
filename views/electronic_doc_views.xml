@@ -68,7 +68,7 @@
           </group>
             
           <notebook>
-            <page string="XSLT">
+            <page string="VISTA XML">
               <group>
                 <field name="xslt" readonly='1' required='1'/>
                 <field name="xslt" invisible='1'/>
