@@ -852,7 +852,7 @@ class AccountMoveFunctions(models.Model):
         ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
 
         for item in list:
-            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO':
+            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO' and item.journal_id.type == 'sale':
                 log.info(' item name %s',item.name)
                 item.get_invoice()
                
@@ -1277,7 +1277,7 @@ class AccountMoveFunctions(models.Model):
         invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted')])
         log.info('-->invoice_list %s',invoice_list)
         for invoice in invoice_list:
-            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO':
+            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO' and item.journal_id.type == 'sale':
                 try:
                     log.info('-->consecutivo %s',invoice.name)
                     invoice.confirm_bill()
