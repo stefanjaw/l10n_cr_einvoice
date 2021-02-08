@@ -43,6 +43,21 @@
         </div>
       </div>
     </xpath>
+    
+   <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
+    <th>
+      <span>Código Caby</span>
+    </th>
+  </xpath>
+    <xpath expr="/t/t/div/table/tbody/t[3]/tr/t[1]/td[1]" position="after">
+      <td>
+        <span t-field="line.product_id.cabys_code_id.code"/>
+      </td>
+    </xpath>
+    <xpath expr="/t/t/div/table/tbody/t[3]/t[3]/tr/td" position="attributes">
+      <attribute name="colspan">100</attribute>
+    </xpath>
+   
     <xpath expr="/t/t/div/div[3]/div"
            position="replace">
       <div class="row">
