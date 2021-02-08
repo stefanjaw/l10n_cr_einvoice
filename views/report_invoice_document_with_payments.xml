@@ -46,7 +46,7 @@
     
    <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
     <th>
-      <span>Código Caby</span>
+      <span>Código Cabys</span>
     </th>
   </xpath>
     <xpath expr="/t/t/div/table/tbody/t[3]/tr/t[1]/td[1]" position="after">
