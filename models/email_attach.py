@@ -19,6 +19,7 @@ class attachments(models.Model):
                                 selection=[
                                     ('TE', 'Tiquete Electronico'),
                                     ('FE', 'Factura Electronica'),
+                                    ('FE', 'Nota Crédito'),
                                     ('MH', 'Aceptacion Ministerio Hacienda'),
                                     ('OT', 'Otro'),
                                 ])
