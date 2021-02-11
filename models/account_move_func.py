@@ -43,6 +43,8 @@ class AccountMoveFunctions(models.Model):
                     return 'ND'
                 else:
                     return 'OTRO'
+        else:
+            return 'OTRO'
 
 
     @api.onchange("journal_id",)
@@ -511,12 +513,18 @@ class AccountMoveFunctions(models.Model):
 
     def _validate_invoice_line(self):
         units = ['Al', 'Alc', 'Cm', 'I', 'Os', 'Sp', 'Spe', 'St', 'd', 'm', 'kg', 's', 'A', 'K', 'mol', 'cd', 'm²', 'm³', 'm/s', 'm/s²', '1/m', 'kg/m³', 'A/m²', 'A/m', 'mol/m³', 'cd/m²', '1', 'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'Ω', 'S', 'Wb', 'T', 'H', '°C', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'Pa·s', 'N·m', 'N/m', 'rad/s', 'rad/s²', 'W/m²', 'J/K', 'J/(kg·K)', 'J/kg', 'W/(m·K)', 'J/m³', 'V/m', 'C/m³', 'C/m²', 'F/m', 'H/m', 'J/mol', 'J/(mol·K)', 'C/kg', 'Gy/s', 'W/sr', 'W/(m²·sr)', 'kat/m³', 'min', 'h', 'd', 'º', '´', '´´', 'L', 't', 'Np', 'B', 'eV', 'u', 'ua', 'Unid', 'Gal', 'g', 'Km', 'Kw', 'ln', 'cm', 'mL', 'mm', 'Oz', 'Otros']
+        service_units = ['Os','Sp','Spe','St']
         log.info('--> _validate_invoice_line')
         for line in self.invoice_line_ids:
             if len(line.name) > 200:
                 raise exceptions.Warning(("La descripción del producto {0} no puede ser mayor a 200 caracteres".format(line.name)))
-            if line.product_uom_id.uom_mh not in units:
-                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
+            if line.product_id:
+                if line.product_id.type == 'service':
+                    if line.product_uom_id.uom_mh not in service_units:
+                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
+                else: 
+                    if line.product_uom_id.uom_mh not in  service_units:
+                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
 
             if not line.product_id.cabys_code_id:
                 raise exceptions.Warning(("El producto {0} no contiene código CABYS".format(line.product_id.name)))
