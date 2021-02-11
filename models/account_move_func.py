@@ -519,11 +519,15 @@ class AccountMoveFunctions(models.Model):
             if len(line.name) > 200:
                 raise exceptions.Warning(("La descripción del producto {0} no puede ser mayor a 200 caracteres".format(line.name)))
             if line.product_id:
+                log.info('--> type {}'.format(line.product_id.type))
                 if line.product_id.type == 'service':
                     if line.product_uom_id.uom_mh not in service_units:
                         raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
                 else: 
-                    if line.product_uom_id.uom_mh not in  service_units:
+                    if line.product_uom_id.uom_mh not in units:
+                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
+            else:
+                if line.product_uom_id.uom_mh not in units:
                         raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
 
             if not line.product_id.cabys_code_id:
