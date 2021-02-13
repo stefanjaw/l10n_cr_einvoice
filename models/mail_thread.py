@@ -55,7 +55,7 @@ class mailThread(models.AbstractModel):
                 doc = base64.b64encode(item.content)
                 dic = self.env['electronic.doc'].convert_xml_to_dic(doc)
                 doc_type = electronic_doc.get_doc_type(dic)
-                if (doc_type == 'FE' or doc_type == 'TE'):
+                if (doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC'):
                     bills.append(item)
 
                 elif (doc_type == 'MH'):

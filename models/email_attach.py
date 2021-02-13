@@ -17,8 +17,9 @@ class attachments(models.Model):
     doc = fields.Binary(string="Attachment")
     doc_type = fields.Selection(string='Tipo',
                                 selection=[
-                                    ('TE', 'Tiquete Electronico'),
-                                    ('FE', 'Factura Electronica'),
-                                    ('MH', 'Aceptacion Ministerio Hacienda'),
+                                    ('TE', 'Tiquete Electrónico'),
+                                    ('FE', 'Factura Electrónica'),
+                                    ('NC', 'Nota Crédito Electrónica'),
+                                    ('MH', 'Aceptación Ministerio Hacienda'),
                                     ('OT', 'Otro'),
                                 ])
