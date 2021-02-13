@@ -702,7 +702,7 @@ class ElectronicDoc(models.Model):
                     xml_name = item.fname
                     dic = self.convert_xml_to_dic(xml)
                     doc_type = self.get_doc_type(dic)
-                    if doc_type == 'FE' or doc_type == 'TE':
+                    if doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC':
                         clave = self.get_key(dic,doc_type)
                         self.create_electronic_doc(xml, xml_name,company)
 
