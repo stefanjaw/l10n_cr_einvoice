@@ -7,16 +7,18 @@ class AccountFiscalPosition(models.Model):
     _inherit = "account.fiscal.position"
 
     fiscal_position_type = fields.Selection([
-        ('01', 'Authorized purchases'),
-        ('02', 'Exempt sales to diplomats'),
-        ('03', 'Purchase Order (Public Institutions and other organisms)'),
-        ('04', 'Exemptions General Directorate of Finance'),
-        ('05', 'Free trade zone'),
+        ('01', 'Compras autorizadas'),
+        ('02', 'Ventas exentas a diplomáticos'),
+        ('03', 'Autorizado por Ley especial'),
+        ('04', 'Exenciones Dirección General de Hacienda'),
+        ('05', 'Transitorio V'),
+        ('06', 'Transitorio IX'),
+        ('07', 'Transitorio XVII'),
         ('99', 'Others'),
-    ], string="Fiscal Position Type")
-    document_number = fields.Char(string="Document Number")
-    institution_name = fields.Char(string="Institution Name")
-    issued_date = fields.Date(string="Issued Date")
+    ], string="Tipo de Documento de exoneración o autorización")
+    document_number = fields.Char(string="Número Documento")
+    institution_name = fields.Char(string="Nombre de Institución que emite la exoneración")
+    issued_date = fields.Date(string="Fecha de la Emisión")
     
 
     @api.constrains('tax_ids')
