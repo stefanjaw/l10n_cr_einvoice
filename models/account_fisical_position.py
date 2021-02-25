@@ -14,7 +14,7 @@ class AccountFiscalPosition(models.Model):
         ('05', 'Transitorio V'),
         ('06', 'Transitorio IX'),
         ('07', 'Transitorio XVII'),
-        ('99', 'Others'),
+        ('99', 'Otros'),
     ], string="Tipo de Documento de exoneración o autorización")
     document_number = fields.Char(string="Número Documento")
     institution_name = fields.Char(string="Nombre de Institución que emite la exoneración")
