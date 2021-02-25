@@ -9,10 +9,10 @@
         <field name="inherit_id" ref="account.view_account_position_form"/>
         <field name="arch" type="xml">
             <field name="auto_apply" position="after">
-                <field name="fiscal_position_type" placeholder="Seleccione el tipo de documento de exoneración o de autorización" required="True" />
-                <field name="document_number" placeholder="Ingrese el número de documento de exoneración o de autorización" required="True"/>
-                <field name="institution_name" placeholder="Ingrese el nombre de institución o dependencia que emitió la exoneración" required="True"/>
-                <field name="issued_date" placeholder="Seleccione la fecha de emisión del documento de exoneración o de autorización" required="True"/>
+                <field name="fiscal_position_type" placeholder="Tipo de documento de exoneración o autorización" required="True" />
+                <field name="document_number" placeholder="Número de documento de exoneración o autorización" required="True"/>
+                <field name="institution_name" placeholder="Nombre de institución o dependencia que emitió la exoneración" required="True"/>
+                <field name="issued_date" placeholder="Fecha de emisión del documento de exoneración o autorización" required="True"/>
             </field>
         </field>
     </record>
