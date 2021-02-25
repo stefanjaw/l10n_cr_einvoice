@@ -15,9 +15,9 @@ class AccountFiscalPosition(models.Model):
         ('06', 'Transitorio IX'),
         ('07', 'Transitorio XVII'),
         ('99', 'Otros'),
-    ], string="Tipo de Documento", placeholder="Tipo de documento de exoneración o de autorización.")
-    document_number = fields.Char(string="Número de Documento", placeholder="Número de documento de exoneración o de autorización")
-    institution_name = fields.Char(string="Nombre de la Institución", placeholder="Nombre de institución o dependencia que emitió la exoneración ")
+    ], string="Tipo de Documento")
+    document_number = fields.Char(string="Número de Documento")
+    institution_name = fields.Char(string="Nombre de la Institución")
     issued_date = fields.Date(string="Fecha de la Emisión")
     
 
