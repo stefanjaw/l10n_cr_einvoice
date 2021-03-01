@@ -686,7 +686,11 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronica'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
-        return dic[key]['ResumenFactura']['TotalImpuesto']
+
+        if dic[key]['ResumenFactura'].get('TotalImpuesto'):
+            return dic[key]['ResumenFactura']['TotalImpuesto']
+        else:
+            return "0"
     
     def convert_xml_to_dic(self, xml):
         dic = xmltodict.parse(base64.b64decode(xml))
