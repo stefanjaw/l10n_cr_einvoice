@@ -1198,6 +1198,8 @@ class AccountMoveFunctions(models.Model):
 
             if TotalGravado:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
+            else:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'0'})
 
             if TotalExento:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
