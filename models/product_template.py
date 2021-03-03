@@ -32,7 +32,7 @@ class ProductTemplate(models.Model):
     
     @api.constrains('type')
     def _constrains_type(self):
-        service_units = ['Os','Sp','Spe','St']
+        service_units = ['Os','Sp','Spe','St','h']
         for record in self:
             if record.type == 'service':
                     if record.uom_id.uom_mh not in service_units:
