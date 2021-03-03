@@ -996,6 +996,7 @@ class AccountMoveFunctions(models.Model):
             TotalServGravados = 0
             TotalServExentos = 0
             TotalServExonerado = 0
+            TotalGravado = 0
             TotalMercanciasGravadas = 0
             TotalMercanciasExentas = 0
             TotalMercExonerada = 0
