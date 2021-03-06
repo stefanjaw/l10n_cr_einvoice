@@ -86,8 +86,8 @@ class AccountMove(models.Model):
     fe_total_servicio_exentos = fields.Float(string="Total servicios exentos", compute = '_compute_gravados_exentos' )
     fe_total_mercancias_gravadas = fields.Float(string="Total mercancias gravadas", compute = '_compute_gravados_exentos' )
     fe_total_mercancias_exentas = fields.Integer(string="Total mercancias exentas", compute = '_compute_gravados_exentos')
-    fe_total_gravado = fields.Float(string="Total gravado", compute = '_compute_total_gravado')
-    fe_total_exento = fields.Float(string="Total exento", compute = '_compute_total_exento' )
+    fe_total_gravado = fields.Float(string="Total gravado", compute = '_compute_gravados_exentos')
+    fe_total_exento = fields.Float(string="Total exento", compute = '_compute_gravados_exentos' )
     fe_total_venta = fields.Float(string="Total venta",compute = '_compute_total_venta' )
     fe_total_descuento = fields.Float(string="Total descuento", compute = '_compute_total_descuento' )
 

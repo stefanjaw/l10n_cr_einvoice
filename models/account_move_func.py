@@ -158,6 +158,9 @@ class AccountMoveFunctions(models.Model):
                             else:
                                 record.fe_total_mercancias_exentas = record.fe_total_mercancias_exentas + LineaMontoTotal #LineaSubTotal
 
+            record.fe_total_gravado = record.fe_total_servicio_gravados + record.fe_total_mercancias_gravadas
+            record.fe_total_exento = record.fe_total_mercancias_exentas + record.fe_total_servicio_exentos
+
     def _compute_total_descuento(self):
         log.info('--> factelec/_compute_total_descuento')
         for s in self:
@@ -178,21 +181,6 @@ class AccountMoveFunctions(models.Model):
                 totalSale = totalSale + totalAmount
 
         self.fe_total_venta = totalSale
-
-
-
-    @api.depends("fe_total_servicio_exentos", "fe_total_mercancias_exentas" )
-    def _compute_total_exento(self):
-        log.info('--> factelec/_compute_total_exento')
-        for s in self:
-            s.fe_total_exento = s.fe_total_servicio_exentos + s.fe_total_mercancias_exentas
-
-
-    @api.depends("fe_total_servicio_gravados", "fe_total_mercancias_gravadas" )
-    def _compute_total_gravado(self):
-        log.info('--> factelec/_compute_total_gravado')
-        for s in self:
-            s.fe_total_gravado = s.fe_total_servicio_gravados + s.fe_total_mercancias_gravadas
 
 
     @api.depends("fe_total_mercancias_exentas")
