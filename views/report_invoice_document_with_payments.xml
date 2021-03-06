@@ -43,7 +43,7 @@
         </div>
       </div>
     </xpath>
-    <xpath expr="//div[@id='informations']" position="after">
+    <xpath expr="/t/t/div/table" position="before">
          <div class="row" t-if="o.currency_id.name != 'CRC'">
               <div class="col-12">
                   <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(1/o.currency_id.rate)"/>
