@@ -126,8 +126,8 @@ class AccountMoveFunctions(models.Model):
 
                   if record.fiscal_position_id:
                       for i in record.invoice_line_ids:
-                            fisical = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
-                            old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id
+                            fisical = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
+                            old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id
                             LineaImpuestoTarifa = round(old_tax.amount,2)
                             percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
                             if i.product_id.type == 'service':
