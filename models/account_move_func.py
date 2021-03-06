@@ -135,28 +135,28 @@ class AccountMoveFunctions(models.Model):
     def _compute_gravados_exentos(self):
         for record in self:
             for i in record.invoice_line_ids:
-                fisical = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
-                old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id        
+                fisical = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
+                old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id        
                 LineaImpuestoTarifa = round(old_tax.amount,2)
                 percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
                 LineaMontoTotal = round((i.quantity * i.price_unit),5)
                 if i.product_id.type == 'service':
                             #asking for tax for know if the product is Tax Free
                             if i.tax_ids:
-                                if self.fiscal_position_id:
-                                    self.fe_total_servicio_gravados = self.fe_total_servicio_gravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                                if record.fiscal_position_id:
+                                    record.fe_total_servicio_gravados = record.fe_total_servicio_gravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
                                 else:
-                                    self.fe_total_servicio_gravados = self.fe_total_servicio_gravados + LineaMontoTotal
+                                    record.fe_total_servicio_gravados = record.fe_total_servicio_gravados + LineaMontoTotal
                             else:
-                                self.fe_total_servicio_exentos = self.fe_total_servicio_exentos + LineaMontoTotal
+                                record.fe_total_servicio_exentos = record.fe_total_servicio_exentos + LineaMontoTotal
                 else:
                             if i.tax_ids:
-                                if self.fiscal_position_id:
-                                    self.fe_total_mercancias_gravadas = self.fe_total_mercancias_gravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                                if record.fiscal_position_id:
+                                    record.fe_total_mercancias_gravadas = record.fe_total_mercancias_gravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
                                 else:
-                                    self.fe_total_mercancias_gravadas = self.fe_total_mercancias_gravadas + LineaMontoTotal #LineaSubTotal
+                                    record.fe_total_mercancias_gravadas = record.fe_total_mercancias_gravadas + LineaMontoTotal #LineaSubTotal
                             else:
-                                self.fe_total_mercancias_exentas = self.fe_total_mercancias_exentas + LineaMontoTotal #LineaSubTotal
+                                record.fe_total_mercancias_exentas = record.fe_total_mercancias_exentas + LineaMontoTotal #LineaSubTotal
 
     def _compute_total_descuento(self):
         log.info('--> factelec/_compute_total_descuento')
