@@ -43,7 +43,13 @@
         </div>
       </div>
     </xpath>
-    
+    <xpath expr="/t/t/div/div[2]/div[1]/strong" position="after">
+         <div class="row" t-if="o.currency_id.name != 'CRC'">
+              <div class="col-3">
+                  <strong>Tipo Cambio: </strong><span t-field="1 / o.currency_id.rate"/>
+              </div>
+         </div>
+   </xpath>
    <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
     <th>
       <span>Código Cabys</span>
