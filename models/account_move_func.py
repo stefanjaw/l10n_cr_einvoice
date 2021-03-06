@@ -127,11 +127,11 @@ class AccountMoveFunctions(models.Model):
                             LineaImpuestoTarifa = round(old_tax.amount,2)
                             percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
                             if i.product_id.type == 'service':
-                                self.TotalServExonerado = self.TotalServExonerado + i.price_subtotal * ( percent / LineaImpuestoTarifa )
+                                record.TotalServExonerado = record.TotalServExonerado + i.price_subtotal * ( percent / LineaImpuestoTarifa )
                             else:
-                                self.TotalMercExonerada = self.TotalMercExonerada + i.price_subtotal * ( percent / LineaImpuestoTarifa )
+                                record.TotalMercExonerada = record.TotalMercExonerada + i.price_subtotal * ( percent / LineaImpuestoTarifa )
 
-                      self.TotalExonerado = self.TotalServExonerado + self.TotalMercExonerada
+                      record.TotalExonerado = record.TotalServExonerado + record.TotalMercExonerada
     def _compute_gravados_exentos(self):
         for record in self:
             for i in record.invoice_line_ids:
