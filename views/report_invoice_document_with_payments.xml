@@ -92,11 +92,32 @@
                 <span t-field="o.fe_total_mercancias_exentas" />
               </td>
             </tr>
+            <tr class=""
+                style="">
+              <td>Servicios exonerados</td>
+              <td class="text-right">
+                <span t-field="o.TotalServExonerado" />
+              </td>
+            </tr>
+            <tr class=""
+                style="">
+              <td>Mercancias exonerados</td>
+              <td class="text-right">
+                <span t-field="o.TotalMercExonerada" />
+              </td>
+            </tr>
           </table>
         </div>
         <div class="col-6">
           <table class="table table-sm"
                  style="page-break-inside: avoid;">
+            <tr class=""
+                style="" t-if="o.fe_current_country_company_code == 'CR'" >
+              <td>Tolal exonerado</td>
+              <td class="text-right">
+                <span t-field="o.TotalExonerado" />
+              </td>
+            </tr>
             <tr class=""
                 style="" t-if="o.fe_current_country_company_code == 'CR'" >
               <td>Tolal gravado</td>

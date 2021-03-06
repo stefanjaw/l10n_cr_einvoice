@@ -156,3 +156,9 @@ class AccountMove(models.Model):
     debit_note = fields.Boolean(string='Nota Debito?', invisible = True, default = False )
 
     fecha_factura_simplificada = fields.Datetime(string='Fecha Emisión')
+
+    TotalServExonerado = fields.Float(string='Servicio Exonerados',)
+
+    TotalMercExonerada = fields.Float(string='Mercancias Exonerados',)
+
+    TotalExonerado = fields.Float(string='Total Exonerado',)

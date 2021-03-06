@@ -995,11 +995,11 @@ class AccountMoveFunctions(models.Model):
             TotalDescuentos = 0
             TotalServGravados = 0
             TotalServExentos = 0
-            TotalServExonerado = 0
+            self.TotalServExonerado = 0
             TotalGravado = 0
             TotalMercanciasGravadas = 0
             TotalMercanciasExentas = 0
-            TotalMercExonerada = 0
+            self.TotalMercExonerada = 0
             TotalImpuesto = 0
             TotalOtrosCargos = 0
             OtrosCargos_array = []
@@ -1114,9 +1114,9 @@ class AccountMoveFunctions(models.Model):
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
                                 inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
                                 if i.product_id.type == 'service':
-                                    TotalServExonerado = TotalServExonerado + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                    self.TotalServExonerado = self.TotalServExonerado + LineaSubTotal * ( percent / LineaImpuestoTarifa )
                                 else:
-                                    TotalMercExonerada = TotalMercExonerada + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                    self.TotalMercExonerada = self.TotalMercExonerada + LineaSubTotal * ( percent / LineaImpuestoTarifa )
 
                                 
 
@@ -1174,8 +1174,8 @@ class AccountMoveFunctions(models.Model):
 
             TotalGravado = TotalServGravados + TotalMercanciasGravadas
             TotalExento = TotalServExentos + TotalMercanciasExentas
-            TotalExonerado = TotalServExonerado + TotalMercExonerada
-            TotalVenta = TotalGravado + TotalExento + TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
+            self.TotalExonerado = self.TotalServExonerado + self.TotalMercExonerada
+            TotalVenta = TotalGravado + TotalExento + self.TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
             TotalVentaNeta = TotalVenta - TotalDescuentos
 
             if TotalServGravados:
@@ -1184,8 +1184,8 @@ class AccountMoveFunctions(models.Model):
             if TotalServExentos:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExentos':'{0:.5f}'.format(TotalServExentos)})
 
-            if TotalServExonerado:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(TotalServExonerado)})
+            if self.TotalServExonerado:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(self.TotalServExonerado)})
 
             if TotalMercanciasGravadas:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasGravadas':'{0:.5f}'.format(TotalMercanciasGravadas)})
@@ -1193,8 +1193,8 @@ class AccountMoveFunctions(models.Model):
             if TotalMercanciasExentas:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasExentas':'{0:.5f}'.format(TotalMercanciasExentas)})
 
-            if TotalMercExonerada:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(TotalMercExonerada)})
+            if self.TotalMercExonerada:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(self.TotalMercExonerada)})
 
             if TotalGravado:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
@@ -1204,8 +1204,8 @@ class AccountMoveFunctions(models.Model):
             if TotalExento:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
 
-            if TotalExonerado:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(TotalServExonerado + TotalMercExonerada)})
+            if self.TotalExonerado:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(self.TotalServExonerado + TotalMercExonerada)})
 
             if TotalVenta:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'{0:.5f}'.format(TotalVenta)})
