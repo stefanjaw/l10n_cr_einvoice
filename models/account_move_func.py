@@ -122,6 +122,7 @@ class AccountMoveFunctions(models.Model):
                 for record in self:
                   record.TotalServExonerado = 0
                   record.TotalMercExonerada = 0
+                  record.TotalExonerado = 0
 
                   if record.fiscal_position_id:
                       for i in record.invoice_line_ids:
