@@ -157,8 +157,8 @@ class AccountMove(models.Model):
 
     fecha_factura_simplificada = fields.Datetime(string='Fecha Emisión')
 
-    TotalServExonerado = fields.Float(string='Servicio Exonerados',compute="_compute_exoneraciones")
+    TotalServExonerado = fields.Float(string='Servicio Exonerados',compute="_compute_exoneraciones", digits=(15, 2))
 
-    TotalMercExonerada = fields.Float(string='Mercancias Exonerados',compute="_compute_exoneraciones")
+    TotalMercExonerada = fields.Float(string='Mercancias Exonerados',compute="_compute_exoneraciones", digits=(15, 2))
 
-    TotalExonerado = fields.Float(string='Total Exonerado',compute="_compute_exoneraciones")
+    TotalExonerado = fields.Float(string='Total Exonerado',compute="_compute_exoneraciones", digits=(15,2))
