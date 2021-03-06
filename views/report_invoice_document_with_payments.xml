@@ -192,9 +192,9 @@
   <xpath expr="/t/t/div/div[3]/div" position="after">
 
       <div class="row" t-if="o.fe_current_country_company_code == 'CR'">
-        <div class="" t-if="o.fiscal_position_id">
+        <div class="col-12" t-if="o.fiscal_position_id">
           <div>
-            <h5>Detalle de la Exoneración</h5>
+            <p><strong>Detalle de la Exoneración</strong></p>
             <span>Tipo del Documento: </span>
             <span t-field="o.fiscal_position_id.fiscal_position_type"/>
             <span>, Número de Exoneración: </span>
@@ -206,7 +206,7 @@
             <span>, </span>
             <span t-field="o.fiscal_position_id.tax_ids.tax_dest_id.tarifa_impuesto"/>
           </div>
-          
+
           <div>
             <span>Emitido por: </span>
             <span t-field="o.fiscal_position_id.institution_name"/>
