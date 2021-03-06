@@ -82,10 +82,10 @@ class AccountMove(models.Model):
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,
     states={'posted': [('readonly', True)]})# 1570035143
 
-    fe_total_servicio_gravados = fields.Float(string="Total servicios gravados", compute = '_compute_total_servicios_gravados' )
-    fe_total_servicio_exentos = fields.Float(string="Total servicios exentos", compute = '' )
-    fe_total_mercancias_gravadas = fields.Float(string="Total mercancias gravadas", compute = '_compute_total_mercancias_gravadas' )
-    fe_total_mercancias_exentas = fields.Integer(string="Total mercancias exentas", compute = '_compute_total_mercancias_exentas')
+    fe_total_servicio_gravados = fields.Float(string="Total servicios gravados", compute = '_compute_gravados_exentos' )
+    fe_total_servicio_exentos = fields.Float(string="Total servicios exentos", compute = '_compute_gravados_exentos' )
+    fe_total_mercancias_gravadas = fields.Float(string="Total mercancias gravadas", compute = '_compute_gravados_exentos' )
+    fe_total_mercancias_exentas = fields.Integer(string="Total mercancias exentas", compute = '_compute_gravados_exentos')
     fe_total_gravado = fields.Float(string="Total gravado", compute = '_compute_total_gravado')
     fe_total_exento = fields.Float(string="Total exento", compute = '_compute_total_exento' )
     fe_total_venta = fields.Float(string="Total venta",compute = '_compute_total_venta' )

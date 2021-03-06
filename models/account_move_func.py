@@ -132,6 +132,31 @@ class AccountMoveFunctions(models.Model):
                                 self.TotalMercExonerada = self.TotalMercExonerada + i.price_subtotal * ( percent / LineaImpuestoTarifa )
 
                       self.TotalExonerado = self.TotalServExonerado + self.TotalMercExonerada
+    def _compute_gravados_exentos(self):
+        for record in self:
+            for i in record.invoice_line_ids:
+                fisical = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
+                old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id        
+                LineaImpuestoTarifa = round(old_tax.amount,2)
+                percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
+                LineaMontoTotal = round((i.quantity * i.price_unit),5)
+                if i.product_id.type == 'service':
+                            #asking for tax for know if the product is Tax Free
+                            if i.tax_ids:
+                                if self.fiscal_position_id:
+                                    self.fe_total_servicio_gravados = self.fe_total_servicio_gravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                                else:
+                                    self.fe_total_servicio_gravados = self.fe_total_servicio_gravados + LineaMontoTotal
+                            else:
+                                self.fe_total_servicio_exentos = self.fe_total_servicio_exentos + LineaMontoTotal
+                else:
+                            if i.tax_ids:
+                                if self.fiscal_position_id:
+                                    self.fe_total_mercancias_gravadas = self.fe_total_mercancias_gravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                                else:
+                                    self.fe_total_mercancias_gravadas = self.fe_total_mercancias_gravadas + LineaMontoTotal #LineaSubTotal
+                            else:
+                                self.fe_total_mercancias_exentas = self.fe_total_mercancias_exentas + LineaMontoTotal #LineaSubTotal
 
     def _compute_total_descuento(self):
         log.info('--> factelec/_compute_total_descuento')
@@ -168,57 +193,6 @@ class AccountMoveFunctions(models.Model):
         log.info('--> factelec/_compute_total_gravado')
         for s in self:
             s.fe_total_gravado = s.fe_total_servicio_gravados + s.fe_total_mercancias_gravadas
-
-
-    def _compute_total_servicios_gravados(self):
-        log.info('--> factelec/_compute_total_servicios_gravados')
-        totalServGravados = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type == 'Service':
-                    if i.tax_ids:
-                        totalAmount = i.price_unit * i.quantity
-                        totalServGravados = totalServGravados + totalAmount
-
-        self.fe_total_servicio_gravados = totalServGravados
-
-
-    def _compute_total_servicios_exentos(self):
-        log.info('--> factelec/_compute_total_servicios_exentos')
-        totalServExentos = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type == 'Service':
-                    if i.tax_ids:
-                        totalAmount = i.price_unit * i.quantity
-                        totalServExentos = totalServExentos + totalAmount
-
-        self.fe_total_servicio_exentos  = totalServExentos
-
-
-    def _compute_total_mercancias_gravadas(self):
-        log.info('--> factelec/_compute_total_mercancias_gravadas')
-        totalMercanciasGravadas = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type != 'Service':
-                        if i.tax_ids:
-                            totalAmount = i.price_unit * i.quantity
-                            totalMercanciasGravadas = totalMercanciasGravadas + totalAmount
-        self.fe_total_mercancias_gravadas =  totalMercanciasGravadas
-
-
-    def _compute_total_mercancias_exentas(self):
-        log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO1')
-        totalMercanciasExentas = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type != 'Service':
-                        if not i.tax_ids:
-                            totalAmount = i.price_unit * i.quantity
-                            totalMercanciasExentas = totalMercanciasExentas + totalAmount
-        self.fe_total_mercancias_exentas =  totalMercanciasExentas
-
 
 
     @api.depends("fe_total_mercancias_exentas")
