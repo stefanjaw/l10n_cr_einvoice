@@ -120,6 +120,9 @@ class AccountMoveFunctions(models.Model):
 
     def _compute_exoneraciones(self):
                 for record in self:
+                  record.TotalServExonerado = 0
+                  record.TotalMercExonerada = 0
+
                   if record.fiscal_position_id:
                       for i in record.invoice_line_ids:
                             fisical = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
