@@ -347,7 +347,7 @@ class ElectronicDoc(models.Model):
                             'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                             'tax_ids': tax,
                             'account_id': account.id,
-                            'discount':discount or 0,
+                            'discount':discount[0] or 0,
                             'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
                             'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                             }
@@ -395,7 +395,7 @@ class ElectronicDoc(models.Model):
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
-                                        'discount':discount or 0,
+                                        'discount':discount[0] or 0,
                                         'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
                                         'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                                        }]
