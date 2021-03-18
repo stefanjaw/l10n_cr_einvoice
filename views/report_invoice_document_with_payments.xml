@@ -1,7 +1,8 @@
 <odoo>
 <template id="l10n_cr_einvoice.report_invoice_document_with_payments_inherit" inherit_id="account.report_invoice_document_with_payments">
   <xpath expr="/t/t/div/h2" position="before">
-      <t t-if="o.fe_current_country_company_code == 'CR'" >
+      <div class="row" t-if="o.fe_current_country_company_code == 'CR'" >
+        <div class="col-12">
             <t t-set="address" position="replace"/>
             <table class="table table-borderless mt-4 mb-4">
             <tbody>
@@ -29,7 +30,8 @@
             </tr>
             </tbody>
             </table>
-      </t>
+         </div>
+      </div>
   </xpath>
 
   <xpath expr="/t/t/div/h2"
