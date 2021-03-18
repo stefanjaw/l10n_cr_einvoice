@@ -45,11 +45,7 @@
     </xpath>
 
     <table class="table table-sm o_main_table" name="invoice_line_table" position="before">
-         <div class="row">
-              <div class="col-12">
-                  <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(1/o.currency_id.rate)"/>
-              </div>
-         </div>
+              <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(1/o.currency_id.rate)"/>
     </table>
 
    <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
