@@ -336,6 +336,10 @@ class ElectronicDoc(models.Model):
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     discount = linea.xpath("xmlns:Descuento/xmlns:MontoDescuento", namespaces=namespace)
+                    if len(discount)>0:
+                        discount = discount[0]
+                    else:
+                        discount = 0
                     tax = False
                     if percent:
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text.replace(',','.')),("company_id","=",self.company_id.id)])
@@ -347,7 +351,7 @@ class ElectronicDoc(models.Model):
                             'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                             'tax_ids': tax,
                             'account_id': account.id,
-                            'discount':discount[0] or 0,
+                            'discount':discount,
                             'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
                             'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                             }
@@ -385,6 +389,10 @@ class ElectronicDoc(models.Model):
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     discount = linea.xpath("xmlns:Descuento/xmlns:MontoDescuento", namespaces=namespace)
+                    if len(discount)>0:
+                        discount = discount[0]
+                    else:
+                        discount = 0
                     tax = False
                     if percent:
                         tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text.replace(',','.')),("company_id","=",company_id.id)])
@@ -395,7 +403,7 @@ class ElectronicDoc(models.Model):
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
-                                        'discount':discount[0] or 0,
+                                        'discount':discount,
                                         'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
                                         'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                                        }]
