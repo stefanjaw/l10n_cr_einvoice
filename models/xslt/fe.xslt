@@ -30,7 +30,6 @@ exclude-result-prefixes="d">
           </tr>
           <tr>
             <td colspan="7" style="padding-bottom: 6px;"><span style='font-weight: bold;'>Tipo de cambio: </span><xsl:value-of select="d:FacturaElectronica/d:ResumenFactura/d:CodigoTipoMoneda/d:TipoCambio"/></td>
-            <td colspan="7" style="padding-bottom: 6px;"><span style='font-weight: bold;'></td>
           </tr>
           <tr>
             <th colspan="2" style="background-color: #dcdfe5;padding-top: 6px;
