@@ -79,7 +79,7 @@ exclude-result-prefixes="d">
             <td colspan='12'></td>
             <td><span style='font-weight: bold;'>
             Descuento: </span><xsl:value-of
-           select="d:NotaCreditoElectronica/d:ResumenFactura/d:TotalDescuento"/>
+           select="d:NotaCreditoElectronica/d:ResumenFactura/d:TotalDescuentos"/>
            </td>
          </tr>
          <tr>
