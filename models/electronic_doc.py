@@ -389,6 +389,7 @@ class ElectronicDoc(models.Model):
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
                     discount = linea.xpath("xmlns:Descuento/xmlns:MontoDescuento", namespaces=namespace)
+                    log.info("============descuento==========={0}".format(str(discount)))
                     if len(discount)>0:
                         discount = discount[0]
                     else:

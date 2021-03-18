@@ -18,8 +18,8 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
-    discount = fields.Float(string='', digits=(15,4))
-    discount_percent = fields.Float(string='', digits=(15,4))
+    discount = fields.Float(string='', digits=(15,2))
+    discount_percent = fields.Float(string='', digits=(15,2))
 
 
     def tax_domain(self):
