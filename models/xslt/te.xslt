@@ -29,6 +29,9 @@ exclude-result-prefixes="d">
             <td colspan="7" style="padding-bottom: 6px;"><span style='font-weight: bold;'>Email: </span><xsl:value-of select="d:TiqueteElectronico/d:Receptor/d:CorreoElectronico"/></td>
           </tr>
           <tr>
+            <td colspan="7" style="padding-bottom: 6px;"><span style='font-weight: bold;'>Tipo de cambio: </span><xsl:value-of select="d:FacturaElectronica/d:ResumenFactura/d:CodigoTipoMoneda/d:TipoCambio"/></td>
+          </tr>
+          <tr>
             <th colspan="2" style="background-color: #dcdfe5;padding-top: 6px;
             padding-bottom: 6px;">No</th>
             <th colspan="2" style="background-color: #dcdfe5;padding-top: 6px;
