@@ -18,9 +18,13 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
-    discount = fields.Float(string='', digits=(15,2))
-    discount_percent = fields.Float(string='', digits=(15,2))
-
+    discount = fields.Float(string='Descuento', digits=(15,2))
+    discount_percent = fields.Float(compute='_compute_discount_percent', string='',digits=(15,2))
+    
+    @api.depends('discount','subtotal')
+    def _compute_discount_percent(self):
+        for record in self:
+            record.discount_percent =  (record.discount * 100) / record.subtotal
 
     def tax_domain(self):
         #agreger filtro por compañia luego
