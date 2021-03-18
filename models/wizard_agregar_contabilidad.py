@@ -59,7 +59,6 @@ class wizardAgregarContabilidad(models.TransientModel):
                 
                 invoice_lines = []   
                 
-                account_id = self.env['account.account'].search([("code","=","0-511301")])
                 for linea in doc.line_ids:
                     if linea.is_selected:
                         taxes = []
@@ -70,6 +69,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                         new_line =  [0, 0, {'name': linea.name,
                                             'tax_ids': tax_ids,
                                             'account_id': linea.account_id.id,
+                                            'discount': linea.discount_percent,
                                             'quantity': linea.quantity,
                                             'price_unit':linea.price_unit,
                                            }]
