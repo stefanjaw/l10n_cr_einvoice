@@ -41,12 +41,12 @@ class ElectronicDocLine(models.Model):
     @api.depends("price_subtotal", "tax_amount" )
     def _compute_total_linea(self):
         for record in self:
-            record.price_total = (record.price_subtotal - record.discount)+ record.tax_amount
+            record.price_total = record.price_subtotal + record.tax_amount
     
     @api.depends("quantity", "price_unit" )
     def _compute_subtotal_linea(self):
         for record in self:
-            record.price_subtotal = record.quantity * record.price_unit
+            record.price_subtotal = (record.quantity * record.price_unit) - record.discount
             
     @api.depends("price_subtotal")       
     def _compute_monto_impuesto(self):
