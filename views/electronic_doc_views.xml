@@ -88,6 +88,8 @@
                             <field name = 'tax_amount' invisible = 'True'/>
                             <field name = 'price_subtotal' readonly = 'True'/>
                             <field name = 'price_subtotal' invisible = 'True'/>
+                            <field name = 'discount' readonly = 'True'/>
+                            <field name = 'discount' invisible = 'True'/>
                             <field name = 'price_total' readonly = 'True'/>
                             <field name = 'price_total' invisible = 'True'/>
                             <field name="state" invisible="True" />

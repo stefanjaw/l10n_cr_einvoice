@@ -18,6 +18,8 @@ class ElectronicDocLine(models.Model):
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
+    discount = fields.Float(string='', digits=(15,4))
+    discount_percent = fields.Float(string='', digits=(15,4))
 
 
     def tax_domain(self):
@@ -39,7 +41,7 @@ class ElectronicDocLine(models.Model):
     @api.depends("price_subtotal", "tax_amount" )
     def _compute_total_linea(self):
         for record in self:
-            record.price_total = record.price_subtotal + record.tax_amount
+            record.price_total = (record.price_subtotal - record.discount)+ record.tax_amount
     
     @api.depends("quantity", "price_unit" )
     def _compute_subtotal_linea(self):
