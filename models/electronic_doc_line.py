@@ -21,6 +21,7 @@ class ElectronicDocLine(models.Model):
     discount = fields.Float(string='Descuento', digits=(15,2))
     discount_percent = fields.Float(compute='_compute_discount_percent', string='',digits=(15,2))
     
+    
     @api.depends('discount','price_subtotal')
     def _compute_discount_percent(self):
         for record in self:
