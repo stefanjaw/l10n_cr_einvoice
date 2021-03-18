@@ -51,7 +51,7 @@
          </div>
    </div>-->
 
-  <xpath expr="/t/t/div/div[2]" position="after">
+  <xpath expr="/t/t/div/table" position="before">
     <div class="row">
       <div class="col-3">
         <t t-if="o.currency_id.name == 'USD'">
