@@ -391,7 +391,7 @@ class ElectronicDoc(models.Model):
                     discount = linea.xpath("xmlns:Descuento/xmlns:MontoDescuento", namespaces=namespace)
                     log.info("============descuento==========={0}".format(str(discount)))
                     if len(discount)>0:
-                        discount = discount[0]
+                        discount = float(discount[0].text)
                     else:
                         discount = 0
                     tax = False
