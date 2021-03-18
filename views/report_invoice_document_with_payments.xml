@@ -43,6 +43,7 @@
         </div>
       </div>
     </xpath>
+    
     <table class="table table-sm o_main_table" name="invoice_line_table" position="before">
         hola mundo
     </table>
@@ -228,9 +229,6 @@
       </div>
       <br/>
     </xpath>
-
-  </xpath>
-
 
 </template>
 </odoo>
