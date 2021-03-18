@@ -3,7 +3,7 @@
   <xpath expr="/t/t/div/h2" position="before">
       <t t-if="o.fe_current_country_company_code == 'CR'" >
             <t t-set="address" position="replace"/>
-            <table class="table table-borderless mt-4 mb-4 mr-2">
+            <table class="table table-borderless mt-4 mb-4" style="margin-right:6px;">
             <tbody>
             <tr>
             <td><strong>Cliente:</strong></td>
