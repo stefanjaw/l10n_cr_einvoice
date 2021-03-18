@@ -60,7 +60,7 @@
           <br/>
         </span>
         <span t-field="o.currency_id.rate"/></br>
-        <span t-esc="'%.2f'%(1/o.currency_id.rate)">
+        <span t-esc="'%.2f'%(1/o.currency_id.rate)"/>
         </t>
       </div>
       <div class="col-3"/>
