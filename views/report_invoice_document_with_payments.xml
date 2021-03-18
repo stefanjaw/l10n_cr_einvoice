@@ -50,6 +50,25 @@
               </div>
          </div>
    </div>-->
+
+  <xpath expr="/t/t/div/div[2]" position="after">
+    <div class="row">
+      <div class="col-3">
+        <t t-if="o.currency_id.name == 'USD'">
+        <span>
+          <strong>Tipo de cambio:</strong>
+          <br/>
+        </span>
+        <span t-field="o.currency_id.rate"/></br>
+        <span t-esc="'%.2f'%(1/o.currency_id.rate)">
+        </t>
+      </div>
+      <div class="col-3"/>
+      <div class="col-3"/>
+      <div class="col-3"/>
+    </div>
+  </xpath>
+
    <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
     <th>
       <span>Código Cabys</span>
