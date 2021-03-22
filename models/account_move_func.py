@@ -1070,15 +1070,15 @@ class AccountMoveFunctions(models.Model):
                                 old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)]).tax_src_id
                                 LineaImpuestoTarifa = round(old_tax.amount,2)
                                 inv_lines[arrayCount]['Impuesto'] = {
-                                    'Codigo':old_tax.tarifa_impuesto,
-                                    'CodigoTarifa':old_tax.codigo_impuesto,
+                                    'Codigo':old_tax.codigo_impuesto,
+                                    'CodigoTarifa':old_tax.tarifa_impuesto,
                                     'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
                                     }
                             else:
                                 LineaImpuestoTarifa = round(tax_id.amount,2)
                                 inv_lines[arrayCount]['Impuesto'] = {
-                                    'Codigo':tax_id.tarifa_impuesto,
-                                    'CodigoTarifa':tax_id.codigo_impuesto,
+                                    'Codigo':tax_id.codigo_impuesto,
+                                    'CodigoTarifa':tax_id.tarifa_impuesto,
                                     'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
                                     }
 
