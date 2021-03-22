@@ -126,6 +126,8 @@ class AccountMoveFunctions(models.Model):
 
                   if record.fiscal_position_id:
                       for i in record.invoice_line_ids:
+                            if not i.tax_ids:
+                                continue
                             fiscal = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
                             old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id
                             LineaImpuestoTarifa = round(old_tax.amount,2)
