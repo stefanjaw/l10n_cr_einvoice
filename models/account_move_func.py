@@ -126,10 +126,10 @@ class AccountMoveFunctions(models.Model):
 
                   if record.fiscal_position_id:
                       for i in record.invoice_line_ids:
-                            fisical = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
+                            fiscal = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
                             old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id
                             LineaImpuestoTarifa = round(old_tax.amount,2)
-                            percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
+                            percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                             if i.product_id.type == 'service':
                                 record.TotalServExonerado = record.TotalServExonerado + i.price_subtotal * ( percent / LineaImpuestoTarifa )
                             else:
@@ -139,10 +139,12 @@ class AccountMoveFunctions(models.Model):
     def _compute_gravados_exentos(self):
         for record in self:
             for i in record.invoice_line_ids:
-                fisical = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
+                if not i.tax_ids:
+                    continue
+                fiscal = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
                 old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id        
                 LineaImpuestoTarifa = round(old_tax.amount,2)
-                percent = fisical.tax_src_id.amount - fisical.tax_dest_id.amount
+                percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                 LineaMontoTotal = round((i.quantity * i.price_unit),5)
                 if i.product_id.type == 'service':
                             #asking for tax for know if the product is Tax Free
