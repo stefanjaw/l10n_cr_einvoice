@@ -25,7 +25,10 @@ class ElectronicDocLine(models.Model):
     @api.depends('discount','price_subtotal')
     def _compute_discount_percent(self):
         for record in self:
-            record.discount_percent =  (record.discount * 100) / (record.quantity * record.price_unit)
+            if record.price_unit > 0.00 and record.quantity > 0.00:
+                record.discount_percent =  (record.discount * 100) / (record.quantity * record.price_unit)
+            else:
+                record.discount_percent = 0.00
 
     def tax_domain(self):
         #agreger filtro por compañia luego
