@@ -45,8 +45,8 @@ class ResPartner(models.Model):
         if self.email:
              if not re.match(r'^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$', self.email.lower()):
                  raise ValidationError('El email no tiene un formato valido.')
-        else:
-             raise ValidationError('El email es requerido')
+        #else:
+        #     raise ValidationError('El email es requerido')
             
     @api.constrains('vat')
     def _constrains_vat(self):
