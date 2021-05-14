@@ -67,5 +67,5 @@ class ResPartner(models.Model):
                     elif record.fe_identification_type == '04':
                         if len(record.vat) != 10:
                             raise ValidationError('La identificación de tipo "NITE" debe contener 10 digitos')
-            else:
-                raise ValidationError('La identificación es requerida')
+            #else:
+            #    raise ValidationError('La identificación es requerida')
