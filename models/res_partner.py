@@ -62,7 +62,7 @@ class ResPartner(models.Model):
                         if len(record.vat) != 10:
                             raise ValidationError('La identificación de tipo "Jurídico" debe contener 10 digitos')
                     elif record.fe_identification_type == '03':
-                        if len(record.vat) != 9:
+                        if len(record.vat) != 11 and len(record.vat) != 12:
                             raise ValidationError('La identificación de tipo "DIMEX" debe contener 11 ó 12 digitos')
                     elif record.fe_identification_type == '04':
                         if len(record.vat) != 10:
