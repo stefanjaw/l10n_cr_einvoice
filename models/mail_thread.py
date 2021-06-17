@@ -35,8 +35,10 @@ class mailThread(models.AbstractModel):
                     result = re.search('<(.*)>', mail_to)
                     mail_to = result.group(1)
 
+                mail_to = mail_to.split(",")
                 log.info("=====mail_to===={}".format(mail_to))
-                fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
+                #fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
+                fetch = self.env['fetchmail.server'].search([('user','in', mail_to )])
                 company = self.env['res.company'].search([('fecth_server','=',fetch.id)])
                 self.env['email'].create_email(msg_dict,company)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
