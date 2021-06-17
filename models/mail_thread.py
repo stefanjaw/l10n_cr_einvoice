@@ -35,7 +35,7 @@ class mailThread(models.AbstractModel):
                     result = re.search('<(.*)>', mail_to)
                     mail_to = result.group(1)
 
-                mail_to = mail_to.split(",")
+                mail_to = mail_to.replace(" ", "").split(",")
                 log.info("=====mail_to===={}".format(mail_to))
                 #fetch = self.env['fetchmail.server'].search([('user','=',mail_to)])
                 fetch = self.env['fetchmail.server'].search([('user','in', mail_to )])
