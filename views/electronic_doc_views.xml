@@ -139,10 +139,10 @@
         <field name="date"/>
         <field name="provider"/>
         <field name="receiver_name"/>
-        <field string="XML Aceptación" name="has_acceptance"/>
         <field name="total_amount"/>
         <field name="doc_type"/>
-        <field string="Estado Hacienda" name="fe_server_state"/>
+        <field string="XML Aceptación" name="has_acceptance" optional="show"/>
+        <field string="Estado Hacienda" name="fe_server_state" optional="show"/>
         <field name="company_id" string="Compañia" optional="show"/>
       </tree>
     </field>
