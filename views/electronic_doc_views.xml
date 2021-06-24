@@ -161,6 +161,7 @@
             <filter string="Proveedor" name="provider" domain="[]" context="{'group_by': 'provider'}"/>
             <filter string="Tipo de Documento" name="doc_type" domain="[]" context="{'group_by': 'doc_type'}"/>
             <filter string="Mensaje al Documento Proveedor" name="fe_msg_type" domain="[]" context="{'group_by': 'fe_msg_type'}"/>
+            <filter string="Fecha" name="date" domain="[]" context="{'group_by': 'date'}"/>
           </group>
       </search>
     </field>
