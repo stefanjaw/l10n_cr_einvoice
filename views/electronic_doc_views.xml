@@ -134,7 +134,7 @@
       <tree string="">
         <field name="state" string="Estado Contabilidad"/>
         <field name="consecutivo"/>
-        <field name="key"/>
+        <field name="key" string="Clave Proveedor"/>
         <field name = "fe_msg_type" string="Mensaje al Documento Proveedor"/>
         <field name="date"/>
         <field name="provider"/>
