@@ -148,7 +148,18 @@
     </field>
   </record>
 
-
+  <record id="electronic_doc_view_search" model="ir.ui.view">
+    <field name="name">doc.search</field>
+    <field name="model">electronic.doc</field>
+    <field name="arch" type="xml">
+      <search string="Search">
+        <field name="provider" string="Proveedor"/>
+        <field name="key" string="Clave"/>
+        <field name="consecutivo" string="Consecutivo"/>
+        <field name="fe_msg_type" string="Mensaje Documento del Proveedor"/>
+      </search>
+    </field>
+  </record>
 
   <record id="doc_action_form" model="ir.actions.act_window">
     <field name="name">Documentos</field>
