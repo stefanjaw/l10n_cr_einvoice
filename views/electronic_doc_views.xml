@@ -135,7 +135,7 @@
         <field name="state"/>  
         <field name="consecutivo"/>
         <field name="key"/>
-        <field name = "fe_msg_type" string="Estado Documento Proveedor"/>
+        <field name = "fe_msg_type" string="Mensaje al Documento Proveedor"/>
         <field name="date"/>
         <field name="provider"/>
         <field name="receiver_name"/>
@@ -156,7 +156,7 @@
         <field name="provider" string="Proveedor"/>
         <field name="key" string="Clave"/>
         <field name="consecutivo" string="Consecutivo"/>
-        <field name="fe_msg_type" string="Estado Documento Proveedor"/>
+        <field name="fe_msg_type" string="Mensaje al Documento Proveedor"/>
       </search>
     </field>
   </record>
