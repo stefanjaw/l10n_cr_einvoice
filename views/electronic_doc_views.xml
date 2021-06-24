@@ -132,7 +132,7 @@
     <field name="model">electronic.doc</field>
     <field name="arch" type="xml">
       <tree string="">
-        <field name="state" string="Estado Contabilidad"/>
+        <field name="state" string="Estado Contable"/>
         <field name="consecutivo"/>
         <field name="key" string="Clave Proveedor"/>
         <field name = "fe_msg_type" string="Mensaje al Documento Proveedor"/>
