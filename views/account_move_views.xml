@@ -56,7 +56,10 @@
       <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
             <group>
               <group>
-                  <field name="electronic_doc_id" attrs="{'invisible': [('fe_in_invoice_type','!=','OTRO')]}" />
+                  <field name="electronic_doc_id" attrs="{'invisible': [('fe_in_invoice_type','!=','OTRO')]}"
+                    readonly="1" groups="!account.group_account_user" />
+                  <field name="electronic_doc_id" attrs="{'invisible': [('fe_in_invoice_type','!=','OTRO')]}"
+                    readonly="0" groups="account.group_account_user" string="XML."/>
               </group>
             </group>
       </xpath>
