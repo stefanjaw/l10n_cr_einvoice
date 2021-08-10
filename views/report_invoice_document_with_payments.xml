@@ -46,7 +46,7 @@
     
     <table class="table table-sm o_main_table" name="invoice_line_table" position="before">
             <t t-if="o.currency_id.name == 'USD' "> 
-                 <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(1/o.currency_id.rate)"/>
+                 <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(o.amount_total_signed/o.amount_total)"/>
             </t>
     </table>
 
