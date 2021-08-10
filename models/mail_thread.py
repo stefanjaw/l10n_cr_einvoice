@@ -38,9 +38,8 @@ class mailThread(models.AbstractModel):
                 mail_to = mail_to.replace(" ", "").split(",")
                 log.info("=====mail_to===={}".format(mail_to))
                 
-                fetch = self.env['res.company'].search([ ('fecth_server.user','in', mail_to ) ], limit=1)
+                company = self.env['res.company'].search([('fecth_server.user','in', mail_to )], limit=1)
                 
-                company = self.env['res.company'].search([('fecth_server','=',fetch.id)])
                 self.env['email'].create_email(msg_dict,company)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
                 self.env['electronic.doc'].automatic_bill_creation(docs,company)
