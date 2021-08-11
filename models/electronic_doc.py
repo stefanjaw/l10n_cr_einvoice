@@ -14,6 +14,7 @@ import requests
 from io import BytesIO
 
 log = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class ElectronicDoc(models.Model):
