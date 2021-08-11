@@ -438,6 +438,11 @@ class ElectronicDoc(models.Model):
             "UC05A"
             provider = self.get_provider(dic, doc_type)
             receiver_number = self.get_receiver_identification(dic, doc_type) or company.vat or False
+            
+            new_company = self.env['res.company'].search([ ( 'vat', '=', receiver_number ) ])
+            if new_company:
+                company = new_company
+            
             receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
             bill_number = self.get_bill_number(dic, doc_type) 
             xml_bill = xml
