@@ -100,6 +100,7 @@ class ElectronicDoc(models.Model):
     fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
     line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True,ondelete="cascade",)
     currency_id = fields.Many2one('res.currency', string='Moneda')
+    currency_exchange = fields.Float(string="Tipo de Cambio")
     display_name = fields.Char(
         string='Name',
         compute='_compute_display_name',
@@ -430,7 +431,9 @@ class ElectronicDoc(models.Model):
         doc_type = self.get_doc_type(dic)
 
         key = self.get_key(dic, doc_type)
-
+        
+        currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+        
         electronic_doc = self.env['electronic.doc']
         "UC07"
         if (not electronic_doc.search([('key', '=', key),
@@ -475,6 +478,7 @@ class ElectronicDoc(models.Model):
                 'key': key,
                 'provider': provider,
                 'currency_id':currency_id.id,
+                'currency_exchange': currency_exchange,
                 'company_id':company.id or False,
                 'receiver_number': receiver_number,
                 'receiver_name': receiver_name,
