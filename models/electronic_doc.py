@@ -174,6 +174,12 @@ class ElectronicDoc(models.Model):
                     xml_currency = self.get_currency(dic, doc_type)
                     currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
                     currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+                    
+                    receiver_number = self.get_receiver_identification(dic, doc_type)
+                    receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
+                    if receiver_company.id != self.env.company.id:
+                        raise ValidationError( _("Este documento no pertenece a esta compañía!") )
+
                     self.write({
                         'key':self.get_key(dic, doc_type),
                         'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
