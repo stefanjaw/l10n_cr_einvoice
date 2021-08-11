@@ -509,13 +509,13 @@ class ElectronicDoc(models.Model):
                 'xml_acceptance_name': xml_acceptance_name or '{}_aceptacion.xml'.format(key),
             })
 
-    def add_pdf(self,key,pdf):
+    def add_pdf(self,key,pdf,fname):
         log.info("=====pdf========{}".format(key))
         document = self.env['electronic.doc'].search([('key', '=', key)])
         if (document):
             document.update({
                 'fe_pdf': base64.b64encode(pdf),
-                'fe_name_pdf': '{}.pdf'.format(key),
+                'fe_name_pdf': fname,
             })
 
     def transform_to_xslt(self, root_xml, doc_type):
@@ -738,7 +738,7 @@ class ElectronicDoc(models.Model):
                 if '.pdf' in str(item.fname).lower() and clave:
                     log.info("pdf ======creando====")
                     pdf = item.content
-                    self.add_pdf(clave,pdf)
+                    self.add_pdf( clave, pdf, str(item.fname).lower() )
 
              
 
