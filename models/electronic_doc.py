@@ -442,7 +442,9 @@ class ElectronicDoc(models.Model):
             new_company = self.env['res.company'].search([ ( 'vat', '=', receiver_number ) ])
             if new_company:
                 company = new_company
-            
+            else:
+                _logger.info("ERROR:   Vendor Bill with Receiver Tax ID: %s Not Found", receiver_number)
+
             receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
             bill_number = self.get_bill_number(dic, doc_type) 
             xml_bill = xml
