@@ -173,10 +173,12 @@ class ElectronicDoc(models.Model):
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
                     xml_currency = self.get_currency(dic, doc_type)
                     currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
+                    currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
                     self.write({
                         'key':self.get_key(dic, doc_type),
                         'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
                         'currency_id':currency_id,
+                        'currency_exchange': currency_exchange,
                         'electronic_doc_bill_number':self.get_bill_number(dic, doc_type),
                         'date':self.get_date(dic, doc_type),
                         'doc_type':doc_type,
