@@ -736,6 +736,9 @@ class ElectronicDoc(models.Model):
 
                 log.info("pdf ======={}====clave=={}".format(str(item.fname).lower(),clave))
                 if '.pdf' in str(item.fname).lower() and clave:
+                    if 'interpretacion' in str(item.fname).lower():
+                        _logger.info("ERROR: PDF COMIENZA CON LA PALABRA INTERPRETACION, NO SE TOMA EN CUENTA")
+                        continue
                     log.info("pdf ======creando====")
                     pdf = item.content
                     self.add_pdf( clave, pdf, str(item.fname).lower() )
