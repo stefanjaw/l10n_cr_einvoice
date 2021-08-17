@@ -26,6 +26,7 @@
                       <field name="email_from"/>
                       <field name="to"/>
                       <field name="subject"/>
+                      <field name="company_id" options="{'no_create': True, 'no_create_edit': True}" />
                     </group>
                   <notebook>
                     <page string='body'>
