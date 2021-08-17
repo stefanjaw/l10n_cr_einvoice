@@ -173,8 +173,12 @@ class ElectronicDoc(models.Model):
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
                     xml_currency = self.get_currency(dic, doc_type)
                     currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
-                    currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
                     
+                    try:
+                        currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+                    except:
+                        currency_exchange = 1
+                        
                     receiver_number = self.get_receiver_identification(dic, doc_type)
                     receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
                     if receiver_company.id != self.env.company.id:
@@ -442,8 +446,11 @@ class ElectronicDoc(models.Model):
 
         key = self.get_key(dic, doc_type)
         
-        currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-        
+        try:
+            currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+        except:
+            currency_exchange = 1
+
         electronic_doc = self.env['electronic.doc']
         "UC07"
         if (not electronic_doc.search([('key', '=', key),
