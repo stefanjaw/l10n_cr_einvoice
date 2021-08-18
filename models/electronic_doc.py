@@ -173,11 +173,27 @@ class ElectronicDoc(models.Model):
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
                     xml_currency = self.get_currency(dic, doc_type)
                     currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
-                    
-                    try:
-                        currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-                    except:
-                        currency_exchange = 1
+
+                    if dic.get('FacturaElectronica'):
+                        try:
+                            currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+                        except:
+                            currency_exchange = 1
+                    elif dic.get('NotaCreditoElectronica'):
+                        try:
+                            currency_exchange = dic.get('NotaCreditoElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+                        except:
+                            currency_exchange = 1
+                    elif dic.get('NotaDebitoElectronica'):
+                        try:
+                            currency_exchange = dic.get('NotaDebitoElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+                        except:
+                            currency_exchange = 1
+                    elif dic.get('TiqueteElectronico'):
+                        try:
+                            currency_exchange = dic.get('TiqueteElectronico').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
+                        except:
+                            currency_exchange = 1
                         
                     receiver_number = self.get_receiver_identification(dic, doc_type)
                     receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
