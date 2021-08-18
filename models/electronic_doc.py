@@ -171,30 +171,10 @@ class ElectronicDoc(models.Model):
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
-                    xml_currency = self.get_currency(dic, doc_type)
+                    xml_currency = self.get_currency(dic, doc_type).get('CodigoMoneda')
                     currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
+                    currency_exchange = self.get_currency(dic, doc_type).get('TipoCambio')
 
-                    if dic.get('FacturaElectronica'):
-                        try:
-                            currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-                        except:
-                            currency_exchange = 1
-                    elif dic.get('NotaCreditoElectronica'):
-                        try:
-                            currency_exchange = dic.get('NotaCreditoElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-                        except:
-                            currency_exchange = 1
-                    elif dic.get('NotaDebitoElectronica'):
-                        try:
-                            currency_exchange = dic.get('NotaDebitoElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-                        except:
-                            currency_exchange = 1
-                    elif dic.get('TiqueteElectronico'):
-                        try:
-                            currency_exchange = dic.get('TiqueteElectronico').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-                        except:
-                            currency_exchange = 1
-                        
                     receiver_number = self.get_receiver_identification(dic, doc_type)
                     receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
                     if receiver_company.id != self.env.company.id:
@@ -462,11 +442,6 @@ class ElectronicDoc(models.Model):
 
         key = self.get_key(dic, doc_type)
         
-        try:
-            currency_exchange = dic.get('FacturaElectronica').get('ResumenFactura').get('CodigoTipoMoneda').get('TipoCambio')
-        except:
-            currency_exchange = 1
-
         electronic_doc = self.env['electronic.doc']
         "UC07"
         if (not electronic_doc.search([('key', '=', key),
@@ -488,9 +463,10 @@ class ElectronicDoc(models.Model):
             date = self.get_date(dic, doc_type)
             total_amount = self.format_to_valid_float(self.get_total_amount(dic, doc_type))
             fe_monto_total_impuesto = self.format_to_valid_float(self.get_total_tax(dic, doc_type))
-            xml_currency = self.get_currency(dic, doc_type)
+            xml_currency = self.get_currency(dic, doc_type).get('CodigoMoneda')
             currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
-            
+            currency_exchange = self.get_currency(dic, doc_type).get('TipoCambio')
+
             "UC05C"
             xslt = self.transform_to_xslt(xml, doc_type)
             if (not receiver_number):
@@ -661,11 +637,13 @@ class ElectronicDoc(models.Model):
             key = 'NotaCreditoElectronica'
             
         if dic[key]['ResumenFactura'].get('CodigoTipoMoneda') == None:
-            return 'CRC'
+            return { 'CodigoMoneda': 'CRC', 'TipoCambio': 1,}
         elif dic[key]['ResumenFactura'].get('CodigoTipoMoneda').get('CodigoMoneda') == None:
-            return 'CRC'
-            
-        return dic[key]['ResumenFactura']['CodigoTipoMoneda']['CodigoMoneda']
+            return { 'CodigoMoneda': 'CRC', 'TipoCambio': 1,}
+
+        return  { 'CodigoMoneda': dic[key]['ResumenFactura']['CodigoTipoMoneda']['CodigoMoneda'],
+                 'TipoCambio': dic[key]['ResumenFactura']['CodigoTipoMoneda']['TipoCambio']
+                }
     
     def get_provider_identification(self, dic, doc_type):
         #this method validate that exist a receiver number
