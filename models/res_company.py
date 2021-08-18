@@ -34,6 +34,8 @@ class ResCompany(models.Model):
     )
     fe_url_server = fields.Char(string="Url del server para facturar",default='http://localhost/api/v1/billing/')
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
+    
+    fe_email = fields.Char(string="Email de Recepcion XMLs")
     fecth_server = fields.Many2one('fetchmail.server', string='Servidor Correo')
     default_account_for_invoice_email = fields.Many2one('account.account', string='Cuenta contable facturas por email',
     help="Esta cuenta sera asignada por default a las lineas de las facturas creadas automaticamente por email")
