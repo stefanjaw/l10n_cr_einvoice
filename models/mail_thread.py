@@ -29,7 +29,7 @@ class mailThread(models.AbstractModel):
         if name_field in fields and not data.get('name'):
             data[name_field] = msg_dict.get('subject', '')
         if msg_dict:
-            _log.info("32====DEB msg_dict: %s", msg_dict)
+            log.info("32====DEB msg_dict: %s", msg_dict)
             if msg_dict.get('message_id', ''):
                 mail_to = msg_dict.get('to', '')
                 log.info("=====mail_to===={}".format(mail_to))
