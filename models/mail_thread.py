@@ -31,21 +31,20 @@ class mailThread(models.AbstractModel):
         if msg_dict:
             if msg_dict.get('message_id', ''):
                 mail_to = msg_dict.get('to', '')
-                if '<' in mail_to and '>' in mail_to:
-                    result = re.search('<(.*)>', mail_to)
-                    mail_to = result.group(1)
-
-                mail_to = mail_to.replace(" ", "").split(",")
                 log.info("=====mail_to===={}".format(mail_to))
                 
+                mail_to_lst = mail_to.split(",")
+                
                 company = False
-                for email1 in mail_to:
-                    try:
-                        email1_domain = email1.split("@")[1]
-                    except:
-                        continue
-
-                    company = self.env['res.company'].search([('fecth_server.user','ilike', email1_domain )], limit=1)
+                for email_to in mail_to_lst:
+                    
+                    if '<' in email_to and '>' in email_to:
+                        result = re.search('<(.*)>', email_to)
+                        email_to = result.group(1)
+                    
+                    email_to = email_to.replace(" ", "")
+                    
+                    company = self.env['res.company'].search([('fecth_server.user','=', email_to )], limit=1)
                     if company:
                         break
 
