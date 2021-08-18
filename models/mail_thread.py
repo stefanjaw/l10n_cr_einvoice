@@ -45,7 +45,7 @@ class mailThread(models.AbstractModel):
                     
                     email_to = email_to.replace(" ", "")
                     
-                    company = self.env['res.company'].search([('fecth_server.user','=', email_to )], limit=1)
+                    company = self.env['res.company'].search([('fe_email','=', email_to )], limit=1)
                     if company:
                         break
 
