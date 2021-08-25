@@ -456,6 +456,7 @@ class ElectronicDoc(models.Model):
                 company = new_company
             else:
                 _logger.info("ERROR:   Vendor Bill with Receiver Tax ID: %s Not Found", receiver_number)
+                return False
 
             receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
             bill_number = self.get_bill_number(dic, doc_type) 
@@ -743,9 +744,11 @@ class ElectronicDoc(models.Model):
                     xml_name = item.fname
                     dic = self.convert_xml_to_dic(xml)
                     doc_type = self.get_doc_type(dic)
-                    if doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC':
+                    if doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC' or doc_type == 'ND' :
                         clave = self.get_key(dic,doc_type)
-                        self.create_electronic_doc(xml, xml_name,company)
+                        is_created = self.create_electronic_doc(xml, xml_name,company)
+                        if is_created == False:
+                            return
 
                     elif doc_type == 'MH':
                         self.add_acceptance(xml, xml_name)
