@@ -178,7 +178,8 @@ class ElectronicDoc(models.Model):
                     receiver_number = self.get_receiver_identification(dic, doc_type)
                     receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
                     if receiver_company.id != self.env.company.id:
-                        message1 = "Este documento no pertenece a esta compañía, pertenece a: " + receiver_company.name
+                        message1 = "Error:\n El receptor de este document es: {}\n y fue enviado por: {}".format( 
+                           self.get_receiver_name(dic, doc_type), self.get_provider(dic, doc_type) )
                         raise ValidationError( _(message1) )
 
                     self.write({
