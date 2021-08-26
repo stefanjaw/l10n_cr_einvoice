@@ -26,28 +26,16 @@ class mailThread(models.AbstractModel):
         RecordModel = self.env[model]
         fields = RecordModel.fields_get()
         name_field = RecordModel._rec_name or 'name'
+        fetchmail_server_int = self._context.get('default_fetchmail_server_id')
+        company = self.env['res.company'].sudo().search([('fecth_server.id','=', fetchmail_server_int)])
         if name_field in fields and not data.get('name'):
             data[name_field] = msg_dict.get('subject', '')
         if msg_dict:
-            log.info("32====DEB msg_dict: %s", msg_dict)
             if msg_dict.get('message_id', ''):
                 mail_to = msg_dict.get('to', '')
                 log.info("=====mail_to===={}".format(mail_to))
                 
                 mail_to_lst = mail_to.split(",")
-                
-                company = False
-                for email_to in mail_to_lst:
-                    
-                    if '<' in email_to and '>' in email_to:
-                        result = re.search('<(.*)>', email_to)
-                        email_to = result.group(1)
-                    
-                    email_to = email_to.replace(" ", "")
-                    
-                    company = self.env['res.company'].search([('fe_email','=', email_to )], limit=1)
-                    if company:
-                        break
 
                 self.env['email'].create_email(msg_dict,company)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
