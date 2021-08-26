@@ -68,7 +68,11 @@ class email(models.Model):
                     list_attachments = msg_dict.get('attachments', '')
 
                     for item in list_attachments:
-                        doc = base64.b64encode(item.content)
+                        item_content = item.content
+                        if type(item_content) is str:
+                            continue
+
+                        doc = base64.b64encode( item_content )
                         "UC03"
                         if '.xml' in str(item.fname).lower():
                             dic = self.env['electronic.doc'].convert_xml_to_dic(
