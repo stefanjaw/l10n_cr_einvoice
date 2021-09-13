@@ -32,6 +32,7 @@ class mailThread(models.AbstractModel):
         _logger.info("32DEB====company: \n%s", company)
         if name_field in fields and not data.get('name'):
             data[name_field] = msg_dict.get('subject', '')
+        data['company_id'] = company.id
         if msg_dict:
             if msg_dict.get('message_id', ''):
                 mail_to = msg_dict.get('to', '')
