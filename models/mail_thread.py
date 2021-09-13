@@ -9,7 +9,7 @@ import re
 
 from io import BytesIO
 
-log = logging.getLogger(__name__)
+log = _logger = logging.getLogger(__name__)
 
 class mailThread(models.AbstractModel):
 
@@ -40,7 +40,7 @@ class mailThread(models.AbstractModel):
                 self.env['email'].create_email(msg_dict,company)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
                 self.env['electronic.doc'].automatic_bill_creation(docs,company)
-
+        _logger.info("43DEB====DATA: \n%s", data)
         return RecordModel.create(data)
 
     def order_documents(self, attachments):
