@@ -32,7 +32,7 @@ class mailThread(models.AbstractModel):
         if name_field in fields and not data.get('name'):
             data[name_field] = msg_dict.get('subject', '')
 
-        if data.get('company_id):
+        if data.get('company_id'):
             data['company_id'] = company.id
 
         if msg_dict:
