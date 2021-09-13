@@ -25,6 +25,7 @@ class mailThread(models.AbstractModel):
         model = self._context.get('thread_model') or self._name
         RecordModel = self.env[model]
         fields = RecordModel.fields_get()
+        _logger.info("28DEB====FIELDS: \n%s", fields)
         name_field = RecordModel._rec_name or 'name'
         fetchmail_server_int = self._context.get('default_fetchmail_server_id')
         company = self.env['res.company'].sudo().search([('fecth_server.id','=', fetchmail_server_int)])
