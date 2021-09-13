@@ -29,6 +29,7 @@ class mailThread(models.AbstractModel):
         name_field = RecordModel._rec_name or 'name'
         fetchmail_server_int = self._context.get('default_fetchmail_server_id')
         company = self.env['res.company'].sudo().search([('fecth_server.id','=', fetchmail_server_int)])
+        _logger.info("32DEB====company: \n%s", company)
         if name_field in fields and not data.get('name'):
             data[name_field] = msg_dict.get('subject', '')
         if msg_dict:
@@ -41,7 +42,7 @@ class mailThread(models.AbstractModel):
                 self.env['email'].create_email(msg_dict,company)
                 docs = self.order_documents(msg_dict.get('attachments', ''))
                 self.env['electronic.doc'].automatic_bill_creation(docs,company)
-        _logger.info("43DEB====DATA: \n%s", data)
+        _logger.info("45DEB====DATA: \n%s", data)
         return RecordModel.create(data)
 
     def order_documents(self, attachments):
