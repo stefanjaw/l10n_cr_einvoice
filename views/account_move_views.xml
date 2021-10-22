@@ -6,16 +6,21 @@
   <field name="model">account.move</field>
   <field name="inherit_id" ref="account.view_move_form"/>
   <field name="arch" type="xml">
-      
+
       <xpath expr="//header/button[@name='action_reverse']" position="after">
             <button name="mostrar_wizard_nota_debito" type="object" string="Add Debit Note"
-            attrs="{'invisible': ['|', ('type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}"/>
+            attrs="{'invisible': ['|', ('move_type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}"/>
       </xpath>
+
+      
       <field name="product_uom_id" position="attributes">
         <attribute name="groups"></attribute>
       </field>
+      
       <xpath expr="//page[last()]" position="after">
         <field name ="fe_current_country_company_code" invisible="1"/>
+        <field name ="fe_in_invoice_type" invisible="1"/>
+        
         <page string="Facturacion electrónica" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}">
           <form>
             <group>
@@ -33,26 +38,30 @@
           </form>
         </page>
       </xpath>
-      <!--<xpath expr="//sheet/h1" position="after">
-          <h3><field name="fe_clave" readonly="1"/></h3>
-      </xpath>-->
+
       
+      <!-- PRUEBA Quitando 2 -->
      <field name="name" position="after">
             <h3><field name="fe_clave" readonly="1" attrs="{'invisible': [('state','=','draft')]}" /></h3>
             <field name="fe_clave" invisible="1"/>
       </field>
        
        <field name="ref" position="attributes">
-           <attribute name="attrs">{ 'required':[('fe_doc_ref','!=',False),('type','=','in_invoice')] }</attribute>
+           <attribute name="attrs">{ 'required':[('fe_doc_ref','!=',False),('move_type','=','in_invoice')] }</attribute>
        </field>
+      
+      <!--  Prueba Quitando 2 -->
       <field name="journal_id" position="replace">
         <field name="journal_id"  options="{'no_create': True}" domain="[('type', '=?', invoice_filter_type_domain)]" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
-        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')]}"/>
-        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/>
-        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/> 
-        <field name="fecha_factura_simplificada" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False),('fe_in_invoice_type','=','FEC')]}"/>
+        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('move_type','!=','in_invoice')]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('move_type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('move_type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False)]}"/> 
+        <field name="fecha_factura_simplificada" attrs="{'invisible': ['|',('fe_in_invoice_type','=','OTRO'),('move_type','!=','in_invoice')],'required':[('fe_doc_ref','!=',False),('fe_in_invoice_type','=','FEC')]}"/>
       </field>
+
+
       
+      <!-- Prueba Quitando 3 -->
       <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
             <group>
               <group>
@@ -63,7 +72,9 @@
               </group>
             </group>
       </xpath>
+
       
+      <!-- Prueba quitando 4 -->
       <field name="ref" position="after">
           <field name ='fe_in_invoice_type' invisible = 'True' />
           <field name = "fe_payment_type"  attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
@@ -72,14 +83,20 @@
           <field name="fe_server_state" readonly='1' attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
           <field name = "fe_currency_rate" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
       </field>
-      <!--<div groups="base.group_multi_currency" position="after">
+
+
+      <!--  Prueba - Este Ya estaba antes comentado
+      <div groups="base.group_multi_currency" position="after">
         <field name = "fe_currency_rate" readonly="1"/>
       </div>-->
+      
       <!--Vendor bill-->
+      <!-- Prueba 6 quitando  -->
       <field name="narration" nolabel="1" height="50" position="after">
          <field name = "fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
          <field name = "fe_xml_supplier_xslt" invisible="1"/>
       </field>
+
 
   </field>
 </record>
@@ -94,16 +111,21 @@
       <field name="journal_id" position="after">
         <field name = 'debit_note' invisible="True"/>
         <field name ="fe_current_country_company_code" invisible="1"/>
-        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>
-        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>
-        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>                  
-     </field>
+          
+          <!-- Quitado esto ya que da error al realizar el Upgrade del App  -->
+        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('move_type','!=','out_refund'),('debit_note','=',False)]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('move_type','!=','out_refund'),('debit_note','=',False)]}"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('move_type','!=','out_refund'),('debit_note','=',False)]}"/>
+        
+     </field> 
     </field>
   </record>
-    
-     <record id="account.action_move_out_invoice_type" model="ir.actions.act_window">
-      <field name="domain">[('type', '=', 'out_invoice'),('debit_note', '=', False)]</field>
+  
+  <!-- QUITADO TEMPORALMENTE  -->
+  <record id="account.action_move_out_invoice_type" model="ir.actions.act_window">
+      <field name="domain">[('move_type', '=', 'out_invoice'),('debit_note', '=', False)]</field>
   </record>
+  
 
   <record id="action_for_debit_notes" model="ir.actions.act_window">
       <field name="name">Debit Notes</field>
