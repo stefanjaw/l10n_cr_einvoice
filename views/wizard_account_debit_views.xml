@@ -11,8 +11,11 @@
                          <field name="fe_reason" string="Razón" required="1"/>
                        </group>
                         <group>
+                            <!-- Se elimina el domain ya que no hay un prefix_code con el 02
                             <field name="journal_id" options="{'no_create': True, 'no_create_edit': True}"
                              domain= '[["sequence_id.prefix_code","in",["02"]]]' required="1"/>
+                            -->
+                            <field name="journal_id" options="{'no_create': True, 'no_create_edit': True}" />
                             <field name = "fe_informacion_referencia_codigo" required="True"/>
                             <field name = "fe_tipo_documento_referencia" required="True"/>
                         </group>
