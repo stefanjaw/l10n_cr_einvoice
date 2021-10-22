@@ -17,6 +17,7 @@ import time
 #import os
 
 log = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 TYPE2REFUND = {
     'out_invoice': 'out_refund',        # Customer Invoice
@@ -31,8 +32,14 @@ class AccountMoveFunctions(models.Model):
 
     @api.model
     def default_fe_in_invoice_type(self):
+        _logger.info("1634495301 default_fe_in_invoice_type")
         journal = super(AccountMoveFunctions, self)._get_default_journal()
-        if len(journal.sequence_id.prefix) == 10 :
+        
+        _logger.info("1634495301a journal: %s", journal)
+        #_logger.info("1634495301b self.search_read: %s", self.sudo().search_read([]) )
+        _logger.info("1634495301c self.name: %s", self.name)
+        
+        if self.name and len(self.name) == 20 :
                 if journal.sequence_id.prefix[8:10] == '08':
                    return 'FEC'
                 elif journal.sequence_id.prefix[8:10] == '09':
@@ -46,28 +53,64 @@ class AccountMoveFunctions(models.Model):
         else:
             return 'OTRO'
 
-
-    @api.onchange("journal_id",)
-    def _onchange_journal_id(self):
-        self.fe_in_invoice_type = 'OTRO'
+    @api.onchange("name",)
+    def _onchange_name(self):
+        _logger.info("1634495302X _onchange_name")
         if self.journal_id:
-            if len(self.journal_id.sequence_id.prefix) == 10 :
-                if self.journal_id.sequence_id.prefix[8:10] == '08':
+            if len(self.name) == 20 :
+                if self.name[8:10] == '08':
                     self.fe_in_invoice_type = 'FEC'
-                elif self.journal_id.sequence_id.prefix[8:10] == '09':
+                elif self.name[8:10] == '09':
                     self.fe_in_invoice_type = 'FEX'
-                elif self.journal_id.sequence_id.prefix[8:10] == '01':
+                elif self.name[8:10] == '01':
                     self.fe_in_invoice_type = 'FE'
-                elif self.journal_id.sequence_id.prefix[8:10] == '02':
+                elif self.name[8:10] == '02':
                     self.fe_in_invoice_type = 'ND'
                 else:
                     self.fe_in_invoice_type = 'OTRO'
             else:
                 self.fe_in_invoice_type = 'OTRO'
                 log.info('largo del prefijo del diario menor a 10')
+            
+            _logger.info("1634495302X self.fe_in_invoice_type: %s", self.fe_in_invoice_type)
+        
+        
+
+    @api.onchange("journal_id",)
+    def _onchange_journal_id(self):
+        
+        _logger.info("1634495302 _onchange_journal_id")
+        
+        self.fe_in_invoice_type = 'OTRO'
+        
+        _logger.info("1634495302a self.name: %s", self.name)
+        
+        _logger.info("1634495302b len self.name: %s", len(self.name) )
+        #_logger.info("1634495302b self.name: %s", self.sudo().search_read([]) )
+        
+        
+        if self.journal_id:
+            if len(self.name) == 20 :
+                if self.name[8:10] == '08':
+                    self.fe_in_invoice_type = 'FEC'
+                elif self.name[8:10] == '09':
+                    self.fe_in_invoice_type = 'FEX'
+                elif self.name[8:10] == '01':
+                    self.fe_in_invoice_type = 'FE'
+                elif self.name[8:10] == '02':
+                    self.fe_in_invoice_type = 'ND'
+                else:
+                    self.fe_in_invoice_type = 'OTRO'
+            else:
+                self.fe_in_invoice_type = 'OTRO'
+                log.info('largo del prefijo del diario menor a 10')
+
+        _logger.info("1634495302z DETECTADO: %s self.fe_in_invoice_type: %s", self.name[8:10], self.fe_in_invoice_type)
+                
                 
     @api.onchange("currency_id","invoice_date",)
     def _onchange_currency_rate(self):
+        _logger.info("1634495303 _onchange_currency_rate") 
         #buscar error con respecto a dolares
         '''for s in self:
             log.info('-->577381353')
@@ -82,6 +125,7 @@ class AccountMoveFunctions(models.Model):
                             
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
+         _logger.info("1634495304 _constrains_fe_doc_ref") 
          if self.name[8:10] == '03' or self.name[8:10] == '02':
                 doc = self.search([('name', '=', self.fe_doc_ref)])
                 if not doc:
@@ -90,6 +134,7 @@ class AccountMoveFunctions(models.Model):
         
     
     def _rate(self,date):
+        _logger.info("1634495305 _rate") 
         rate_obj = self.env['res.currency.rate'].search([('name','=',date),('company_id','=',self.company_id.id)])
         if rate_obj:
             rate_calculation = 1 / rate_obj.rate
@@ -109,16 +154,15 @@ class AccountMoveFunctions(models.Model):
                 self.fe_currency_rate = "No existe el tipo de cambio"
                 return 
     
-    
-    
-
     @api.depends('company_id')
     def _get_country_code(self):
+        _logger.info("1634495306 _get_country_code") 
         log.info('--> 1575319718')
         for s in self:
             s.fe_current_country_company_code = s.company_id.country_id.code
 
     def _compute_exoneraciones(self):
+                _logger.info("1634495307 _compute_exoneraciones") 
                 for record in self:
                   record.TotalServExonerado = 0
                   record.TotalMercExonerada = 0
@@ -139,6 +183,7 @@ class AccountMoveFunctions(models.Model):
 
                       record.TotalExonerado = record.TotalServExonerado + record.TotalMercExonerada
     def _compute_gravados_exentos(self):
+        _logger.info("1634495308 _compute_gravados_exentos") 
         for record in self:
             for i in record.invoice_line_ids:
                 if not i.tax_ids:
@@ -171,6 +216,7 @@ class AccountMoveFunctions(models.Model):
 
     def _compute_total_descuento(self):
         log.info('--> factelec/_compute_total_descuento')
+        _logger.info("1634495309 _compute_total_descuento") 
         for s in self:
             totalDiscount = 0
             for i in s.invoice_line_ids:
@@ -182,6 +228,7 @@ class AccountMoveFunctions(models.Model):
 
     def _compute_total_venta(self):
         log.info('--> factelec/_compute_total_venta')
+        _logger.info("1634495310 _compute_total_venta") 
         for s in self:
             totalSale = 0
             for i in s.invoice_line_ids:
@@ -193,6 +240,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.depends("fe_total_mercancias_exentas")
     def _compute_total_mercancias_exentas(self):
+        _logger.info("1634495311 _compute_total_mercancias_exentas") 
         log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO2')
         total_mercancias_exentas = 0
         for s in self:
@@ -207,6 +255,7 @@ class AccountMoveFunctions(models.Model):
 
     def _remove_sign(self,xml):
         log.info('--> factelec/_remove_sign')
+        _logger.info("1634495312 _remove_sign") 
         ds = "http://www.w3.org/2000/09/xmldsig#"
         xades = "http://uri.etsi.org/01903/v1.3.2#"
 
@@ -217,11 +266,13 @@ class AccountMoveFunctions(models.Model):
         return root_xml
 
     def convert_xml_to_dic(self, xml):
+        _logger.info("1634495313 convert_xml_to_dic") 
         log.info('--> factelec-Invoice-convert_xml_to_dic')
         dic = xmltodict.parse(base64.b64decode(xml))
         return dic
 
     def get_doc_type(self, dic):
+        _logger.info("1634495314 get_doc_type") 
         log.info('--> factelec/get_doc_type')
         tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
         tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
@@ -242,6 +293,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.onchange("fe_xml_supplier_hacienda")
     def _onchange_xml_hacienda(self):
+       _logger.info("1634495315 _onchange_xml_hacienda") 
        #1569524732
        if self.fe_xml_supplier_hacienda:
            root_xml = self._remove_sign(self.fe_xml_supplier_hacienda)
@@ -251,6 +303,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.onchange("fe_xml_supplier")
     def _onchange_xml_factura(self):
+        _logger.info("1634495316 _onchange_xml_factura ") 
         #1569524296
         log.info('--> factelec/_onchange_field')
         if self.fe_xml_supplier:
@@ -274,6 +327,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _cr_validate_mensaje_receptor(self):
+        _logger.info("1634495317 _cr_validate_mensaje_receptor") 
         log.info('--> factelec-Invoice-_cr_validate_mensaje_receptor')
         #if self.state != 'open':  #Se cambio de 'open' a draft or cancel
         #if (self.state != 'open' and self.state != 'paid'):
@@ -293,6 +347,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _cr_xml_mensaje_receptor(self):
+        _logger.info("1634495318  _cr_xml_mensaje_receptor") 
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
 
         bill_dic = self.convert_xml_to_dic(self.fe_xml_supplier)
@@ -324,6 +379,7 @@ class AccountMoveFunctions(models.Model):
             raise exceptions.Warning((msg))
 
     def _cr_post_server_side(self):
+        _logger.info("1634495319 _cr_post_server_side") 
         if not self.company_id.fe_certificate:
             raise exceptions.Warning(('No se encuentra el certificado en compañia'))
             
@@ -376,6 +432,7 @@ class AccountMoveFunctions(models.Model):
 
     def confirm_bill(self):
         log.info('--> factelec-Invoice-confirm_bill')
+        _logger.info("1634495320 confirm_bill") 
 
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
@@ -443,6 +500,7 @@ class AccountMoveFunctions(models.Model):
                 self._cr_post_server_side()
 
     def transform_doc(self,root_xml,type):
+        _logger.info("1634495321 transform_doc") 
         log.info('--> transform_doc')
         transform = None
         dom = ET.fromstring(tostring(root_xml,pretty_print=True))
@@ -457,6 +515,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _get_date(self, date):
+       _logger.info("1634495322 _get_date") 
        log.info('--> factelec/Invoice/_get_date')
        date_obj = datetime.strptime(date, "%Y-%m-%d")
 
@@ -467,6 +526,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _transform_date(self,date,tz):
+        _logger.info("1634495323  _transform_date") 
         log.info('--> factelec-Invoice-_transform_date')
         new_date = ''
         if tz == "GMT":
@@ -479,6 +539,7 @@ class AccountMoveFunctions(models.Model):
         return new_date
 
     def _validate_company(self):
+        _logger.info("1634495324 _validate_company") 
         log.info('--> _validate_company')
         error = False
         msg = 'En Compania:\n'
@@ -496,6 +557,7 @@ class AccountMoveFunctions(models.Model):
             raise exceptions.Warning((msg))
 
     def _validate_invoice_line(self):
+        _logger.info("1634495325 _validate_invoice_line") 
         units = ['Al', 'Alc', 'Cm', 'I', 'Os', 'Sp', 'Spe', 'St', 'd', 'm', 'kg', 's', 'A', 'K', 'mol', 'cd', 'm²', 'm³', 'm/s', 'm/s²', '1/m', 'kg/m³', 'A/m²', 'A/m', 'mol/m³', 'cd/m²', '1', 'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'Ω', 'S', 'Wb', 'T', 'H', '°C', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'Pa·s', 'N·m', 'N/m', 'rad/s', 'rad/s²', 'W/m²', 'J/K', 'J/(kg·K)', 'J/kg', 'W/(m·K)', 'J/m³', 'V/m', 'C/m³', 'C/m²', 'F/m', 'H/m', 'J/mol', 'J/(mol·K)', 'C/kg', 'Gy/s', 'W/sr', 'W/(m²·sr)', 'kat/m³', 'min', 'h', 'd', 'º', '´', '´´', 'L', 't', 'Np', 'B', 'eV', 'u', 'ua', 'Unid', 'Gal', 'g', 'Km', 'Kw', 'ln', 'cm', 'mL', 'mm', 'Oz', 'Otros']
         service_units = ['Os','Sp','Spe','St','h']
         log.info('--> _validate_invoice_line')
@@ -536,7 +598,7 @@ class AccountMoveFunctions(models.Model):
 
            
     def validar_datos_factura(self):
-        
+            _logger.info("1634495326 validar_datos_factura") 
             msg = ''
             if self.name[8:10] != '08':
                 if self.partner_id.state_id:                
@@ -685,6 +747,7 @@ class AccountMoveFunctions(models.Model):
            
 
     def _generar_clave(self):
+        _logger.info("1634495327 _generar_clave") 
         document_date_invoice = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
         if self.fe_doc_type != "MensajeReceptor":
            country_code = self.company_id.country_id.phone_code
@@ -699,6 +762,29 @@ class AccountMoveFunctions(models.Model):
 
 
     def action_post(self,validate = True):
+        _logger.info("1634495328 action_post") 
+        
+        _logger.info("1634495328a self.name: %s", self.name)
+        _logger.info("1634495328b len self.name: %s", len(self.name) )
+        
+        # Agregado para DEFINIR EL TIPO DE DOCUMENTO EN EL POST
+        if self.journal_id:
+            if len(self.name) == 20 :
+                if self.name[8:10] == '08':
+                    self.fe_in_invoice_type = 'FEC'
+                elif self.name[8:10] == '09':
+                    self.fe_in_invoice_type = 'FEX'
+                elif self.name[8:10] == '01':
+                    self.fe_in_invoice_type = 'FE'
+                elif self.name[8:10] == '02':
+                    self.fe_in_invoice_type = 'ND'
+                else:
+                    self.fe_in_invoice_type = 'OTRO'
+            else:
+                self.fe_in_invoice_type = 'OTRO'
+                log.info('largo del prefijo del diario menor a 10')
+        _logger.info("1634495328b TIPO DE DOCUMENTO: %s", self.fe_in_invoice_type)
+        
         for s in self:
             log.info('--> action_post')
             if s.company_id.country_id.code == 'CR' and s.fe_in_invoice_type != 'OTRO':
@@ -718,8 +804,8 @@ class AccountMoveFunctions(models.Model):
                                                 'context': {'invoice': s.id}
                                         }
                                 #es mensaje de aceptacion??
-                                if len(s.journal_id.sequence_id.prefix) >= 10:
-                                    if s.journal_id.sequence_id.prefix[8:10] == '05':
+                                if len(s.name) >= 10:
+                                    if s.name[8:10] == '05':
                                             if s.fe_xml_supplier == False:
                                                 msg = 'Falta el XML del proveedor'
                                                 raise exceptions.Warning((msg))
@@ -781,6 +867,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def get_invoice(self):
+        _logger.info("1634495329 get_invoice") 
         for s in self:
             if not s.fe_server_state:
                 raise exceptions.Warning('Porfavor envie el documento antes de consultarlo')
@@ -831,6 +918,7 @@ class AccountMoveFunctions(models.Model):
                 
                 
     def _get_pdf_bill(self,id):
+        _logger.info("1634495330 _get_pdf_bill") 
         log.info('--> _get_pdf_bill')
         ctx = self.env.context.copy()
         ctx.pop('default_type', False)
@@ -842,6 +930,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.model
     def cron_get_server_bills(self):
+        _logger.info("1634495331 cron_get_server_bills") 
         log.info('--> cron_get_server_bills')
         list = self.env['account.move'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','posted'),
         ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=','error'),('fe_server_state','!=','Importada Manual'),('fe_server_state','!=',False),
@@ -858,6 +947,7 @@ class AccountMoveFunctions(models.Model):
                
 
     def write_chatter(self,body):
+        _logger.info("1634495332 write_chatter")
         log.info('--> write_chatter')
         chatter = self.env['mail.message']
         chatter.create({
@@ -868,6 +958,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _cr_xml_factura_electronica(self):
+        _logger.info("1634495333 _cr_xml_factura_electronica") 
         log.info('--> factelec-Invoice-_cr_xml_factura_electronica')
         for s in self:
             s.invoice = {}
@@ -1276,6 +1367,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.model
     def cron_send_json(self):
+        _logger.info("1634495334 cron_send_json") 
         log.info('--> factelec-Invoice-build_json')
         invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted'),('fe_server_state','!=','Importada Manual'),('type','!=','entry')])
         log.info('-->invoice_list %s',invoice_list)
@@ -1292,6 +1384,7 @@ class AccountMoveFunctions(models.Model):
 
         
     def mostrar_wizard_nota_debito(self):
+        _logger.info("1634495335 mostrar_wizard_nota_debito") 
         return {
                 'type': 'ir.actions.act_window',
                 'name': 'Nota Débito',
