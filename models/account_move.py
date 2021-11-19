@@ -38,6 +38,7 @@ class AccountMove(models.Model):
     states={'posted': [('readonly', True)]}) #Cambio de True a False, se debe colocar True pero en la vista Invoice
     fe_doc_type = fields.Char(string="FE Tipo Documento")
     fe_doc_type_id = fields.Char()
+
     fe_informacion_referencia_codigo = fields.Selection([
         ('01', 'Anula Documento de Referencia'),
         ('02', 'Corrige monto'),
@@ -46,6 +47,8 @@ class AccountMove(models.Model):
         ('99', 'Otros'),
     ], string="Codigo de Referencia", track_visibility='onchange',
     states={'posted': [('readonly', True)]})
+
+    fe_informacion_referencia_fecha = fields.Datetime(string="Fecha Informacion Referencia")
 
     tax_condition = fields.Selection(
         string="Condicion del IVA",
