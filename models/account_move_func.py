@@ -1259,8 +1259,18 @@ class AccountMoveFunctions(models.Model):
                                     'Razon':s.ref,
                                     }
                                 })
-
-
+            else:
+                if s.fe_doc_ref:
+                    s.invoice[s.fe_doc_type].update({
+                        'InformacionReferencia':{
+                            'TipoDoc':s.fe_tipo_documento_referencia,
+                            'Numero':s.fe_doc_ref,
+                            'FechaEmision': s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
+                            'Codigo':s.fe_informacion_referencia_codigo or None,
+                            'Razon':s.ref,
+                        }
+                    })
+                            
             if s.narration:
                 s.invoice[s.fe_doc_type].update({
                     'Otros':{
