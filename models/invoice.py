@@ -34,7 +34,7 @@ class Invoice(models.Model):
     fe_clave = fields.Char(string="Clave", size=50, copy=False)
     source_date = fields.Datetime(string="Fecha Emision_S")
     fe_fecha_emision = fields.Char(string="Fecha Emision")
-    fe_informacion_referencia = fields.Datetime(string="Fecha de información de Referencia")
+    fe_informacion_referencia_fecha = fields.Datetime(string="Fecha de información de Referencia")
 
     fe_payment_type = fields.Selection([
         ('01', 'Efectivo'),
