@@ -194,6 +194,7 @@ class ElectronicDoc(models.Model):
                         'date':self.get_date(dic, doc_type),
                         'doc_type':doc_type,
                         'provider':self.get_provider(dic, doc_type),
+                        'provider_vat':self.get_provider_identification(dic, doc_type),
                         'receiver_name':self.get_receiver_name(dic, doc_type) or self.env.user.company_id.name,
                         'receiver_number':self.get_receiver_identification(dic, doc_type) or self.env.user.company_id.vat,
                         'total_amount':self.format_to_valid_float(self.get_total_amount(dic, doc_type)),
