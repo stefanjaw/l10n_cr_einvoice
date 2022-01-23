@@ -29,6 +29,7 @@ class ElectronicDoc(models.Model):
     electronic_doc_bill_number = fields.Char(string="Numero Factura", )
 
     provider = fields.Char(string="Proveedor", )
+    provider_vat = fields.Char(string="Proveedor Identificacion", )
     receiver_number = fields.Char(string="Identificacion del Receptor", )
     receiver_name = fields.Char(string="Receptor", )
 
