@@ -37,6 +37,7 @@
 
                 <field name="provider" readonly='1' required='1'/>
                 <field name="provider" invisible='1'/>
+                <field name="provider_vat" />
 
                 <field name="receiver_name" readonly='1' required='1'/>
                 <field name="receiver_name" invisible='1'/>
