@@ -536,7 +536,8 @@ class AccountMoveFunctions(models.Model):
 
            
     def validar_datos_factura(self):
-        
+            if len( self.name ) != 20:
+                return
             msg = ''
             if self.name[8:10] != '08':
                 if self.partner_id.state_id:                
