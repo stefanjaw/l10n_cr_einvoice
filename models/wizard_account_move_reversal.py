@@ -37,7 +37,8 @@ class wizardReversal(models.TransientModel):
 
             moves_to_redirect |= new_moves
             for move in moves_to_redirect:
-                move._generar_clave()
+                if len( move.name ) == 20:
+                    move._generar_clave()
 
         # Create action.
         action = {
