@@ -688,6 +688,8 @@ class AccountMoveFunctions(models.Model):
            
 
     def _generar_clave(self):
+        if len( self.name ) != 20:
+            return
         document_date_invoice = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
         if self.fe_doc_type != "MensajeReceptor":
            country_code = self.company_id.country_id.phone_code
