@@ -33,8 +33,14 @@ class ResPartnerFunctions(models.Model):
             header = {'Content-Type':'application/json'}
             url = "https://api.hacienda.go.cr/fe/ae?identificacion={0}".format(self.vat)
             log.info(url)
-            response = requests.get(url, headers = header)
- 
+
+            try:
+                response = requests.get(url, headers = header)
+            except:
+                response = False
+                log.info("  ==> SIN RESPUESTA DE API DE HACIENDA")
+                return
+
             try:
                 json_response = json.loads(response.text)
             except:
