@@ -35,7 +35,12 @@ class ResPartnerFunctions(models.Model):
             log.info(url)
             response = requests.get(url, headers = header)
  
-            json_response = json.loads(response.text)
+            try:
+                json_response = json.loads(response.text)
+            except:
+                log.info("  ==> SIN RESPUESTA DE API DE HACIENDA")
+                json_response = False
+                return
                 
             if json_response.get("code") == 404:
                 return
