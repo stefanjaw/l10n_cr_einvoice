@@ -83,7 +83,8 @@ class AccountMove(models.Model):
 
     move_type_extra =  fields.Selection(
         _move_type_extra_lst,
-        string="Tipo Documento Electrónico"
+        string="Tipo Documento Electrónico",
+        default=lambda self: self.fields_get().get('move_type_extra').get('selection')[0][0],
     )
     
     exchange_rate = fields.Float(string="Tipo de Cambio", compute="_compute_exchange_rate")
