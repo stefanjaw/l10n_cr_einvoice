@@ -468,13 +468,6 @@ class AccountMove(models.Model):
             sequence_prefix = self.journal_id.sequence_nd.prefix
             sequence_number = self.journal_id.sequence_nd.number_next_actual
             
-        elif self.move_type == "out_refund" \
-        and  self.journal_id.sequence_nc \
-        and  self.move_type_extra == "nc":
-            next_number = self.journal_id.sequence_nc.next_by_id()
-            sequence_prefix = self.journal_id.sequence_nc.prefix
-            sequence_number = self.journal_id.sequence_nc.number_next_actual
-            
         elif self.move_type == "out_invoice" \
         and  self.journal_id.sequence_te \
         and self.move_type_extra == "te":
