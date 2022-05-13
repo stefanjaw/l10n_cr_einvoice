@@ -14,7 +14,7 @@
             <h3>Secuencias</h3>
             <field name="sequence_fe" string="Factura Electrónica"/>
             <field name="sequence_nd" string="Nota Débito"/>
-            <field name="sequence_nc" string="Nota Crédito"/>
+            <!-- <field name="sequence_nc" string="Nota Crédito"/> -->
             <field name="sequence_te" string="Tiquete Electrónico"/>
             <field name="sequence_fee" string="Factura Electrónica Exportación"/>
           </group>
