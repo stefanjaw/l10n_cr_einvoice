@@ -8,8 +8,8 @@
     <field name="arch" type="xml">
 
       <xpath expr="//div[@class='oe_title']" position="after">
-        <h4><field name="fe_clave" 
-                   attrs="{  'invisible': [  ( 'move_type', 'not in', ['out_invoice', 'out_refund'] )  ]  }"
+        <h4><field name="fe_clave" readonly="1"
+                   attrs="{ 'invisible': [  ( 'move_type', 'not in', ['out_invoice', 'out_refund'] )  ] }"
         /></h4>
       </xpath>
         
@@ -20,7 +20,7 @@
                  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')  ) ]}"/>
           <field name="fe_receipt_status"
                  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')  ) ]}"/>
-          <field name="fe_activity_code_id"
+          <field name="fe_activity_code_id" options="{'no_create': True, 'no_create_edit': True}"
                  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')  ) ]}"/>
       </xpath>
 
