@@ -13,7 +13,7 @@ class AccountJournal(models.Model):
 
     sequence_fe = fields.Many2one('ir.sequence', string='Secuencia Factura Electrónica')
     sequence_nd = fields.Many2one('ir.sequence', string='Secuencia Notas Debito')
-    sequence_nc = fields.Many2one('ir.sequence', string='Secuencia Notas Crédito')
+    #sequence_nc = fields.Many2one('ir.sequence', string='Secuencia Notas Crédito')
     sequence_te = fields.Many2one('ir.sequence', string='Secuencia Tiquete Electrónico')
     sequence_fec = fields.Many2one('ir.sequence', string='Secuencia Factura Electrónica de Compra')
     sequence_fee = fields.Many2one('ir.sequence', string='Secuencia Factura Electrónica Exportación')
