@@ -1,0 +1,215 @@
+<odoo>
+  <record id="electronic_doc_view_form" model="ir.ui.view">
+    <field name="name">doc.form</field>
+    <field name="model">electronic.doc</field>
+    <field name="arch" type="xml">
+      <form string="">
+          
+          <header>
+               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('state','in',['posted','accounting'])]}"/> 
+               <field name="state" widget="statusbar" statusbar_visible="draft,posted,accounting"/>
+          </header>
+          
+        <sheet>
+         <group>
+            <h1 class="mt0">
+                <field name="consecutivo" readonly="True" attrs="{'invisible':[('consecutivo', '=', False )]}"/>
+            </h1>
+         </group>
+            
+          <group>
+            <field name="key" readonly='1' required='1'/>
+            <field name="key" invisible='1'/>
+            <field name="xml_bill_name" invisible='1'/>
+            <field name="xml_acceptance_name" invisible='1'/>
+            <field name="fe_name_pdf" invisible='1'/>
+            <field name="xml_bill" widget="download_link" filename='xml_bill_name' options="{'filename': 'xml_bill_name'}" class="oe_inline" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+            <field name="xml_acceptance" widget="download_link" filename='xml_acceptance_name' options="{'filename': 'xml_acceptance_name'}" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+            <field name="fe_pdf" widget="download_link" filename='fe_name_pdf' options="{'filename': 'fe_name_pdf'}" class="oe_inline" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+          </group>
+            
+          <group>  
+              <group>
+
+                <!--duplicate field for save the information in the current model because readonly field dont write in vals-->
+                <field name="electronic_doc_bill_number" readonly='1' required='1'/>
+                <field name="electronic_doc_bill_number" invisible='1'/>
+
+                <field name="provider" readonly='1' required='1'/>
+                <field name="provider" invisible='1'/>
+                <field name="provider_vat" readonly='1'/>
+
+                <field name="receiver_name" readonly='1' required='1'/>
+                <field name="receiver_name" invisible='1'/>
+                <field name="receiver_number" invisible='1'/>
+                <field name="date" readonly='1' required='1'/>
+                <field name="date" invisible='1'/>
+
+                <field name="doc_type"  readonly='1' required='1'/>
+                <field name="doc_type"  invisible='1'/>
+                <field name ="currency_id" readonly='1' required='1'/>
+                <field name ="currency_id" invisible='1'/>
+                <field name="currency_exchange" invisible="0" readonly="1" string="Tipo de Cambio XML"/>
+                <field name="total_amount" readonly='1'/>
+                <field name="total_amount" invisible='1'/>
+              </group>
+              <group>
+                  <field name="company_id" invisible="True"/>
+                  <field name="invoice_id" string="Invoice Ref" groups="!account.group_account_user"
+                    attrs="{'invisible': [('state','!=','accounting')]}"/>
+                  <field name="invoice_id" string="Invoice Ref." groups="account.group_account_user"
+                    attrs="{'invisible': [('state','!=','accounting')]}" readonly="0" />
+                  <field name="sequence_id" required='1' attrs="{'readonly': [('state','in',['posted','accounting'])]}" domain= '[ ["prefix_code","in",["05","06","07"]],["company_id","=",company_id] ]'/>
+                  <field name = "fe_msg_type"  required='1' readonly = 'True' />
+                  <field name = "fe_msg_type"  invisible = 'True' />
+                  <field name = "fe_detail_msg"  attrs="{'readonly': [('state','in',['posted','accounting'])],'required':[('fe_msg_type','!=','1')]}" />                
+                  <field name = "fe_monto_total_impuesto" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_condicio_impuesto" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_monto_total_impuesto_acreditar" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_monto_total_gasto_aplicable" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                  <field name = "fe_actividad_economica" required="True"  attrs="{'readonly': [('state','in',['posted','accounting'])]}" domain= '[ ["company_id","=",company_id] ]'/>
+                  <field name="fe_server_state" readonly='1'/>
+              </group>
+          </group>
+            
+          <notebook>
+            <page string="VISTA XML">
+              <group>
+                <field name="xslt" readonly='1' required='1'/>
+                <field name="xslt" invisible='1'/>
+              </group>
+            </page>
+            <page string="Lineas">
+                  <field name="line_ids">
+                        <tree editable="bottom" create="false" delete="false">
+                            <field name = 'name' readonly = 'True'/>
+                            <field name = 'name' invisible = 'True'/>
+                            <field name = 'quantity' readonly = 'True'/>
+                            <field name = 'quantity' invisible = 'True'/>
+                            <field name = 'price_unit' readonly = 'True'/>
+                            <field name = 'price_unit' invisible = 'True'/>
+                            <field name = 'tax_ids' widget="many2many_tags" attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                            <field name = 'tax_amount' readonly = 'True'/>
+                            <field name = 'tax_amount' invisible = 'True'/>
+                            <field name = 'discount' readonly = 'True'/>
+                            <field name = 'discount' invisible = 'True'/>
+                            <field name = 'price_subtotal' readonly = 'True'/>
+                            <field name = 'price_subtotal' invisible = 'True'/>
+                            <field name = 'price_total' readonly = 'True'/>
+                            <field name = 'price_total' invisible = 'True'/>
+                            <field name="state" invisible="True" />
+                            <field name = 'is_selected'  attrs="{'readonly': [('state','in',['posted','accounting'])]}"/>
+                            <field name = 'is_selected'  invisible="True"/>
+                        </tree>
+                  </field>
+            </page>
+            <page string="Facturacion electrónica">
+          <form>
+            <group>
+              <button name = "get_bill" string="consultar"  type="object" class="oe_highlight" />
+            </group>
+            <group>
+              <button name = "send_bill"  string="Enviar a Hacienda"  type="object" class="oe_highlight" />
+            </group>
+            <group>
+              <field name="fe_name_xml_sign" invisible='1'/>
+              <field name="fe_name_xml_hacienda" invisible='1'/>
+              <field name="fe_xml_sign" filename='fe_name_xml_sign' options="{'filename': 'fe_name_xml_sign'}"/>
+              <field name="fe_xml_hacienda" filename='fe_name_xml_hacienda' options="{'filename': 'fe_name_xml_hacienda'}"/>
+            </group>
+          </form>
+            </page>
+          </notebook>
+        </sheet>
+         <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+            <field name="message_ids" widget="mail_thread"/>
+        </div>
+      </form>
+
+    </field>
+  </record>
+
+
+  <!--UC05B-->
+  <record id="electronic_doc_view_tree" model="ir.ui.view">
+    <field name="name">doc.tree</field>
+    <field name="model">electronic.doc</field>
+    <field name="arch" type="xml">
+      <tree string="">
+        <field name="state" string="Estado Contable"/>
+        <field name="consecutivo"/>
+        <field name="key" string="Clave Proveedor"/>
+        <field name = "fe_msg_type" string="Mensaje al Documento Proveedor"/>
+        <field name="date"/>
+        <field name="provider"/>
+        <field name="receiver_name"/>
+        <field name="total_amount"/>
+        <field name="doc_type"/>
+        <field string="XML Aceptación" name="has_acceptance" optional="show"/>
+        <field string="Estado Hacienda" name="fe_server_state" optional="show"/>
+        <field name="company_id" string="Compañia" optional="show"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="electronic_doc_view_search" model="ir.ui.view">
+    <field name="name">doc.search</field>
+    <field name="model">electronic.doc</field>
+    <field name="arch" type="xml">
+      <search string="Search">
+        <field name="provider" string="Proveedor"/>
+        <field name="key" string="Clave"/>
+        <field name="consecutivo" string="Consecutivo"/>
+        <field name="fe_msg_type" string="Mensaje al Documento Proveedor"/>
+          <group expand="0" string="Group By">
+            <filter string="Proveedor" name="provider" domain="[]" context="{'group_by': 'provider'}"/>
+            <filter string="Tipo de Documento" name="doc_type" domain="[]" context="{'group_by': 'doc_type'}"/>
+            <filter string="Mensaje al Documento Proveedor" name="fe_msg_type" domain="[]" context="{'group_by': 'fe_msg_type'}"/>
+            <filter string="Fecha" name="date" domain="[]" context="{'group_by': 'date'}"/>
+          </group>
+      </search>
+    </field>
+  </record>
+
+  <record id="doc_action_form" model="ir.actions.act_window">
+    <field name="name">Documentos</field>
+    <field name="res_model">electronic.doc</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+  </record>
+
+
+  <menuitem id="menu_doc" name="CR XMLS"  action="doc_action_form" parent="account.menu_finance_payables" sequence="200"/>
+    
+    <!-- server action to the one above -->
+    <record model="ir.actions.server" id="l10n_cr_einvoice.action_server_electronic_doc">
+      <field name="name">Agregar a contabilidad</field>
+      <field name="model_id" ref="l10n_cr_einvoice.model_electronic_doc"/>
+      <field name="binding_model_id" ref="l10n_cr_einvoice.model_electronic_doc"/>
+      <field name="binding_view_types">form</field>
+      <field name="state">code</field>
+      <field name="code">
+        action = records.agregar_contabilidad()
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="l10n_cr_einvoice.doc_lines">
+        <field name="name">l10n_cr_einvoice.doc_lines</field>
+        <field name="model">electronic.doc.line</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                     <field name="name" readonly="True"/>
+                     <field name="quantity" readonly="True"/>
+                     <field name="price_unit" readonly="True"/>
+                     <field name="tax_ids" widget="many2many_tags" readonly="True"/>
+                     <field name="price_total" readonly="True"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+    <record id="l10n_cr_einvoice.res_company_form" model="ir.ui.view">
+        <field name="name">l10n_cr_einvoice.res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="priority">90</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page" position="after">
+                <page name="" string="Facturacion electronica" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}">
+                <field name ="fe_current_country_company_code" invisible="1"/>
+                  <form>
+                      <sheet>
+                         <group>
+                             <field name="fe_hacienda_ambiente" string="Ambiente de Hacienda" widget="radio"/>
+                             <field name="fe_certificate_name" invisible = "1"/>
+                             <field name="fe_certificate" filename='fe_certificate_name' string="Certificado de Hacienda"/>
+                             <field name="fe_password_certificate" password='1' string="Contraseña del Certificado"/>
+                             <field name="fe_user_name" string="Usuario de Hacienda" placeholder="cpx-xx-xxxx-xxxx@comprobanteselectronicos.go.cr"/>
+                             <field name="fe_user_password" password='1' string="Contraseña del Usuario"/>
+                             <field name="fe_url_server" string="Server Side URL" 
+                                placeholder="https://fecr1.avalantec.com/api/odoov14/createxml_fev43/"/>
+                          </group>
+                          
+                          <group>
+                                  <field name="fe_activity_code_ids" string="Actividades Económicas">
+                                      <tree editable="1">
+                                          <field name="code" required='1'/>
+                                          <field name="description" required='1'/>
+                                      </tree>
+                                  </field>
+                          </group>
+                          
+                      </sheet>
+                  </form>
+                </page>
+            </xpath>
+
+            <xpath expr="//field[@name='vat']" position="before">
+                <field name = "fe_comercial_name" readonly="0" />
+                <field name="fe_identification_type" readonly="0" />
+            </xpath>
+            
+        </field>
+    </record>
+
+</odoo>
