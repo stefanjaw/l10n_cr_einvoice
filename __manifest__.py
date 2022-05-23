@@ -46,3 +46,4 @@
         'demo/demo.xml',
     ],
 }
+
