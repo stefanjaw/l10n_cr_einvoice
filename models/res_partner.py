@@ -41,3 +41,10 @@ class ResPartner(models.Model):
     
     emails_extra_ids = fields.One2many('res.partner.emails_extra', 'partner_id',
         help="Enviar: Incluye el correo en C.C\nPrincipal: Incluye el correo como Principal" )
+    
+    payment_method_default = fields.Many2one('fe_payment_type','Método de Pago')
+    is_invoice_export_default = fields.Boolean('Factura Electrónica Exportación')
+    has_fiscal_position = fields.Boolean('Contribuyente especial')
+    
+    fe_otros_ids = fields.One2many('res.partner.otros.line', 'partner_id',
+        help="Otras Lineas para factura electrónica")

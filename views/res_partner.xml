@@ -28,6 +28,28 @@
         </field>
     </xpath>
       
+    <xpath expr="//page[@name='internal_notes']" position="after">
+        <page name="einvoice_cr" string="Factura Electronica">
+            <group>
+                <group>
+                    <field name="payment_method_default" string="Método de pago Default"/>
+                    <field name="is_invoice_export_default"/>
+                    <field name="has_fiscal_position"/>
+                </group>
+                <field name="fe_otros_ids" string="Otros" attrs="{'invisible':[('has_fiscal_position', '=', False)]}">
+                    <tree editable="bottom">
+                        <field name="field_type" placeholder="Tipo de Elemento"/>
+                        <field name="attributes_data" placeholder="atributo1=&quot;valor1&quot; atributo2=&quot;valor2&quot;"
+                            attrs=" {  'invisible': [  ( 'field_type', 'not in', ['OtroTexto'] )  ]  }  "
+                            string="Atributos y sus valores" />
+                        <field name="field_data" placeholder="Datos del Campo" string="Texto de Otros"/>
+                        <field name="move_type" string="Añadir en"/>
+                    </tree>                                  
+                </field>
+            </group>
+        </page>
+    </xpath>
+
   </field>
 </record>
 </odoo>
