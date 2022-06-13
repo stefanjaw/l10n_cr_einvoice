@@ -595,7 +595,7 @@ class AccountMove(models.Model):
             'codigo': "01", # 01-Anula Documento de Referencia
         })
         return invoiceref_line_id
-    
+    ''' 
     def action_invoice_sent(self):
         STOP514
         _logging.info("DEF_974 action_invoice_sent")
@@ -630,7 +630,7 @@ class AccountMove(models.Model):
         template.send_mail(self.id)
         
         return
-        
+    '''    
     def get_account_move_data(self, account_move_id_int):
         filter_records = [['id','=', self.id]]
         get_keys = ['name', 'invoice_date','partner_id', 'company_id', 'invoice_payment_term_id',  

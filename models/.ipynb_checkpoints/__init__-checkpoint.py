@@ -26,3 +26,4 @@ from . import account_move_otros_line
 from . import account_move_inforef_line
 from . import account_move_attachment_line
 from . import account_fiscal_position
+from . import res_partner_emails_extra

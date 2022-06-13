@@ -19,8 +19,13 @@
     </xpath>
       
     <xpath expr="//field[@name='website']" position="before">
-        <field name = "email_facturacion" widget="email" />
-        <field name = "email_facturacion_cc" widget="email" />
+        <field name="emails_extra_ids" widget="one2many_list">
+          <tree editable="bottom">
+              <field name="email_additional" required="0"/>
+              <field name="email_send"/>
+              <field name="email_main"/>
+          </tree>
+        </field>
     </xpath>
       
   </field>
