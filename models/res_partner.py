@@ -39,4 +39,5 @@ class ResPartner(models.Model):
     fe_fax_number = fields.Char(string="Fax",size = 20 )
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
     
-    emails_extra_ids = fields.One2many('res.partner.emails_extra', 'partner_id')
+    emails_extra_ids = fields.One2many('res.partner.emails_extra', 'partner_id',
+        help="Enviar: Incluye el correo en C.C\nPrincipal: Incluye el correo como Principal" )
