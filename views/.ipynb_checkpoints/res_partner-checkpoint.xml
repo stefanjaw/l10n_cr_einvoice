@@ -19,10 +19,10 @@
     </xpath>
       
     <xpath expr="//field[@name='website']" position="before">
-        <field name="emails_extra_ids" widget="one2many_list" string="Emails Extras">
+        <field name="emails_extra_ids" widget="one2many_list" string="Emails Extras" nolabel="1" colspan="2">
           <tree editable="bottom">
-              <field name="email_additional" required="0" string="Email"/>
-              <field name="email_send"/>
+              <field name="email_additional" required="0" string="Emails adicionales"/>
+              <field name="email_send" default="1"/>
               <field name="email_main"/>
           </tree>
         </field>
