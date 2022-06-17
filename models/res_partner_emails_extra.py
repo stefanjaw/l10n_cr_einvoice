@@ -14,7 +14,7 @@ class ResPartner(models.Model):
     partner_id = fields.Many2one('res.partner')
     email_additional = fields.Char(placeholder="Email Adicional" )
     email_main = fields.Boolean(string="Principal")
-    email_send = fields.Boolean(string="Enviar")
+    email_send = fields.Boolean(string="Enviar", default=True)
     
     
     
