@@ -22,7 +22,8 @@ class ResPartner(models.Model):
                  ('01', 'Cédula Física'),
                  ('02', 'Cédula Jurídica'),
                  ('03','DIMEX'),
-                 ('04','NITE')
+                 ('04','NITE'),
+                 ('05','Extranjero'),
          ],
     )
     #IdentificacionExtranjero
