@@ -10,12 +10,27 @@ class AccountMove(models.Model):
     _inherit = "account.move"
     
     fe_clave = fields.Char(string="Clave", size=50, copy=False)
+
+    def default_activity(self): #1655869588
+        fe_activity_code_int = False
+        fe_activity_code_id = False
+        try:
+            companies_arr = str(self._context.get('params').get('cids')).split(",")
+            if len(companies_arr) == 1:
+                company_ids = self.env['res.company'].sudo().browse( int(companies_arr[0]) )
+                if len(company_ids[0].fe_activity_code_ids) == 1:
+                    fe_activity_code_int = company_ids[0].fe_activity_code_ids[0].id
+        except:
+            pass
+        return fe_activity_code_int
+
     
     fe_activity_code_id = fields.Many2one(
         string="Actividad económica",
         comodel_name="activity.code",
         ondelete="set null",
-        states={'posted': [('readonly', True)]}
+        states={'posted': [('readonly', True)]},
+        default=default_activity,
     )
 
     fe_payment_type = fields.Selection([

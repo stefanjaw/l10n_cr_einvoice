@@ -10,12 +10,27 @@ class AccountMove(models.Model):
     _inherit = "account.move"
     
     fe_clave = fields.Char(string="Clave", size=50, copy=False)
+
+    def default_activity(self): #1655869588
+        fe_activity_code_int = False
+        fe_activity_code_id = False
+        try:
+            companies_arr = str(self._context.get('params').get('cids')).split(",")
+            if len(companies_arr) == 1:
+                company_ids = self.env['res.company'].sudo().browse( int(companies_arr[0]) )
+                if len(company_ids[0].fe_activity_code_ids) == 1:
+                    fe_activity_code_int = company_ids[0].fe_activity_code_ids[0].id
+        except:
+            pass
+        return fe_activity_code_int
+
     
     fe_activity_code_id = fields.Many2one(
         string="Actividad económica",
         comodel_name="activity.code",
         ondelete="set null",
-        states={'posted': [('readonly', True)]}
+        states={'posted': [('readonly', True)]},
+        default=default_activity,
     )
 
     fe_payment_type = fields.Selection([
@@ -41,8 +56,9 @@ class AccountMove(models.Model):
     fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda",copy=False )
     fe_xml_hacienda = fields.Binary(string="XML Hacienda",copy=False )# 1570034790
     
-    fe_tohacienda_json = fields.Text(string="JSON hacia Hacienda",copy=False )
-    fe_fromhacienda_json = fields.Text(string="JSON respuesta Hacienda",copy=False )
+    fe_tohacienda_json = fields.Text(string="JSON hacia Hacienda", copy=False )
+    fe_fromhacienda_json = fields.Text(string="JSON respuesta Hacienda", copy=False )
+    fe_fromhacienda_xml_html = fields.Html(string="Respuesta de Hacienda", copy=False )
     
     fe_server_state = fields.Char(string="Estado Hacienda",copy=False )
     
@@ -82,7 +98,8 @@ class AccountMove(models.Model):
 
     move_type_extra =  fields.Selection(
         _move_type_extra_lst,
-        string="Tipo Documento Electrónico"
+        string="Tipo Documento Electrónico",
+        default=lambda self: self.fields_get().get('move_type_extra').get('selection')[0][0],
     )
     
     exchange_rate = fields.Float(string="Tipo de Cambio", compute="_compute_exchange_rate")

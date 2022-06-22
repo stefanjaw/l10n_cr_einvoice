@@ -21,7 +21,8 @@
           <field name="fe_receipt_status"
                  attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')  ) ]}"/>
           <field name="fe_activity_code_id" options="{'no_create': True, 'no_create_edit': True}"
-                 attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')  ) ]}"/>
+                 attrs="{'invisible': [('move_type', 'not in', ('out_invoice', 'out_refund', 'in_invoice')  ) ]}"
+                 placeholder="Seleccione la Actividad Económica"/>
       </xpath>
 
 
