@@ -435,12 +435,12 @@ class AccountMove(models.Model):
         next_number = sequence_prefix = sequence_number = False
 
         sequence_data = self._get_sequence_data()
-        _logging.info("DEF434 sequence_data: {0}".format( sequence_data ) )
         if sequence_data:
             self.name = sequence_data.get('next_number')
 
             self.sequence_prefix = sequence_data.get('sequence_prefix')
-            self.sequence_number = sequence_data.get('sequence_number')            
+            self.sequence_number = sequence_data.get('sequence_number')
+            self.state = "posted"
         else:
             return res.action_post()
 

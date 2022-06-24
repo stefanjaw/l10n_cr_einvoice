@@ -23,7 +23,6 @@ class AccountMove(models.Model):
         except:
             pass
         return fe_activity_code_int
-
     
     fe_activity_code_id = fields.Many2one(
         string="Actividad económica",

@@ -435,12 +435,12 @@ class AccountMove(models.Model):
         next_number = sequence_prefix = sequence_number = False
 
         sequence_data = self._get_sequence_data()
-        _logging.info("DEF434 sequence_data: {0}".format( sequence_data ) )
         if sequence_data:
             self.name = sequence_data.get('next_number')
 
             self.sequence_prefix = sequence_data.get('sequence_prefix')
-            self.sequence_number = sequence_data.get('sequence_number')            
+            self.sequence_number = sequence_data.get('sequence_number')
+            self.state = "posted"
         else:
             return res.action_post()
 
@@ -467,13 +467,6 @@ class AccountMove(models.Model):
             next_number = self.journal_id.sequence_nd.next_by_id()
             sequence_prefix = self.journal_id.sequence_nd.prefix
             sequence_number = self.journal_id.sequence_nd.number_next_actual
-            
-        elif self.move_type == "out_refund" \
-        and  self.journal_id.sequence_nc \
-        and  self.move_type_extra == "nc":
-            next_number = self.journal_id.sequence_nc.next_by_id()
-            sequence_prefix = self.journal_id.sequence_nc.prefix
-            sequence_number = self.journal_id.sequence_nc.number_next_actual
             
         elif self.move_type == "out_invoice" \
         and  self.journal_id.sequence_te \
@@ -602,7 +595,7 @@ class AccountMove(models.Model):
             'codigo': "01", # 01-Anula Documento de Referencia
         })
         return invoiceref_line_id
-    
+    ''' 
     def action_invoice_sent(self):
         STOP514
         _logging.info("DEF_974 action_invoice_sent")
@@ -637,7 +630,7 @@ class AccountMove(models.Model):
         template.send_mail(self.id)
         
         return
-        
+    '''    
     def get_account_move_data(self, account_move_id_int):
         filter_records = [['id','=', self.id]]
         get_keys = ['name', 'invoice_date','partner_id', 'company_id', 'invoice_payment_term_id',  
