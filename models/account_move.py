@@ -8,7 +8,7 @@ log = _logging = logging.getLogger(__name__)
 
 class AccountMove(models.Model):
     _inherit = "account.move"
-    
+
     fe_clave = fields.Char(string="Clave", size=50, copy=False)
 
     def default_activity(self): #1655869588
@@ -23,7 +23,7 @@ class AccountMove(models.Model):
         except:
             pass
         return fe_activity_code_int
-    
+
     fe_activity_code_id = fields.Many2one(
         string="Actividad económica",
         comodel_name="activity.code",

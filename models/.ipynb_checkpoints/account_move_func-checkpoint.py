@@ -953,7 +953,7 @@ class AccountMove(models.Model):
             return False
         
     def get_account_fiscal_position_line( self, fiscal_position_line_ids ):
-        _logging.info("    DEF1450 fiscal_position_line_ids: {0}".format( fiscal_position_line_ids ) )
+        _logging.info("DEF1450 fiscal_position_line_ids: {0}".format( fiscal_position_line_ids ) )
         get_keys = ['id' , 'tax_src_id', 'tax_dest_id', 'position_id']
         output_lst = self.env['account.fiscal.position.tax'].search_read(
             [ ( 'id', 'in',  fiscal_position_line_ids  )  ],
@@ -963,7 +963,7 @@ class AccountMove(models.Model):
             return output_lst
         else:
             return False
-        
+
     def write_to_chatter(self, model, res_id, body):
         self.env['mail.message'].create({
             'res_id': res_id,
@@ -971,4 +971,39 @@ class AccountMove(models.Model):
             'body': body,
         })
         return
-        
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id_fe(self): ##1657405510
+        if self.partner_id and self.company_id.country_id.code == "CR":
+            
+            #1657405520
+            if self.partner_id.is_invoice_export_default and self.move_type in ['out_invoice']:
+                move_type_extra = 'fee'
+            elif not self.partner_id.vat \
+            and not self.partner_id.fe_identification_type \
+            and self.move_type in ['out_invoice']:
+                move_type_extra = 'te'
+            else:
+                move_type_extra = self.move_type_extra
+
+            self.write({
+                'fe_payment_type': self.partner_id.fe_payment_type,
+                'move_type_extra': move_type_extra,
+            })
+            
+            #1657405530
+            otros_line = self.env['res.partner.otros.line'].sudo().search([
+                ('partner_id','=', self.partner_id.id),
+            ])
+
+            records = [x for x in otros_line if x['move_type'] == self.move_type]
+            for record in records:
+                self.env['account.move.otros.line'].create({
+                    'move_id': self.id,
+                    'field_type': record.field_type,
+                    'attributes_data': record.attributes_data,
+                    'field_data': record.field_data,
+                })
+        else:
+            pass
+        return
