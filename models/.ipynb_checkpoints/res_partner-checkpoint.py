@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 import logging
 import re
 
-log = logging.getLogger(__name__)
+log = _logging = logging.getLogger(__name__)
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
@@ -22,7 +22,8 @@ class ResPartner(models.Model):
                  ('01', 'Cédula Física'),
                  ('02', 'Cédula Jurídica'),
                  ('03','DIMEX'),
-                 ('04','NITE')
+                 ('04','NITE'),
+                 ('05','Extranjero'),
          ],
     )
     #IdentificacionExtranjero
@@ -42,7 +43,11 @@ class ResPartner(models.Model):
     emails_extra_ids = fields.One2many('res.partner.emails_extra', 'partner_id',
         help="Enviar: Incluye el correo en C.C\nPrincipal: Incluye el correo como Principal" )
     
-    payment_method_default = fields.Many2one('fe_payment_type','Método de Pago')
+    def _payment_method_lst(self):
+        return self.env['account.move']._fields['fe_payment_type'].selection
+    
+    fe_payment_type = fields.Selection(_payment_method_lst,'Método de Pago', translate=True)
+    
     is_invoice_export_default = fields.Boolean('Factura Electrónica Exportación')
     has_fiscal_position = fields.Boolean('Contribuyente especial')
     
