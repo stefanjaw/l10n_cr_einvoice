@@ -15,6 +15,7 @@ _logging = logging.getLogger(__name__)
 
 class AccountHacienda(models.Model):
     _name = "account.hacienda"
+    _description = "account.hacienda"
 
     def _get_token( self, record ):
         _logging.info("  ==> Get Access Token")
