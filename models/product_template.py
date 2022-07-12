@@ -9,7 +9,6 @@ log = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    log.info('--> Class factelec-Product')
     fe_codigo_comercial_tipo = fields.Selection([
         ('01', 'Reference Code from Vendor'),
         ('02', 'Reference Code from Seller'),

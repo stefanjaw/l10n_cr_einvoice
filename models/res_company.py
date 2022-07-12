@@ -8,7 +8,6 @@ log = logging.getLogger(__name__)
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    log.info('--> Class Emisor')
     fe_certificate = fields.Binary(string="Upload Certificate")
     fe_certificate_name = fields.Char(string="Certificate name")
     fe_password_certificate = fields.Char(string="Contraseña Certificado", )

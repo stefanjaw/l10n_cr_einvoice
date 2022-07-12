@@ -9,8 +9,6 @@ _logging = logging.getLogger(__name__)
 class AccountJournal(models.Model):
     _inherit = 'account.journal'
     
-    _logging.info("DEB __________ account.journal" )
-
     sequence_fe = fields.Many2one('ir.sequence', string='Secuencia Factura Electrónica', help='Default Prefix: 0010000101')
     sequence_nd = fields.Many2one('ir.sequence', string='Secuencia Notas Debito', help='Default Prefix: 0010000102')
     #sequence_nc = fields.Many2one('ir.sequence', string='Secuencia Notas Crédito')
