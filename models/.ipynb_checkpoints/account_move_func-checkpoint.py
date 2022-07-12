@@ -401,6 +401,7 @@ class AccountMove(models.Model):
     def hacienda_post_json(self):
         _logging.info("==> POST a HACIENDA para: {0}".format( self.name ))
         hacienda_json = self.fe_tohacienda_json
+        _logging.info("DEF hacienda_json: {0}".format( self.name ))
         account_hacienda = self.env['account.hacienda'].sudo()
         
         access_token = account_hacienda._get_token( self )
@@ -679,19 +680,19 @@ class AccountMove(models.Model):
         product_product_lst = []
         #QUITAR ESTO, SOLO PARA EFECTOS DE LA PRUEBA
 
-        #_logging.info("DEF1055 account_move_line_json: {0}".format(account_move_lines_json))
+        #_logging.info("DEF683 account_move_line_json: {0}".format(account_move_lines_json))
         for account_move_line in account_move_lines_json:
             
             product_product_tuple = account_move_line.get('product_id')
             if not product_product_tuple:
-                _logging.info("DEF1130 No product found in line")
+                _logging.info("DEF689 No product found in line")
                 continue
             #_logging.info("DEF1059 product_product_tuple: {0}".format(product_product_tuple))
 
             try:
                 value = [element for element in product_product_lst if element['id'] == product_product_tuple[0]]
                 if len(value) > 0:
-                    _logging.info("DEF1063 FOUNDED PRODUCT in LST NOT ADDED, THEN CONTINUE")
+                    _logging.info("DEF696 FOUNDED PRODUCT in LST NOT ADDED, THEN CONTINUE")
                     continue
             except:
                 pass
@@ -704,6 +705,11 @@ class AccountMove(models.Model):
                 [ ( 'id', '=', product_product_tuple[0] )  ],
                 get_keys,
             )
+            
+            if output_lst[0].get('cabys_code_id') == False:
+                product_product_id = self.env['product.product'].sudo().browse( product_product_tuple[0]  )
+                output_lst[0]['cabys_code_id'] = [ product_product_id[0].categ_id.cabys_code_id.id ]
+                
             product_product_lst.append( output_lst[0] )
 
         if len(product_product_lst) > 0:
@@ -818,6 +824,7 @@ class AccountMove(models.Model):
        
     def server_side_post(self, company_id_obj, account_move_data_json):
         _logging.info("  ==> server_side_post for: {0}".format( self.name ) )
+        _logging.info("DEF822 account_move_data_json for: {0}".format( account_move_data_json ) )
 
         url1 = company_id_obj.fe_url_server
         if not url1:

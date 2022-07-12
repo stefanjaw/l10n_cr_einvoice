@@ -16,6 +16,7 @@ from . import electronic_doc_line
 from . import cabys_code
 from . import product_product
 from . import product_template
+from . import product_category
 from . import ir_sequence
 from . import res_company
 from . import res_company_func

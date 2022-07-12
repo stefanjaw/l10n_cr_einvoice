@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="l10n_cr_einvoice_product_category" model="ir.ui.view">
+        <field name="name">l10n_cr_einvoice.product.category.form.inherit</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="account.view_category_property_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//group[@name='account_property']" position="after"> 
+                <group string="Factura Electronica Costa Rica">
+                    <group>
+                        <field name="cabys_code_id" />
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Product Template -->
 
     <record id="l10n_cr_einvoice.product_template" model="ir.ui.view">
         <field name="name">l10n_cr_einvoice.product.template.form</field>
@@ -13,24 +12,9 @@
                 <field name="fe_codigo_comercial_codigo" attrs="{'invisible':[('product_variant_count','>',1)]}"
                        string="Codigo Producto/Servicio"/>
                 <field name="fe_unidad_medida_comercial" attrs="{'invisible':[('product_variant_count','>',1)]}"/>
-                <field name="cabys_code_id" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}" required="True"/>
+                <field name="cabys_code_id" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}"/>
             </field>
         </field>
     </record>
 
-    <!-- Product -->
-
-    <record id="l10n_cr_einvoice.product_product" model="ir.ui.view">
-        <field name="name">l10n_cr_einvoice.product.product.form</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view"/>
-        <field name="arch" type="xml">
-            <field name="default_code" position="after">
-                <field name="fe_codigo_comercial_tipo"/>
-                <field name="fe_codigo_comercial_codigo"/>
-                <field name="fe_unidad_medida_comercial"/>
-                 <field name="cabys_code_id" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}" required="True"/>
-            </field>
-        </field>
-    </record>
 </odoo>
