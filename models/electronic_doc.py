@@ -110,7 +110,9 @@ class ElectronicDoc(models.Model):
     
     fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar",compute = '_compute_impuesto_acreditar' )
     fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable",compute = '_compute_gasto_aplicable' )
-    fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
+    def default_activity(self):
+        return self.env['account.move'].sudo().default_activity()
+    fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica', default = default_activity)
     line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True,ondelete="cascade",)
     currency_id = fields.Many2one('res.currency', string='Moneda')
     currency_exchange = fields.Float(string="Tipo de Cambio")
