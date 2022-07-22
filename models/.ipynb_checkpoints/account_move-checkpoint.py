@@ -16,12 +16,22 @@ class AccountMove(models.Model):
         fe_activity_code_id = False
         try:
             companies_arr = str(self._context.get('params').get('cids')).split(",")
-            if len(companies_arr) == 1:
-                company_ids = self.env['res.company'].sudo().browse( int(companies_arr[0]) )
-                if len(company_ids[0].fe_activity_code_ids) == 1:
-                    fe_activity_code_int = company_ids[0].fe_activity_code_ids[0].id
         except:
+            companies_arr = []
             pass
+
+        if len(companies_arr) == 0:
+            try:
+                companies_arr = self._context.get('allowed_company_ids')
+            except:
+                companies_arr = []
+                pass
+
+        if len(companies_arr) == 1:
+            company_ids = self.env['res.company'].sudo().browse( int(companies_arr[0]) )
+            if len(company_ids[0].fe_activity_code_ids) == 1:
+                fe_activity_code_int = company_ids[0].fe_activity_code_ids[0].id
+
         return fe_activity_code_int
 
     fe_activity_code_id = fields.Many2one(
