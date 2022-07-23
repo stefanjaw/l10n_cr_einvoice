@@ -981,36 +981,41 @@ class AccountMove(models.Model):
 
     @api.onchange('partner_id')
     def _onchange_partner_id_fe(self): ##1657405510
-        if self.partner_id and self.company_id.country_id.code == "CR":
-            
-            #1657405520
-            if self.partner_id.is_invoice_export_default and self.move_type in ['out_invoice']:
-                move_type_extra = 'fee'
-            elif not self.partner_id.vat \
-            and not self.partner_id.fe_identification_type \
-            and self.move_type in ['out_invoice']:
-                move_type_extra = 'te'
-            else:
-                move_type_extra = self.move_type_extra
-
-            self.write({
-                'fe_payment_type': self.partner_id.fe_payment_type,
-                'move_type_extra': move_type_extra,
-            })
-            
-            #1657405530
-            otros_line = self.env['res.partner.otros.line'].sudo().search([
-                ('partner_id','=', self.partner_id.id),
-            ])
-
-            records = [x for x in otros_line if x['move_type'] == self.move_type]
-            for record in records:
-                self.env['account.move.otros.line'].create({
-                    'move_id': self.id,
-                    'field_type': record.field_type,
-                    'attributes_data': record.attributes_data,
-                    'field_data': record.field_data,
-                })
+        if self.company_id.country_id.code != "CR":
+            return
+        
+        if not self.partner_id and self.move_type in ['out_invoice']:  #1657405520
+            move_type_extra = 'te'
+        elif self.partner_id.vat and self.move_type in ['out_invoice'] \
+        and self.partner_id.fe_identification_type == "05": #Extranjero
+            move_type_extra = 'fee'
+        elif self.partner_id.vat and self.move_type in ['out_invoice'] \
+        and self.partner_id.fe_identification_type != "05": #NO ES Extranjero
+            move_type_extra = 'fe'
+        elif self.partner_id.is_invoice_export_default and self.move_type in ['out_invoice']:
+            move_type_extra = 'fee'
+        elif not self.partner_id.vat and self.move_type in ['out_invoice']:
+            move_type_extra = 'te'
         else:
-            pass
+            move_type_extra = 'te'
+
+        self.write({
+            'fe_payment_type': self.partner_id.fe_payment_type,
+            'move_type_extra': move_type_extra,
+        })
+            
+        #1657405530
+        otros_line = self.env['res.partner.otros.line'].sudo().search([
+            ('partner_id','=', self.partner_id.id),
+        ])
+
+        records = [x for x in otros_line if x['move_type'] == self.move_type]
+        for record in records:
+            self.env['account.move.otros.line'].create({
+                'move_id': self.id,
+                'field_type': record.field_type,
+                'attributes_data': record.attributes_data,
+                'field_data': record.field_data,
+            })
+
         return
