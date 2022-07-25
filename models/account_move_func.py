@@ -507,70 +507,19 @@ class AccountMove(models.Model):
         }
 
     @api.model_create_multi
-    def create(self, vals_list):
-        _logging.info("    DEF513 CREATE")
-        _logging.info("    DEF514 self._context: {0}".format( self._context ) )
-        _logging.info("    DEF515 vals_list: {0}".format( vals_list ) )
-        _logging.info("    ==================516============" )
-        res = super(AccountMove,self)
-        
-        move_type_extra_options = ['fe', 'nd', 'fee']
-
-        try:
-            reversed_entry_int = vals_list[0].get('reversed_entry_id')
-            reversed_entry_id = self.env['account.move'].search([('id','=', reversed_entry_int)])
-            if reversed_entry_id.move_type_extra in move_type_extra_options:
-                vals_list[0]['move_type_extra'] = 'nc'
-        except:
-            reversed_entry_int = False
-            pass
-
-        if self.env['account.move'].browse( reversed_entry_int ):
-            
-            razon = vals_list[0].get('ref')
-            invoiceref_line_id = self.get_invoiceref_info( reversed_entry_int, razon )
-            _logging.info("    DEF534 invoiceref_line_id: {0}".format( invoiceref_line_id ) )
-            if invoiceref_line_id:
-                vals_list[0]['inforef_ids'] = [( 4, invoiceref_line_id.id )]
-
-            
-            '''
-            STOP532
-            reversed_entry_id = self.env['account.move'].browse( reversed_entry_int )
-            _logging.info("    DEF531 reversed_entry_id: {0}".format( reversed_entry_id ) )
-            _logging.info("    DEF531 reversed_entry_id: {0}".format( reversed_entry_id.name[8:10] ) )
-            
-            if reversed_entry_id.name[8:10] == "01":
-                tipodoc = "01"
-            elif reversed_entry_id.name[8:10] == "02":
-                tipodoc = "02"
-            elif reversed_entry_id.name[8:10] == "03":
-                tipodoc = "03"
-            elif reversed_entry_id.name[8:10] == "04":
-                tipodoc = "04"
-                
-            invoiceref_line = self.env['account.move.inforef.line'].sudo()            
-            invoiceref_line_id = invoiceref_line.create({
-                'move_id': reversed_entry_int,
-                'tipodoc': tipodoc,
-                'numero': reversed_entry_id.fe_clave,
-                'fecha_emision': reversed_entry_id.invoice_date,
-                'razon': vals_list[0].get('ref'),
-                'codigo': "01", # 01-Anula Documento de Referencia
+    def create(self, vals_list): #1658765150
+        res = super(AccountMove,self).create( vals_list )
+        res._onchange_partner_id_fe()
+        if res.reversed_entry_id:
+            res.write({
+                'fe_payment_type': res.reversed_entry_id.fe_payment_type,
+                'fe_receipt_status': res.reversed_entry_id.fe_receipt_status,
+                'fe_activity_code_id': res.reversed_entry_id.fe_activity_code_id,
             })
-            _logging.info("DEF 539 invoiceref_line_id: {0}".format( invoiceref_line_id )  )
-            
-            vals_list[0]['inforef_ids'] = [( 4, invoiceref_line_id.id )]
-            '''
-            '''
-            self.write({
-                'inforef_ids': [( 4, invoiceref_line_id.id )]
-            })
-            '''
-            
-        return res.create(vals_list)
+        return res
     
     def get_invoiceref_info(self, reversed_entry_int, razon):
+        STOP522
         reversed_entry_id = self.env['account.move'].browse( reversed_entry_int )
         if reversed_entry_id.name[8:10] == "01":
             tipodoc = "01"
@@ -596,42 +545,7 @@ class AccountMove(models.Model):
             'codigo': "01", # 01-Anula Documento de Referencia
         })
         return invoiceref_line_id
-    ''' 
-    def action_invoice_sent(self):
-        STOP514
-        _logging.info("DEF_974 action_invoice_sent")
-        res = super(AccountMove,self)
-        
-        if self.move_type_extra == False:
-            return res.action_invoice_sent()
-        
-        
-        template_id = self.env.ref('account.email_template_edi_invoice').id
-        template = self.env['mail.template'].browse( template_id )
-        
-        attachment = self.env['ir.attachment']
-        attachment_ids = []
-        if self.fe_xml_sign:
-            attachment_id = attachment.create({
-                'name': self.fe_name_xml_sign,
-                'datas': self.fe_xml_sign,
-                'type': 'binary',
-            })
-            attachment_ids.append( attachment_id.id )
-            
-        if self.fe_xml_hacienda:
-            attachment_id = attachment.create({
-                'name': self.fe_name_xml_hacienda,
-                'datas': self.fe_xml_hacienda,
-                'type': 'binary',
-            })
-            attachment_ids.append( attachment_id.id )
-            
-        template.attachment_ids = attachment_ids
-        template.send_mail(self.id)
-        
-        return
-    '''    
+  
     def get_account_move_data(self, account_move_id_int):
         filter_records = [['id','=', self.id]]
         get_keys = ['name', 'invoice_date','partner_id', 'company_id', 'invoice_payment_term_id',  
@@ -996,9 +910,11 @@ class AccountMove(models.Model):
             move_type_extra = 'fee'
         elif not self.partner_id.vat and self.move_type in ['out_invoice']:
             move_type_extra = 'te'
+        elif self.move_type in ['out_refund']:
+            move_type_extra = 'nc'
         else:
-            move_type_extra = 'te'
-
+            move_type_extra = False
+        
         self.write({
             'fe_payment_type': self.partner_id.fe_payment_type,
             'move_type_extra': move_type_extra,
