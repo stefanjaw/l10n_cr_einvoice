@@ -88,6 +88,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                     'move_type' : doc_type,
                     'invoice_date':doc.date,
                     'invoice_line_ids':invoice_lines,
+                    'invoice_payment_term_id': contacto.property_supplier_payment_term_id.id,
                     'electronic_doc_id':doc.id,
                     'company_id':doc.company_id,
                 })
