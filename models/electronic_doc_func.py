@@ -668,28 +668,19 @@ class ElectronicDoc(models.Model):
                 'fe_name_pdf': fname,
             })
 
-    def transform_to_xslt(self, root_xml, doc_type):
-        dom = ET.fromstring(base64.b64decode(root_xml))
-        if (doc_type == 'FE'):
-            ruta = path._path[0]+"/fe.xslt"
-            transform = ET.XSLT(
-                ET.parse(
-                    ruta
-                ))
-        elif (doc_type == 'TE'):
-            ruta = path._path[0]+"/te.xslt"
-            transform = ET.XSLT(
-                ET.parse(
-                    ruta
-                ))
-        elif (doc_type == 'NC'):
-            ruta = path._path[0]+"/nc.xslt"
-            transform = ET.XSLT(
-                ET.parse(
-                    ruta
-                ))
-        nuevodom = transform(dom)
-        return ET.tostring(nuevodom, pretty_print=True)
+    def transform_to_xslt(self, root_xml_b64, doc_type):
+        if not self.company_id.fe_url_server:
+            _logger.info("==> SERVER SIDE URL NOT CONFIGURED")
+            return
+        json_to_send = { 'xml_bill': root_xml_b64 }
+        header = {'Content-Type':'application/json'}        
+        url = self.company_id.fe_url_server + "/api/odoov14/transform_xml"
+        
+        try:
+            response_html = requests.post( url, headers=header, json=json_to_send, timeout=3 ).json().get('result')
+        except:
+            response_html = False
+        return response_html
 
     "UC03"
 
