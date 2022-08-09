@@ -962,12 +962,6 @@ class AccountMoveFunctions(models.Model):
             if s.partner_id.email:
                 s.invoice[s.fe_doc_type]['Receptor'].update({'CorreoElectronico':s.partner_id.email})
 
-            if s.type == 'in_refund' and s.name[8:10] == "03":  #1660067692
-                new_emisor = s.invoice[s.fe_doc_type]['Receptor']
-                new_receptor = s.invoice[s.fe_doc_type]['Emisor']
-                s.invoice[s.fe_doc_type]['Receptor'] = new_receptor
-                s.invoice[s.fe_doc_type]['Emisor'] = new_emisor
-
             s.invoice[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
 
             if s.invoice_payment_term_id.payment_term_hacienda:
