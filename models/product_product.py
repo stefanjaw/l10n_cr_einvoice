@@ -77,19 +77,5 @@ class productProduct(models.Model):
         else:
             self.product_tmpl_id.fe_codigo_comercial_tipo = self.product_tmpl_id.fe_codigo_comercial_tipo
 
-    @api.constrains('name')
-    def _constrains_name(self):
-        for record in self:
-            if len(record.name) > 200:
-                raise ValidationError("El nombre del registro no puede ser mayor a 200 caracteres.")
-        
-    @api.constrains('type')
-    def _constrains_type(self):
-        service_units = ['Os','Sp','Spe','St','h']
-        for record in self:
-            if record.type == 'service':
-                    if record.uom_id.uom_mh not in service_units:
-                        raise ValidationError(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(record.uom_id.uom_mh,record.uom_id.name)))
-
 
     
