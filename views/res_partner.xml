@@ -40,13 +40,13 @@
                 </group>
                 <field name="fe_otros_ids" string="Otros" attrs="{'invisible':[('has_fiscal_position', '=', False)]}">
                     <tree editable="bottom">
+			<field name="field_required" string="Requerido (Contenido)"/>
                         <field name="field_type" placeholder="Tipo de Elemento"/>
                         <field name="attributes_data" placeholder="atributo1=&quot;valor1&quot; atributo2=&quot;valor2&quot;"
                             attrs=" {  'invisible': [  ( 'field_type', 'not in', ['OtroTexto'] )  ]  }  "
                             string="Atributos y sus valores" />
 			<field name="field_help" string="Ayuda de este campo"/>
                         <field name="field_data" placeholder="Datos del Campo" string="Texto de Otros"/>
-			<field name="field_required" string="Data Requerida"/>
                         <field name="move_type" string="Añadir en"/>
                     </tree>                                  
                 </field>
