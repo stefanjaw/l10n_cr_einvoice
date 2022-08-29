@@ -8,6 +8,7 @@ class AccountMoveOtrosLine(models.Model):
     _name = "res.partner.otros.line"
     _description = "res.partner.otros.line"
 
+    field_required = fields.Boolean('Required')
     field_type = fields.Selection([
         ('OtroTexto', 'Otro Texto'),
         ('OtroContenido', 'Otro Contenido')
@@ -15,6 +16,7 @@ class AccountMoveOtrosLine(models.Model):
     attributes_data = fields.Char(string="Atributos y valores")
     field_data = fields.Char()
     partner_id = fields.Many2one('res.partner')
+    field_help = fields.Char('Ayuda')
     move_type = fields.Selection([
         ('out_invoice', 'Factura'),
         ('out_refund', 'Nota de Crédito')
