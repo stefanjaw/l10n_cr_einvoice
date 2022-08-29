@@ -46,7 +46,7 @@
                             attrs=" {  'invisible': [  ( 'field_type', 'not in', ['OtroTexto'] )  ]  }  "
                             string="Atributos y sus valores" />
 			<field name="field_help" string="Ayuda de este campo"/>
-                        <field name="field_data" placeholder="Datos del Campo" string="Texto de Otros"/>
+			<!-- <field name="field_data" placeholder="Datos del Campo" string="Valor Default"/> -->
                         <field name="move_type" string="Añadir en"/>
                     </tree>                                  
                 </field>
