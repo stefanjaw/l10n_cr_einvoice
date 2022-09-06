@@ -9,11 +9,18 @@
              <sheet>
                 <group>
                    <group>
-                       <field name="institution_name"  />
+                       <field name="partner_id"  string="Contacto"/>
+                       <field name="partner_vat" string="Identificación"/>
+                       <field name="fiscal_position_type"/>
+                       <field name="institution_name" string="Emisor"/>
                        <field name="document_number" />
+                       <field name="cfia_project_code"/>
+                   </group>
+		   <group>
+                       <field name="has_cabys"/>
+                       <field name="exoneration_percentage"/>
                        <field name="issued_date"/>
                        <field name="expiration_date"/>
-                       <field name="fiscal_position_type"/>
                    </group>
                 </group>
               </sheet>
@@ -52,7 +59,7 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem name="Exoneraciones Costa Rica" id="_menu" parent="account.menu_finance_configuration" action="account_fiscal_position_exoneraiones_cr_action"
-    sequence="0"/>
+    <menuitem name="Exoneraciones Costa Rica" id="_menu" parent="account.account_account_menu" action="account_fiscal_position_exoneraiones_cr_action"
+    sequence="6"/>
 
 </odoo>

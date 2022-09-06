@@ -1,6 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_activity_code, activity_code,model_activity_code,base.group_user,1,1,1,1
 access_cabys_code,cabys_code,model_cabys_code,base.group_user,1,1,1,1
+access_fiscal_position_exoneraciones_cr,account_fiscal_position_exoneraciones_cr,model_account_fiscal_position_exoneraciones_cr,base.group_user,1,1,1,1
 access_electronic_doc,electronic_doc,model_electronic_doc,base.group_user,1,1,1,1
 access_electronic_doc_line,electronic_doc_line,model_electronic_doc_line,base.group_user,1,1,1,1
 access_wizard_agregar_contabilidad,wizard_agregar_contabilidad,model_wizard_agregar_contabilidad,base.group_user,1,1,1,1

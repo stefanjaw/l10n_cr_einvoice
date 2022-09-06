@@ -21,8 +21,14 @@ class AccountFiscalPositionExoneracionesCR(models.Model):
         ('99', 'Otros'),
     ], string="Tipo de Documento")
 
-    document_number = fields.Char(string="Número de Documento")
-    institution_name = fields.Char(string="Nombre de la Institución")
-    issued_date = fields.Date(string="Fecha de la Emisión")
-    expiration_date = fields.Date(string="Fecha de Expiración")
+    document_number = fields.Char( string="Número de Documento" )
+    partner_id = fields.Many2one( 'res.partner', string="Empresa" )
+    partner_vat = fields.Char( related='partner_id.vat', string="Identification" )
+    cfia_project_code = fields.Char( string="Código Proyecto CFIA" )
+    exoneration_percentage = fields.Float( string="Porcenaje Exoneración" )
+    institution_name = fields.Char( string="Nombre de la Institución" )
+    issued_date = fields.Datetime( string="Fecha de la Emisión" )
+    expiration_date = fields.Datetime( string="Fecha de Expiración" )
+    has_cabys = fields.Boolean( string="Posee Cabys" )
+
 
