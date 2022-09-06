@@ -3,6 +3,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+import requests
 import logging
 _logging = _logger = logging.getLogger(__name__)
 
@@ -30,5 +31,14 @@ class AccountFiscalPositionExoneracionesCR(models.Model):
     issued_date = fields.Datetime( string="Fecha de la Emisión" )
     expiration_date = fields.Datetime( string="Fecha de Expiración" )
     has_cabys = fields.Boolean( string="Posee Cabys" )
+    
+    api.onchange('document_number')
+    def get_autorizacion(self):
+        for record in self:
+            url1 = f"https://api.hacienda.go.cr/fe/ex?autorizacion={record.document_number}"
+            response = requests.get(url1, timeout=5)
+            _logging.info(f"DEF40 response: {response.json()}")
+        _logging.info(f"DEF35 autoriacion: {autorizacion}")
+        STOP35
 
 
