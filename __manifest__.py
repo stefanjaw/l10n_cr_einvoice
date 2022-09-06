@@ -42,6 +42,7 @@
         'views/uom_uom.xml',
         'views/account_tax.xml',
         'views/account_fiscal_position.xml',
+        'views/account_fiscal_position_exoneraciones_cr.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
