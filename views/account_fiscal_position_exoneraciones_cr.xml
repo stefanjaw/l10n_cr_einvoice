@@ -8,14 +8,22 @@
             <form string="">
              <sheet>
                 <group>
+
+                   <group>
+                       <field name="name" />
+                   </group>
+
+	           <group/>
+
                    <group>
                        <field name="partner_id"  string="Contacto"/>
-                       <field name="partner_vat" string="Identificación"/>
+                       <field name="partner_vat" string="Identificación" style="margin-bottom:30px;"/>
                        <field name="fiscal_position_type"/>
                        <field name="institution_name" string="Emisor"/>
-                       <field name="document_number" />
+		       <field name="autorizacion"/>
                        <field name="cfia_project_code"/>
                    </group>
+	
 		   <group>
                        <field name="has_cabys"/>
                        <field name="exoneration_percentage"/>
@@ -33,8 +41,7 @@
       <field name="model">account.fiscal.position.exoneraciones_cr</field>
       <field name="arch" type="xml">
         <tree string="">
-          <field name="display_name"/>
-          <field name="document_number" />
+          <field name="name"/>
           <field name="issued_date" />
           <field name="expiration_date" />
           <field name="fiscal_position_type"/>
@@ -48,7 +55,7 @@
       <field name="arch" type="xml">
         <search string="">
               <field name="institution_name" string="Empresa" filter_domain="[('institution_name','ilike',self)]"/>
-              <field name="document_number" string="Exoneración" filter_domain="[('document_number','ilike',self)]"/>
+              <field name="name" string="Exoneración" filter_domain="[('name','ilike',self)]"/>
         </search>
       </field>
     </record>
