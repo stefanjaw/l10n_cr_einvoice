@@ -64,28 +64,23 @@ class AccountFiscalPositionExoneracionesCR(models.Model):
                     msg = f"No Encontrada la Identificación Física o Jurídica: { response_json.get('identificacion') }"
                     raise ValidationError(msg)
 
-                issued_date = datetime.datetime.fromisoformat( response_json.get('fechaEmision') + "+00:00" )#.astimezone( pytz.timezone('America/Costa_Rica') )
-                _logging.info(f"DEF67 issued_date: {issued_date}")
-                expiration_date = datetime.datetime.fromisoformat( response_json.get('fechaVencimiento') )#.astimezone( pytz.timezone('America/Costa_Rica') )
+                issued_date = datetime.datetime.fromisoformat( response_json.get('fechaEmision') + '-06:00').astimezone( pytz.timezone('UTC') )
+                expiration_date = datetime.datetime.fromisoformat( response_json.get('fechaVencimiento') + '-06:00').astimezone( pytz.timezone('UTC') )
+
                 try:
                     codigo = response_json.get('tipoDocumento').get('codigo')
                 except:
                     codigo = False
 
-                _logging.info(f"DEF64 CFIA: {response_json.get('codigoProyectoCFIA') }")
-
                 record.write({
                     'partner_id': partner_id[0].id or False,
                     'fiscal_position_type': codigo,
                     'cfia_project_code': str(response_json.get('codigoProyectoCFIA') ) or False,
-                    'issued_date': str(issued_date),
+                    'issued_date': issued_date.strftime('%Y-%m-%d %H:%M'),
                     'institution_name': response_json.get('nombreInstitucion') or False,
-                    'expiration_date': str(expiration_date),
+                    'expiration_date': expiration_date.strftime('%Y-%m-%d %H:%M'),
                     'exoneration_percentage': response_json.get('porcentajeExoneracion') or 0,
                     'has_cabys': response_json.get('poseeCabys') or False,
 
                 })
-
-                _logging.info(f"DEF62 FIN =====")
-
 
