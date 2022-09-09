@@ -34,6 +34,7 @@ class AccountFiscalPositionExoneracionesCR(models.Model):
     expiration_date = fields.Datetime( string="Fecha de Expiración" )
     has_cabys = fields.Boolean( string="Posee Cabys" )
     autorizacion = fields.Char( string="Autorización" )
+    cabys_allowed = fields.Text( string="Cabys Permitidos" )
     
     @api.onchange('name')
     def get_autorizacion(self):
@@ -76,11 +77,12 @@ class AccountFiscalPositionExoneracionesCR(models.Model):
                     'partner_id': partner_id[0].id or False,
                     'fiscal_position_type': codigo,
                     'cfia_project_code': str(response_json.get('codigoProyectoCFIA') ) or False,
-                    'issued_date': issued_date.strftime('%Y-%m-%d %H:%M'),
+                    'issued_date': issued_date.strftime('%Y-%m-%d %H:%M:%S'),
                     'institution_name': response_json.get('nombreInstitucion') or False,
-                    'expiration_date': expiration_date.strftime('%Y-%m-%d %H:%M'),
+                    'expiration_date': expiration_date.strftime('%Y-%m-%d %H:%M:%S'),
                     'exoneration_percentage': response_json.get('porcentajeExoneracion') or 0,
                     'has_cabys': response_json.get('poseeCabys') or False,
-
+                    'cabys_allowed': response_json.get('cabys') or False,
+                    'autorizacion': response_json.get('autorizacion') or False,
                 })
 

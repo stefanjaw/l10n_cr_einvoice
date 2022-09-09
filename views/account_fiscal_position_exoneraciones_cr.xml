@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="account_fiscal_position_exoneraciones_cr_form" model="ir.ui.view">
-	    <field name="name">account.fiscal.position.exoneraciones_cr.form</field>
+	<field name="name">account.fiscal.position.exoneraciones_cr.form</field>
         <field name="model">account.fiscal.position.exoneraciones_cr</field>
         <field name="arch" type="xml">
             <form string="">
@@ -29,8 +29,14 @@
                        <field name="exoneration_percentage"/>
                        <field name="issued_date"/>
                        <field name="expiration_date"/>
-                   </group>
+	       	   </group>
+
                 </group>
+
+		<group>
+                    <field name="cabys_allowed" string="Cabys Permitidos"/>
+	        </group>
+
               </sheet>
             </form>
         </field>
