@@ -8,12 +8,18 @@
         <field name="model">account.fiscal.position</field>
         <field name="inherit_id" ref="account.view_account_position_form"/>
         <field name="arch" type="xml">
+	
             <field name="auto_apply" position="after">
                 <field name="fiscal_position_type" placeholder="Tipo de documento de exoneración o autorización" required="True" />
                 <field name="document_number" placeholder="Número de documento de exoneración o autorización" required="True"/>
                 <field name="institution_name" placeholder="Nombre de institución o dependencia que emitió la exoneración" required="True"/>
                 <field name="issued_date" placeholder="Fecha de emisión del documento de exoneración o autorización" required="True"/>
-            </field>
+	    </field>
+
+	    <xpath expr="//tree[@name='tax_map_tree']" position="inside">
+    	        <field name="line_exoneracion" />
+  	    </xpath>
+
         </field>
     </record>
 

@@ -38,20 +38,17 @@ class AccountFiscalPositionExoneracionesCR(models.Model):
     
     @api.onchange('name')
     def get_autorizacion(self):
-        _logging.info(f"DEF37 self: {self}")
         for record in self:
-            _logging.info(f"DEF39 record: {record}")
-            _logging.info(f"DEF40 name: {record.name}")
             if record.name:
-                _logging.info(f"DEF42 document_number: {record.name}")
                 url1 = f"https://api.hacienda.go.cr/fe/ex?autorizacion={record.name}"
-                _logging.info(f"DEF44 url1: {url1}")
                 response = requests.get(url1, timeout=5)
                 
                 try:
                     response_json = response.json()
                 except:
                     response_json = False
+                    continue
+                if response_json.get('code') in [400, 404]:
                     continue
 
                 partner_id = self.env['res.partner'].search([('vat','=', response_json.get('identificacion'))])
