@@ -916,7 +916,7 @@ class AccountMove(models.Model):
             move_type_extra = False
         
         self.write({
-            'fe_payment_type': self.partner_id.fe_payment_type,
+            'fe_payment_type': self.partner_id.fe_payment_type or self.fe_payment_type,
             'move_type_extra': move_type_extra,
         })
             
