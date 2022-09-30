@@ -430,7 +430,7 @@ class AccountMove(models.Model):
             return res.action_post()
         
         if self.name and len(self.name) >= 6:
-            _logging.info("    Ya tiene un numero consecutivo asignado")
+            _logging.info(f"    Ya tiene un numero consecutivo asignado: {self.name}")
             return res.action_post()
         
         next_number = sequence_prefix = sequence_number = False
@@ -441,9 +441,9 @@ class AccountMove(models.Model):
 
             self.sequence_prefix = sequence_data.get('sequence_prefix')
             self.sequence_number = sequence_data.get('sequence_number')
-            self.state = "posted"
         else:
-            return res.action_post()
+            pass 
+        return res.action_post()
 
     def _get_sequence_data(self):
         if self._name != "account.move":
