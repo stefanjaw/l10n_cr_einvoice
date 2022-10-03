@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- Fiscal Position -->
-
+<!--
     <record id="view_fiscal_position_form_inherited" model="ir.ui.view">
         <field name="name">account.fiscal.position.form.inherited.localization</field>
         <field name="model">account.fiscal.position</field>
@@ -22,5 +22,5 @@
 
         </field>
     </record>
-
+-->
 </odoo>
