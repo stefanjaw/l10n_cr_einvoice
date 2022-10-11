@@ -925,7 +925,13 @@ class AccountMove(models.Model):
             ('partner_id','=', self.partner_id.id),
         ])
 
-        records = [x for x in otros_line if x['move_type'] == self.move_type]
+        records = [x for x in otros_line if x['move_type'] == self.move_type or x['move_type'] == False ]
+        try:
+            results = self.otros_ids #env['account.move.otros.line'].search([('move_id', '=', self.id)])
+            results.unlink()
+        except:
+            pass
+
         for record in records:
             self.env['account.move.otros.line'].create({
                 'move_id': self.id,
