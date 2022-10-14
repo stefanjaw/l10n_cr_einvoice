@@ -941,3 +941,65 @@ class AccountMove(models.Model):
             })
 
         return
+
+    @api.onchange('electronic_doc_id')
+    def get_xml_record_data(self):
+        _logging.info(f"DEF947 self: {self} {self.electronic_doc_id}\n\n")
+        #STOP948
+
+        if self.electronic_doc_id:
+            try:
+                provider_vat = self.electronic_doc_id.provider_vat
+                partner_id = self.env["res.partner"].search([("vat","=", provider_vat)])
+            except:
+                msg = f"Identificación no se obtuvo del XML o está ausente"
+                raise  ValidationError( _( msg ) )
+
+            if len(partner_id) > 1:
+                msg = f"Encontrados { len(partner_id) } Contactos con la misma identificación: { provider_vat }"
+                raise  ValidationError( _( msg ) )
+
+            if len(self.electronic_doc_id.line_ids) > 0:
+                lines_lst = []
+                for line in self.electronic_doc_id.line_ids:
+
+                    if line.is_selected == False:
+                        continue
+
+                    #product_uom_id = line.
+
+                    lines_lst.append((0,0, {
+                        "name": line.name,
+                        "quantity": line.quantity,
+                        "price_unit": line.price_unit,
+                        "tax_ids": line.tax_ids.ids,
+                        "discount": line.discount,
+                        "currency_id": self.currency_id.id,
+                        "account_id": self.journal_id.default_account_id.id,
+                        })
+                    )
+
+            if not self.invoice_date:
+                self.invoice_date = self.electronic_doc_id.date
+                self.date = self.electronic_doc_id.date
+            if not self.partner_id: self.partner_id = partner_id.id
+            if not self.payment_reference: self.payment_reference = self.electronic_doc_id.electronic_doc_bill_number
+            else: self.payment_reference: False
+            if not self.currency_id: self.currency_id = self.electronic_doc_id.currency_id.id
+            if len( self.invoice_line_ids ) ==  0:
+                self.invoice_line_ids = lines_lst
+            self._onchange_partner_id()
+            self.invoice_line_ids._onchange_price_subtotal()
+            self._onchange_recompute_dynamic_lines()
+
+        else:
+            self.line_ids.unlink()
+            self.invoice_line_ids.unlink()
+            self._onchange_partner_id()
+            self.invoice_line_ids._onchange_price_subtotal()
+            self._onchange_recompute_dynamic_lines()
+            self.invoice_date = False
+            self.date = False
+
+        return 
+
