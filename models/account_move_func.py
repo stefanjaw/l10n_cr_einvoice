@@ -452,6 +452,10 @@ class AccountMove(models.Model):
         if self.move_type == "out_refund":
             _logging.info("    ==> Get Sequence Data no aplica para Tipo Nota de Crédito")
             return False
+
+        if self.name not in [False, None]:
+            _logging.info(f"    ==> account.move with name defined: {self.name}")
+            return False
         
         next_number = sequence_prefix = sequence_number = False
         if  self.move_type == "out_invoice" \
