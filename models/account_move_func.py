@@ -16,7 +16,7 @@ import logging
 import time
 #import os
 
-log = logging.getLogger(__name__)
+log = _logging = logging.getLogger(__name__)
 
 TYPE2REFUND = {
     'out_invoice': 'out_refund',        # Customer Invoice
