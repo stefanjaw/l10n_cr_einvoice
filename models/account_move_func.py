@@ -365,9 +365,14 @@ class AccountMoveFunctions(models.Model):
                        self.update({'fe_server_state':'enviado a procesar'})
 
                elif "error" in  result.keys():
-                    result = json_response['result']['error']
-                    body = "Error "+result
-                    self.write_chatter(body)
+                    if self.name in str(result) and 'already exists' in str(result):
+                        _logging.info(f"DEF369 {self.name} - Already Processed or Duplicated\n")
+                        self.update({'fe_server_state':'enviado a procesar'})
+                    else:
+                        result = json_response['result']['error']
+                        _logging.info(f"DEF373 {self.name} Error: {result}\n")
+                        body = "Error "+result
+                        self.write_chatter(body)
 
         except Exception as e:
             body = "Error "+str(e)
