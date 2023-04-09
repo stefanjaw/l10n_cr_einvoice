@@ -100,7 +100,7 @@ class AccountMove(models.Model):
         ondelete="set null",
         states={'posted': [('readonly', True)]}
     )
-
+    
     fe_in_invoice_type = fields.Selection(#1569867120
         string="Tipo Documento",
         selection=[
@@ -111,9 +111,9 @@ class AccountMove(models.Model):
                 ('ND', 'Nota Débito'),   
                 ('OTRO', 'Otros'),                
         ],
-       default=lambda self: self.default_fe_in_invoice_type(),
+       #default=lambda self: self.default_fe_in_invoice_type(),   ''' Comentado por Upgrade xxxxxxxx
     )
-
+    
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
     
     fe_tipo_documento_referencia = fields.Selection(
