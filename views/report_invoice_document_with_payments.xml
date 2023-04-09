@@ -1,6 +1,10 @@
 <odoo>
-<template id="l10n_cr_einvoice.report_invoice_document_with_payments_inherit" inherit_id="account.report_invoice_document_with_payments">
-  <xpath expr="/t/t/div/h2" position="before">
+<template id="l10n_cr_einvoice.report_invoice_document_with_payments_inherit" inherit_id="account.report_invoice_with_payments">
+    
+    <xpath expr="." position="inside">
+        <p>Comentado por Upgrade</p>
+    </xpath>
+<!--  Comented por Upgrade <xpath expr="/t/t/div/h2" position="before">
       <t t-if="o.fe_current_country_company_code == 'CR'" >
             <t t-set="address" position="replace"/>
             <table class="table table-borderless mt-4 mb-4">
@@ -30,9 +34,9 @@
             </tbody>
             </table>
       </t>
-  </xpath>
+  </xpath> -->
 
-  <xpath expr="/t/t/div/h2"
+<!-- Comentado por upgrade  <xpath expr="/t/t/div/h2"
       position="after">
       <div class="row" t-if="o.fe_current_country_company_code == 'CR'" >
         <div class="col-12">
@@ -42,29 +46,31 @@
           <span t-field="o.fe_clave" />
         </div>
       </div>
-    </xpath>
+    </xpath> -->
     
-    <table class="table table-sm o_main_table" name="invoice_line_table" position="before">
+    
+<!--     <table class="table table-sm o_main_table" name="invoice_line_table" position="before">
             <t t-if="o.currency_id.name == 'USD' "> 
                  <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(o.amount_total_signed/o.amount_total)"/>
             </t>
-    </table>
+    </table> -->
 
-   <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
+<!--   cambiado por Upgrade <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
     <th>
       <span>Código Cabys</span>
     </th>
-  </xpath>
-    <xpath expr="/t/t/div/table/tbody/t[3]/tr/t[1]/td[1]" position="after">
+  </xpath> -->
+    
+<!--   comentado por Upgrade  <xpath expr="/t/t/div/table/tbody/t[3]/tr/t[1]/td[1]" position="after">
       <td>
         <span t-field="line.product_id.cabys_code_id.code"/>
       </td>
     </xpath>
     <xpath expr="/t/t/div/table/tbody/t[3]/t[3]/tr/td" position="attributes">
       <attribute name="colspan">100</attribute>
-    </xpath>
+    </xpath> -->
    
-    <xpath expr="/t/t/div/div[3]/div"
+<!--  COmentado por Upgrade   <xpath expr="/t/t/div/div[3]/div"
            position="replace">
       <div class="row">
         <div class="col-6">
@@ -193,9 +199,9 @@
         </table>
       </div>
     </div>
-  </xpath>
+  </xpath> -->
 
-  <xpath expr="/t/t/div/div[3]/div" position="after">
+<!--  Comentado por Upgrade <xpath expr="/t/t/div/div[3]/div" position="after">
 
       <div class="row" t-if="o.fe_current_country_company_code == 'CR'">
         <div class="col-12" t-if="o.fiscal_position_id">
@@ -224,7 +230,7 @@
 
       </div>
       <br/>
-    </xpath>
+    </xpath> -->
 
 </template>
 </odoo>

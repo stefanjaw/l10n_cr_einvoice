@@ -16,7 +16,7 @@ import logging
 import time
 #import os
 
-log = logging.getLogger(__name__)
+log = _logger = _logging = logging.getLogger(__name__)
 
 TYPE2REFUND = {
     'out_invoice': 'out_refund',        # Customer Invoice
@@ -28,6 +28,30 @@ TYPE2REFUND = {
 class AccountMoveFunctions(models.Model):
     _inherit = "account.move"
     
+
+    @api.model
+    def default_fe_in_invoice_type(self):
+        _logger.info(f"DEF34 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
+        
+        '''
+        #journal = super(AccountMoveFunctions, self)._get_default_journal()
+        journal = self.env['account.journal'].search([('company_id', '=', self.env.company.id), ('type', '=', 'general')], limit=1)
+        if len(journal.sequence_id.prefix) == 10 :
+                if journal.sequence_id.prefix[8:10] == '08':
+                   return 'FEC'
+                elif journal.sequence_id.prefix[8:10] == '09':
+                    return 'FEX'
+                elif journal.sequence_id.prefix[8:10] == '01':
+                    return 'FE'
+                elif journal.sequence_id.prefix[8:10] == '02':
+                    return 'ND'
+                else:
+                    return 'OTRO'
+        else:
+            return 'OTRO'
+        '''
+
+
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):
         self.fe_in_invoice_type = 'OTRO'
@@ -49,7 +73,8 @@ class AccountMoveFunctions(models.Model):
                 
     @api.onchange("currency_id","invoice_date",)
     def _onchange_currency_rate(self):
-        for s in self:
+        #buscar error con respecto a dolares
+        '''for s in self:
             log.info('-->577381353')
             if s.currency_id.name == "USD": 
                 date = None
@@ -58,7 +83,7 @@ class AccountMoveFunctions(models.Model):
                 else:
                     date = s.invoice_date 
                                         
-                s._rate(date)
+                s._rate(date)'''
                             
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
@@ -98,6 +123,56 @@ class AccountMoveFunctions(models.Model):
         for s in self:
             s.fe_current_country_company_code = s.company_id.country_id.code
 
+    def _compute_exoneraciones(self):
+                for record in self:
+                  record.TotalServExonerado = 0
+                  record.TotalMercExonerada = 0
+                  record.TotalExonerado = 0
+
+                  if record.fiscal_position_id:
+                      for i in record.invoice_line_ids:
+                            if not i.tax_ids:
+                                continue
+                            fiscal = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)])
+                            old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id
+                            LineaImpuestoTarifa = round(old_tax.amount,2)
+                            percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
+                            if i.product_id.type == 'service':
+                                record.TotalServExonerado = record.TotalServExonerado + i.price_subtotal * ( percent / LineaImpuestoTarifa )
+                            else:
+                                record.TotalMercExonerada = record.TotalMercExonerada + i.price_subtotal * ( percent / LineaImpuestoTarifa )
+
+                      record.TotalExonerado = record.TotalServExonerado + record.TotalMercExonerada
+    def _compute_gravados_exentos(self):
+        for record in self:
+            for i in record.invoice_line_ids:
+                if not i.tax_ids:
+                    continue
+                fiscal = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
+                old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id        
+                LineaImpuestoTarifa = round(old_tax.amount,2)
+                percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
+                LineaMontoTotal = round((i.quantity * i.price_unit),5)
+                if i.product_id.type == 'service':
+                            #asking for tax for know if the product is Tax Free
+                            if i.tax_ids:
+                                if record.fiscal_position_id:
+                                    record.fe_total_servicio_gravados = record.fe_total_servicio_gravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                                else:
+                                    record.fe_total_servicio_gravados = record.fe_total_servicio_gravados + LineaMontoTotal
+                            else:
+                                record.fe_total_servicio_exentos = record.fe_total_servicio_exentos + LineaMontoTotal
+                else:
+                            if i.tax_ids:
+                                if record.fiscal_position_id:
+                                    record.fe_total_mercancias_gravadas = record.fe_total_mercancias_gravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                                else:
+                                    record.fe_total_mercancias_gravadas = record.fe_total_mercancias_gravadas + LineaMontoTotal #LineaSubTotal
+                            else:
+                                record.fe_total_mercancias_exentas = record.fe_total_mercancias_exentas + LineaMontoTotal #LineaSubTotal
+
+            record.fe_total_gravado = record.fe_total_servicio_gravados + record.fe_total_mercancias_gravadas
+            record.fe_total_exento = record.fe_total_mercancias_exentas + record.fe_total_servicio_exentos
 
     def _compute_total_descuento(self):
         log.info('--> factelec/_compute_total_descuento')
@@ -119,72 +194,6 @@ class AccountMoveFunctions(models.Model):
                 totalSale = totalSale + totalAmount
 
         self.fe_total_venta = totalSale
-
-
-
-    @api.depends("fe_total_servicio_exentos", "fe_total_mercancias_exentas" )
-    def _compute_total_exento(self):
-        log.info('--> factelec/_compute_total_exento')
-        for s in self:
-            s.fe_total_exento = s.fe_total_servicio_exentos + s.fe_total_mercancias_exentas
-
-
-    @api.depends("fe_total_servicio_gravados", "fe_total_mercancias_gravadas" )
-    def _compute_total_gravado(self):
-        log.info('--> factelec/_compute_total_gravado')
-        for s in self:
-            s.fe_total_gravado = s.fe_total_servicio_gravados + s.fe_total_mercancias_gravadas
-
-
-    def _compute_total_servicios_gravados(self):
-        log.info('--> factelec/_compute_total_servicios_gravados')
-        totalServGravados = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type == 'Service':
-                    if i.tax_ids:
-                        totalAmount = i.price_unit * i.quantity
-                        totalServGravados = totalServGravados + totalAmount
-
-        self.fe_total_servicio_gravados = totalServGravados
-
-
-    def _compute_total_servicios_exentos(self):
-        log.info('--> factelec/_compute_total_servicios_exentos')
-        totalServExentos = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type == 'Service':
-                    if i.tax_ids:
-                        totalAmount = i.price_unit * i.quantity
-                        totalServExentos = totalServExentos + totalAmount
-
-        self.fe_total_servicio_exentos  = totalServExentos
-
-
-    def _compute_total_mercancias_gravadas(self):
-        log.info('--> factelec/_compute_total_mercancias_gravadas')
-        totalMercanciasGravadas = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type != 'Service':
-                        if i.tax_ids:
-                            totalAmount = i.price_unit * i.quantity
-                            totalMercanciasGravadas = totalMercanciasGravadas + totalAmount
-        self.fe_total_mercancias_gravadas =  totalMercanciasGravadas
-
-
-    def _compute_total_mercancias_exentas(self):
-        log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO1')
-        totalMercanciasExentas = 0
-        for s in self:
-            for i in s.invoice_line_ids:
-                if i.product_id.type != 'Service':
-                        if not i.tax_ids:
-                            totalAmount = i.price_unit * i.quantity
-                            totalMercanciasExentas = totalMercanciasExentas + totalAmount
-        self.fe_total_mercancias_exentas =  totalMercanciasExentas
-
 
 
     @api.depends("fe_total_mercancias_exentas")
@@ -361,9 +370,14 @@ class AccountMoveFunctions(models.Model):
                        self.update({'fe_server_state':'enviado a procesar'})
 
                elif "error" in  result.keys():
-                    result = json_response['result']['error']
-                    body = "Error "+result
-                    self.write_chatter(body)
+                    if self.name in str(result) and 'already exists' in str(result):
+                        _logging.info(f"DEF369 {self.name} - Already Processed or Duplicated\n")
+                        self.update({'fe_server_state':'enviado a procesar'})
+                    else:
+                        result = json_response['result']['error']
+                        _logging.info(f"DEF373 {self.name} Error: {result}\n")
+                        body = "Error "+result
+                        self.write_chatter(body)
 
         except Exception as e:
             body = "Error "+str(e)
@@ -372,8 +386,7 @@ class AccountMoveFunctions(models.Model):
 
     def confirm_bill(self):
         log.info('--> factelec-Invoice-confirm_bill')
-        if s.fe_server_state:
-            return
+
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
@@ -391,19 +404,24 @@ class AccountMoveFunctions(models.Model):
         self.source_date = self.invoice_date
 
         if country_code == 'CR':
-            self._validate_company()
-            self.validar_datos_factura()
-            self._validate_invoice_line()
-
-            if self.name[8:10] == "01":                    #FACTURA ELECTRONICA
+            if self.name[8:10] == "01": 
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                   #FACTURA ELECTRONICA
                 self.fe_doc_type = "FacturaElectronica"
                 self._cr_post_server_side()
 
-            elif self.name[8:10] == "02":                  #NOTA DEBITO ELECTRONICA
+            elif self.name[8:10] == "02":
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                  #NOTA DEBITO ELECTRONICA
                 self.fe_doc_type = "NotaDebitoElectronica"
                 self._cr_post_server_side()
 
-            elif self.name[8:10] == "03":                  #NOTA CREDITO ELECTRONICA
+            elif self.name[8:10] == "03": 
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                 #NOTA CREDITO ELECTRONICA
                 self.fe_doc_type = "NotaCreditoElectronica"
                 self._cr_post_server_side()
 
@@ -420,11 +438,17 @@ class AccountMoveFunctions(models.Model):
                    self.fe_fecha_emision_doc = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                    self._cr_post_server_side()
 
-            elif self.name[8:10] == "08":                    #FACTURA ELECTRONICA COMPRA
+            elif self.name[8:10] == "08":  
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                  #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaCompra"
                 self._cr_post_server_side()
 
-            elif self.name[8:10] == "09":                    #FACTURA ELECTRONICA COMPRA
+            elif self.name[8:10] == "09":
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                    #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaExportacion"
                 self._cr_post_server_side()
 
@@ -482,13 +506,28 @@ class AccountMoveFunctions(models.Model):
             raise exceptions.Warning((msg))
 
     def _validate_invoice_line(self):
+        if len( self.name ) != 20:
+            return
         units = ['Al', 'Alc', 'Cm', 'I', 'Os', 'Sp', 'Spe', 'St', 'd', 'm', 'kg', 's', 'A', 'K', 'mol', 'cd', 'm²', 'm³', 'm/s', 'm/s²', '1/m', 'kg/m³', 'A/m²', 'A/m', 'mol/m³', 'cd/m²', '1', 'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'Ω', 'S', 'Wb', 'T', 'H', '°C', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'Pa·s', 'N·m', 'N/m', 'rad/s', 'rad/s²', 'W/m²', 'J/K', 'J/(kg·K)', 'J/kg', 'W/(m·K)', 'J/m³', 'V/m', 'C/m³', 'C/m²', 'F/m', 'H/m', 'J/mol', 'J/(mol·K)', 'C/kg', 'Gy/s', 'W/sr', 'W/(m²·sr)', 'kat/m³', 'min', 'h', 'd', 'º', '´', '´´', 'L', 't', 'Np', 'B', 'eV', 'u', 'ua', 'Unid', 'Gal', 'g', 'Km', 'Kw', 'ln', 'cm', 'mL', 'mm', 'Oz', 'Otros']
+        service_units = ['Os','Sp','Spe','St','h']
         log.info('--> _validate_invoice_line')
         for line in self.invoice_line_ids:
+            if len(line.name) > 200:
+                raise exceptions.Warning(("La descripción del producto {0} no puede ser mayor a 200 caracteres".format(line.name)))
+            if line.product_id:
+                if line.product_id.type == 'service':
+                    if line.product_uom_id.uom_mh not in service_units:
+                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
+                else: 
+                    if line.product_uom_id.uom_mh not in units:
+                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
+            else:
+                if line.product_uom_id.uom_mh not in units:
+                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
 
-            if line.product_uom_id.name not in units:
-                raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda".format(line.product_uom_id.name)))
-                return
+            if not line.product_id.cabys_code_id:
+                raise exceptions.Warning(("El producto {0} no contiene código CABYS".format(line.product_id.name)))
+
 
             if line.tax_ids:
 
@@ -509,15 +548,30 @@ class AccountMoveFunctions(models.Model):
 
            
     def validar_datos_factura(self):
-        
+            if len( self.name ) != 20:
+                return
             msg = ''
+            if self.name[8:10] != '08':
+                if self.partner_id.state_id:                
+                    if not self.partner_id.state_id.fe_code:
+                        msg += 'En el Cliente, el codigo para factura electronica de la provincia es requerida \n'
+
+                    if not self.partner_id.canton_id:
+                        msg += 'En el Cliente, el canton es requerido \n'
+                        
+                    if not self.partner_id.distrito_id:
+                        msg += 'En el Cliente, el distrito es requerido \n'
+
+                    if not self.partner_id.street:
+                        msg += 'En el Cliente, el campo otras señas es requerido \n'
+
             if not self.fe_activity_code_id:
                 msg += 'Falta la actividad económica \n'
             elif len(self.fe_activity_code_id.code) != 6:
                 msg += 'El codigo de la actividad económica debe ser de un largo de 6 \n'
             
-            if not self.invoice_payment_term_id:
-                msg += 'Falta el plazo de pago \n'
+            if not self.invoice_payment_term_id.payment_term_hacienda:
+                msg += 'En el plazo de pago falta el plazo credito hacienda \n'
             elif len(self.invoice_payment_term_id.payment_term_hacienda) > 10:
                 msg += 'El nombre del plazo de pago debe ser menor aun largo de 10 \n'
                 
@@ -536,7 +590,7 @@ class AccountMoveFunctions(models.Model):
                 msg += 'Falta la fecha de emisión \n'
                 
             if not self.invoice_payment_term_id.fe_condition_sale:
-                msg += 'En el plazo de pago falta sale type \n'
+                msg += 'Falta definir en el plazo de pago la condición de venta\n'
             
             if not self.fe_payment_type:
                 msg += 'Falta el tipo de pago \n'
@@ -644,6 +698,8 @@ class AccountMoveFunctions(models.Model):
            
 
     def _generar_clave(self):
+        if len( self.name ) != 20:
+            return
         document_date_invoice = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
         if self.fe_doc_type != "MensajeReceptor":
            country_code = self.company_id.country_id.phone_code
@@ -652,7 +708,7 @@ class AccountMoveFunctions(models.Model):
            vat = vat.replace(' ','')
            vat_complete = "0" * (12 - len(vat)) + vat
            clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
-              + str(vat_complete) + str(self.name) + str(self.fe_receipt_status) \
+              + str(vat_complete) + str(self.name) + str(self.fe_receipt_status or '1') \
               + str("87654321")
            self.fe_clave = clave
 
@@ -742,7 +798,7 @@ class AccountMoveFunctions(models.Model):
     def get_invoice(self):
         for s in self:
             if not s.fe_server_state:
-                return
+                raise exceptions.Warning('Porfavor envie el documento antes de consultarlo')
             if s.state == 'draft':
               raise exceptions.Warning('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
@@ -754,6 +810,8 @@ class AccountMoveFunctions(models.Model):
                  raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
 
             if s.name[8:10] == "05":
+               if not s.fe_clave:
+                  log.info("soy un documento 05 sin clave {}".format(s.name))
                url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave+'-'+s.name)
             else:
                url = s.company_id.fe_url_server+'{0}'.format(s.fe_clave)
@@ -801,12 +859,17 @@ class AccountMoveFunctions(models.Model):
     def cron_get_server_bills(self):
         log.info('--> cron_get_server_bills')
         list = self.env['account.move'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','posted'),
-        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=',False)])
+        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=','error'),('fe_server_state','!=','Importada Manual'),('fe_server_state','!=',False),
+        ('type','!=','entry')])
 
         for item in list:
-            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO':
-                log.info(' item name %s',item.name)
-                item.get_invoice()
+            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO' and item.journal_id.type == 'sale':
+                if item.fe_clave:
+                    log.info(' item name %s',item.name)
+                    item.get_invoice()
+                else:
+                    log.info(' item name no tiene clave %s',item.name)
+
                
 
     def write_chatter(self,body):
@@ -839,7 +902,7 @@ class AccountMoveFunctions(models.Model):
 
             if s.company_id.fe_comercial_name:
                 s.invoice[s.fe_doc_type]['Emisor'].update({'NombreComercial':s.company_id.fe_comercial_name})
-
+            
             s.invoice[s.fe_doc_type]['Emisor'].update({'Ubicacion':{
             'Provincia':s.company_id.state_id.fe_code,
             'Canton':s.company_id.canton_id.code,
@@ -888,7 +951,7 @@ class AccountMoveFunctions(models.Model):
                     'OtrasSenas':s.partner_id.street or '',
                 }})
 
-            if s.partner_id.barrio_id.code:
+            if  s.partner_id.state_id.fe_code and s.partner_id.barrio_id.code:
                 s.invoice[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_id.code})
 
             #if s.partner_id.fe_receptor_otras_senas_extranjero:
@@ -932,6 +995,7 @@ class AccountMoveFunctions(models.Model):
             TotalServGravados = 0
             TotalServExentos = 0
             TotalServExonerado = 0
+            TotalGravado = 0
             TotalMercanciasGravadas = 0
             TotalMercanciasExentas = 0
             TotalMercExonerada = 0
@@ -945,13 +1009,15 @@ class AccountMoveFunctions(models.Model):
                 LineaMontoDescuento = 0
                 MontoTotalLinea = 0
                 LineaImpuestoNeto = 0
+                MontoExoneracion = 0
+                percent = 0
 
                 inv_lines.append({'NumeroLinea':NumeroLinea})
 
                 #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
 
-                if i.product_id.default_code:
-                    inv_lines[arrayCount]['Codigo'] = i.product_id.default_code
+                #if i.product_id.default_code:
+                inv_lines[arrayCount]['Codigo'] = i.product_id.cabys_code_id.code
 
                 if i.product_id.fe_codigo_comercial_codigo:
                     inv_lines[arrayCount]['CodigoComercial'] = {
@@ -962,7 +1028,7 @@ class AccountMoveFunctions(models.Model):
                 LineaCantidad = round(i.quantity,3)
                 inv_lines[arrayCount]['Cantidad'] = '{0:.3f}'.format(LineaCantidad)
 
-                inv_lines[arrayCount]['UnidadMedida'] = i.product_uom_id.name
+                inv_lines[arrayCount]['UnidadMedida'] = i.product_uom_id.uom_mh
 
                 if i.product_id.fe_unidad_medida_comercial:
                     inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
@@ -1014,19 +1080,47 @@ class AccountMoveFunctions(models.Model):
                             TotalOtrosCargos += MontoCargo
 
                         else:
-
-                            LineaImpuestoTarifa = round(tax_id.amount,2)
-
-                            inv_lines[arrayCount]['Impuesto'] = {
-                                'Codigo':tax_id.tarifa_impuesto,
-                                'CodigoTarifa':tax_id.codigo_impuesto,
-                                'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
-                                }
+                            
+                            if self.fiscal_position_id:
+                                old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)]).tax_src_id
+                                LineaImpuestoTarifa = round(old_tax.amount,2)
+                                inv_lines[arrayCount]['Impuesto'] = {
+                                    'Codigo':old_tax.codigo_impuesto,
+                                    'CodigoTarifa':old_tax.tarifa_impuesto,
+                                    'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
+                                    }
+                            else:
+                                LineaImpuestoTarifa = round(tax_id.amount,2)
+                                inv_lines[arrayCount]['Impuesto'] = {
+                                    'Codigo':tax_id.codigo_impuesto,
+                                    'CodigoTarifa':tax_id.tarifa_impuesto,
+                                    'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
+                                    }
 
                             LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
-                            LineaImpuestoNeto = round(LineaImpuestoMonto,5) # - LineaImpuestoExoneracion
+                            if self.fiscal_position_id:
+                                fiscal = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
+                                percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
+                                exoneration = {}
+                                exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
+                                exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
+                                exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
+                                exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
+                                exoneration['PorcentajeExoneracion'] =  int(percent) or '0'
+                                MontoExoneracion = round(LineaSubTotal * ( percent / 100),5)
+                                exoneration['MontoExoneracion'] =  MontoExoneracion
+                                inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
+                                if i.product_id.type == 'service':
+                                    TotalServExonerado = TotalServExonerado + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                else:
+                                    TotalMercExonerada = TotalMercExonerada + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+
+                                
+
+   
+                            LineaImpuestoNeto = round(LineaImpuestoMonto - MontoExoneracion,5) # - LineaImpuestoExoneracion
                             inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
                         #Si esta exonerado al 100% se debe colocar 0-Zero
 
@@ -1040,13 +1134,19 @@ class AccountMoveFunctions(models.Model):
                 if i.product_id.type == 'service':
                     #asking for tax for know if the product is Tax Free
                     if i.tax_ids:
-                        TotalServGravados = TotalServGravados + LineaMontoTotal
+                        if self.fiscal_position_id:
+                            TotalServGravados = TotalServGravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                        else:
+                            TotalServGravados = TotalServGravados + LineaMontoTotal
                     else:
                         TotalServExentos = TotalServExentos + LineaMontoTotal
                     #  XXXX PENDIENTE LOS ServExonerados
                 else:
                     if i.tax_ids:
-                        TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
+                         if self.fiscal_position_id:
+                            TotalMercanciasGravadas = TotalMercanciasGravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                         else:
+                            TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
                     else:
                         TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
                     #   XXXX PENDIENTE LOS MercanciasExoneradas
@@ -1074,7 +1174,7 @@ class AccountMoveFunctions(models.Model):
             TotalGravado = TotalServGravados + TotalMercanciasGravadas
             TotalExento = TotalServExentos + TotalMercanciasExentas
             TotalExonerado = TotalServExonerado + TotalMercExonerada
-            TotalVenta = TotalGravado + TotalExento #+ TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
+            TotalVenta = TotalGravado + TotalExento + TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
             TotalVentaNeta = TotalVenta - TotalDescuentos
 
             if TotalServGravados:
@@ -1097,6 +1197,8 @@ class AccountMoveFunctions(models.Model):
 
             if TotalGravado:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
+            else:
+                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'0'})
 
             if TotalExento:
                 s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
@@ -1140,7 +1242,7 @@ class AccountMoveFunctions(models.Model):
             else:
                 s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
 
-            if s.name[8:10] == "02" or s.name[8:10] == "03":
+            if s.name[8:10] == "02" or s.name[8:10] == "03" or  s.name[8:10] == "08":
                 if not s.fe_doc_ref:
                     error = True
                     msg = 'Indique el NUMERO CONSECUTIVO de REFERENCIA\n'
@@ -1161,7 +1263,29 @@ class AccountMoveFunctions(models.Model):
                         else:
                             error = True
                             msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
-
+                    else:
+                        if s.fe_doc_ref:
+                            s.invoice[s.fe_doc_type].update({
+                                    'InformacionReferencia':{
+                                    'TipoDoc':s.fe_tipo_documento_referencia,
+                                    'Numero':s.fe_doc_ref,
+                                    'FechaEmision':s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
+                                    'Codigo':s.fe_informacion_referencia_codigo or None,
+                                    'Razon':s.ref,
+                                    }
+                                })
+            else:
+                if s.fe_doc_ref:
+                    s.invoice[s.fe_doc_type].update({
+                        'InformacionReferencia':{
+                            'TipoDoc':s.fe_tipo_documento_referencia,
+                            'Numero':s.fe_doc_ref,
+                            'FechaEmision': s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
+                            'Codigo':s.fe_informacion_referencia_codigo or None,
+                            'Razon':s.ref,
+                        }
+                    })
+                            
             if s.narration:
                 s.invoice[s.fe_doc_type].update({
                     'Otros':{
@@ -1178,13 +1302,20 @@ class AccountMoveFunctions(models.Model):
     @api.model
     def cron_send_json(self):
         log.info('--> factelec-Invoice-build_json')
-        invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted')])
-        log.info('-->invoice_list %s',invoice_list)
+        invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted'),('fe_server_state','!=','Importada Manual'),('type','!=','entry')])
+        #log.info('-->invoice_list %s',invoice_list)
         for invoice in invoice_list:
-            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO':
-                log.info('-->consecutivo %s',invoice.name)
-                invoice.confirm_bill()
-                
+            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO' and invoice.journal_id.type == 'sale':
+                try:
+                    log.info('-->consecutivo %s',invoice.name)
+                    invoice.confirm_bill()
+                except Exception as ex:
+                    invoice.write_chatter(ex)
+                    invoice.update({
+                        'fe_server_state':'error'
+                    })
+
+        
     def mostrar_wizard_nota_debito(self):
         return {
                 'type': 'ir.actions.act_window',

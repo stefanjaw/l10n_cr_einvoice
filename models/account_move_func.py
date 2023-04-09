@@ -16,7 +16,7 @@ import logging
 import time
 #import os
 
-log = _logging = logging.getLogger(__name__)
+log = _logger = _logging = logging.getLogger(__name__)
 
 TYPE2REFUND = {
     'out_invoice': 'out_refund',        # Customer Invoice
@@ -31,7 +31,11 @@ class AccountMoveFunctions(models.Model):
 
     @api.model
     def default_fe_in_invoice_type(self):
-        journal = super(AccountMoveFunctions, self)._get_default_journal()
+        _logger.info(f"DEF34 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
+        
+        '''
+        #journal = super(AccountMoveFunctions, self)._get_default_journal()
+        journal = self.env['account.journal'].search([('company_id', '=', self.env.company.id), ('type', '=', 'general')], limit=1)
         if len(journal.sequence_id.prefix) == 10 :
                 if journal.sequence_id.prefix[8:10] == '08':
                    return 'FEC'
@@ -45,6 +49,7 @@ class AccountMoveFunctions(models.Model):
                     return 'OTRO'
         else:
             return 'OTRO'
+        '''
 
 
     @api.onchange("journal_id",)

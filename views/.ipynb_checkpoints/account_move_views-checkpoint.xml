@@ -9,9 +9,11 @@
       
       <xpath expr="//header/button[@name='action_reverse']" position="after">
             <button name="mostrar_wizard_nota_debito" type="object" string="Add Debit Note"
-            attrs="{'invisible': ['|', ('type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}"/>
+            attrs="{'invisible': ['|', ('move_type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}"/>
       </xpath>
-      
+      <field name="product_uom_id" position="attributes">
+        <attribute name="groups"></attribute>
+      </field>
       <xpath expr="//page[last()]" position="after">
         <field name ="fe_current_country_company_code" invisible="1"/>
         <page string="Facturacion electrónica" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}">
@@ -36,20 +38,29 @@
       </xpath>-->
       
      <field name="name" position="after">
-            <h3><field name="fe_clave" readonly="1"/></h3>
+            <h3><field name="fe_clave" readonly="1" attrs="{'invisible': [('state','=','draft')]}" /></h3>
             <field name="fe_clave" invisible="1"/>
       </field>
-
-      <field name="journal_id" position="attributes">
-        <attribute name="attrs">{
-            'invisible': [('fe_current_country_company_code', '!=', 'CR')]}
-        </attribute>
+       
+       <field name="ref" position="attributes">
+           <attribute name="attrs">{ 'required':[('fe_doc_ref','!=',False),('move_type','=','in_invoice')] }</attribute>
+       </field>
+      <field name="journal_id" position="replace">
+        <field name="journal_id"  options="{'no_create': True}" domain="[('type', '=?', invoice_filter_type_domain)]" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': [('fe_doc_ref','=', False )] }"  />
+        <field name="fe_doc_ref" help="Numero de Referencia del Documento" placeholder="Documento de Referencia"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': [('fe_doc_ref','=', False )] }"/>
+        <field name="fe_informacion_referencia_fecha" attrs="{'invisible': [('fe_doc_ref','=', False )] }" />
+        <field name="ref" string="Razon" attrs="{'invisible': [('fe_doc_ref','=', False )] }" />
       </field>
       
       <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
             <group>
               <group>
-                  <field name="electronic_doc_id" attrs="{'invisible': [('fe_in_invoice_type','!=','OTRO')]}" />
+                  <field name="electronic_doc_id" attrs="{'invisible': [('fe_in_invoice_type','!=','OTRO')]}"
+                    readonly="1" groups="!account.group_account_user" />
+                  <field name="electronic_doc_id" attrs="{'invisible': [('fe_in_invoice_type','!=','OTRO')]}"
+                    readonly="0" groups="account.group_account_user" string="XML."/>
               </group>
             </group>
       </xpath>
@@ -84,15 +95,12 @@
       <field name="journal_id" position="after">
         <field name = 'debit_note' invisible="True"/>
         <field name ="fe_current_country_company_code" invisible="1"/>
-        <field name="fe_doc_ref" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>
-        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>
-        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('type','!=','out_refund'),('debit_note','=',False)]}"/>                  
      </field>
     </field>
   </record>
     
      <record id="account.action_move_out_invoice_type" model="ir.actions.act_window">
-      <field name="domain">[('type', '=', 'out_invoice'),('debit_note', '=', False)]</field>
+      <field name="domain">[('move_type', '=', 'out_invoice'),('debit_note', '=', False)]</field>
   </record>
 
   <record id="action_for_debit_notes" model="ir.actions.act_window">

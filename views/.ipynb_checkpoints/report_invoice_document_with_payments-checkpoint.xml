@@ -1,6 +1,10 @@
 <odoo>
-<template id="l10n_cr_einvoice.report_invoice_document_with_payments_inherit" inherit_id="account.report_invoice_document_with_payments">
-  <xpath expr="/t/t/div/h2" position="before">
+<template id="l10n_cr_einvoice.report_invoice_document_with_payments_inherit" inherit_id="account.report_invoice_with_payments">
+    
+    <xpath expr="." position="inside">
+        <p>Comentado por Upgrade</p>
+    </xpath>
+<!--  Comented por Upgrade <xpath expr="/t/t/div/h2" position="before">
       <t t-if="o.fe_current_country_company_code == 'CR'" >
             <t t-set="address" position="replace"/>
             <table class="table table-borderless mt-4 mb-4">
@@ -30,9 +34,9 @@
             </tbody>
             </table>
       </t>
-  </xpath>
+  </xpath> -->
 
-  <xpath expr="/t/t/div/h2"
+<!-- Comentado por upgrade  <xpath expr="/t/t/div/h2"
       position="after">
       <div class="row" t-if="o.fe_current_country_company_code == 'CR'" >
         <div class="col-12">
@@ -42,8 +46,31 @@
           <span t-field="o.fe_clave" />
         </div>
       </div>
+    </xpath> -->
+    
+    
+<!--     <table class="table table-sm o_main_table" name="invoice_line_table" position="before">
+            <t t-if="o.currency_id.name == 'USD' "> 
+                 <strong>Tipo Cambio: </strong><span t-esc="'%.2f'%(o.amount_total_signed/o.amount_total)"/>
+            </t>
+    </table> -->
+
+<!--   cambiado por Upgrade <xpath expr="/t/t/div/table/thead/tr/th[1]" position="after">
+    <th>
+      <span>Código Cabys</span>
+    </th>
+  </xpath> -->
+    
+<!--   comentado por Upgrade  <xpath expr="/t/t/div/table/tbody/t[3]/tr/t[1]/td[1]" position="after">
+      <td>
+        <span t-field="line.product_id.cabys_code_id.code"/>
+      </td>
     </xpath>
-    <xpath expr="/t/t/div/div[3]/div"
+    <xpath expr="/t/t/div/table/tbody/t[3]/t[3]/tr/td" position="attributes">
+      <attribute name="colspan">100</attribute>
+    </xpath> -->
+   
+<!--  COmentado por Upgrade   <xpath expr="/t/t/div/div[3]/div"
            position="replace">
       <div class="row">
         <div class="col-6">
@@ -77,11 +104,32 @@
                 <span t-field="o.fe_total_mercancias_exentas" />
               </td>
             </tr>
+            <tr class=""
+                style="">
+              <td>Servicios exonerados</td>
+              <td class="text-right">
+                <span t-field="o.TotalServExonerado" />
+              </td>
+            </tr>
+            <tr class=""
+                style="">
+              <td>Mercancias exonerados</td>
+              <td class="text-right">
+                <span t-field="o.TotalMercExonerada" />
+              </td>
+            </tr>
           </table>
         </div>
         <div class="col-6">
           <table class="table table-sm"
                  style="page-break-inside: avoid;">
+            <tr class=""
+                style="" t-if="o.fe_current_country_company_code == 'CR'" >
+              <td>Tolal exonerado</td>
+              <td class="text-right">
+                <span t-field="o.TotalExonerado" />
+              </td>
+            </tr>
             <tr class=""
                 style="" t-if="o.fe_current_country_company_code == 'CR'" >
               <td>Tolal gravado</td>
@@ -151,6 +199,38 @@
         </table>
       </div>
     </div>
-  </xpath>
+  </xpath> -->
+
+<!--  Comentado por Upgrade <xpath expr="/t/t/div/div[3]/div" position="after">
+
+      <div class="row" t-if="o.fe_current_country_company_code == 'CR'">
+        <div class="col-12" t-if="o.fiscal_position_id">
+          <div>
+            <p><strong>Detalle de la Exoneración</strong></p>
+            <span>Tipo del Documento: </span>
+            <span t-field="o.fiscal_position_id.fiscal_position_type"/>
+            <span>, Número de Exoneración: </span>
+            <span t-field="o.fiscal_position_id.document_number"/>
+          </div>
+
+          <div>
+            <span t-field="o.fiscal_position_id.tax_ids.tax_dest_id.codigo_impuesto"/>
+            <span>, </span>
+            <span t-field="o.fiscal_position_id.tax_ids.tax_dest_id.tarifa_impuesto"/>
+          </div>
+
+          <div>
+            <span>Emitido por: </span>
+            <span t-field="o.fiscal_position_id.institution_name"/>
+            <span>, Fecha: </span>
+            <span t-field="o.fiscal_position_id.issued_date"/>
+          </div>
+
+        </div>
+
+      </div>
+      <br/>
+    </xpath> -->
+
 </template>
 </odoo>
