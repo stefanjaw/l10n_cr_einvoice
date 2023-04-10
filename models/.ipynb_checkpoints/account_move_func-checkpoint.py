@@ -760,6 +760,7 @@ class AccountMoveFunctions(models.Model):
                                                 'context': {'invoice': s.id}
                                         }
                                 #es mensaje de aceptacion??
+                                _logger.info(f"DEF763 sequence: {s.journal_id.sequence}")
                                 if len(s.journal_id.sequence_id.prefix) >= 10:
                                     if s.journal_id.sequence_id.prefix[8:10] == '05':
                                             if s.fe_xml_supplier == False:
