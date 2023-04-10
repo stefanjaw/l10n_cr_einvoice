@@ -80,7 +80,8 @@
       </xpath>
       
       <xpath expr="//group[@id='header_left_group']" position="inside">
-          <h3>Factura Electrónica</h3><br/>
+          <h3>Factura Electrónica</h3><br/><br/>
+	  <field name="fe_doc_type" invisible="False" readonly="0"/>
           <field name="fe_current_country_company_code" invisible="0"/>
           <field name="fe_in_invoice_type" invisible="True"/>
           <field name="fe_payment_type" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
