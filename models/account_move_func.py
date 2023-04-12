@@ -686,8 +686,8 @@ class AccountMoveFunctions(models.Model):
                 msg += 'En compañia, falta el numero de teléfono \n'
             elif len(self.company_id.phone) < 8 and len(self.company_id.phone) > 20:
                  msg += 'En compañia, el numero de teléfono debe ser igual o mayor que 8 y menor que 20 \n'
-            elif not re.search('^\d+$',self.company_id.phone):
-                msg += 'En compañia, el numero de teléfono debe contener solo numeros \n'
+            #elif not re.search('^\d+$',self.company_id.phone): #En otra parte se quitan los caracteres especiales
+            #    msg += 'En compañia, el numero de teléfono debe contener solo numeros \n'
             
             if self.company_id.fe_fax_number:
                 if len(self.company_id.fe_fax_number)  < 8 and len(self.company_id.fe_fax_number) > 20:
@@ -724,20 +724,23 @@ class AccountMoveFunctions(models.Model):
            
 
     def _generar_clave(self):
-        _logger.info(f"DEF726 ===== self: {self} name: {self.name}\n")
+        _logger.info(f"DEF726 ===== _generar_clave self: {self} name: {self.name}\n")
+        
         if len( self.name ) != 20:
             return
+        
         document_date_invoice = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
         if self.fe_doc_type != "MensajeReceptor":
-           country_code = self.company_id.country_id.phone_code
-           vat = self.company_id.vat or ''
-           vat = vat.replace('-','')
-           vat = vat.replace(' ','')
-           vat_complete = "0" * (12 - len(vat)) + vat
-           clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
-              + str(vat_complete) + str(self.name) + str(self.fe_receipt_status or '1') \
-              + str("87654321")
-           self.fe_clave = clave
+            country_code = self.company_id.country_id.phone_code
+            vat = self.company_id.vat or ''
+            vat = vat.replace('-','')
+            vat = vat.replace(' ','')
+            vat_complete = "0" * (12 - len(vat)) + vat
+            epoch = str( datetime.utcnow().timestamp() )[2:10]
+            clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
+                + str(vat_complete) + str(self.name) + str(self.fe_receipt_status or '1') \
+                + str(epoch)
+        self.fe_clave = clave
 
 
     def action_post(self,validate = True):
@@ -857,20 +860,19 @@ class AccountMoveFunctions(models.Model):
                 s.validar_datos_factura()
                 #s.validacion()
                 s._validate_invoice_line()
-                _logger.info(f"DEF844 res.name: {s.name}")
-                STOP860
+                _logger.info(f"DEF844 res.name: {s.name} {s.sequence_prefix}")
             else:
                 log.info('--> 1575061637')
                 res = super(AccountMoveFunctions, s).action_post()
 
-            _logger.info(f"DEF848 res.name: {res.name}")
-            STOP849
+            _logger.info(f"DEF865 s.name: {s.name} {s.sequence_prefix}")
+
         
-        _logger.info(f"DEF851 res.name: {res.name}")
-        STOP852
+        _logger.info(f"DEF868 s.name: {s.name}")
+
                 
     def get_invoice(self):
-        _logger.info(f"DEF826 =====")
+        _logger.info(f"DEF872 =====")
         for s in self:
             if not s.fe_server_state:
                 raise exceptions.UserError('Porfavor envie el documento antes de consultarlo')
