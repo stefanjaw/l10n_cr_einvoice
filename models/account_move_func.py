@@ -577,18 +577,19 @@ class AccountMoveFunctions(models.Model):
                 return
             msg = ''
             if self.name[8:10] != '08':
-                if self.partner_id.state_id:                
-                    if not self.partner_id.state_id.fe_code:
-                        msg += 'En el Cliente, el codigo para factura electronica de la provincia es requerida \n'
+                if len(self.partner_id.country_id) == 0 or self.partner_id.country_id.code == "CR":
+                    if self.partner_id.state_id:
+                        if not self.partner_id.state_id.fe_code:
+                            msg += 'En el Cliente, el codigo para factura electronica de la provincia es requerida \n'
 
-                    if not self.partner_id.canton_id:
-                        msg += 'En el Cliente, el canton es requerido \n'
-                        
-                    if not self.partner_id.distrito_id:
-                        msg += 'En el Cliente, el distrito es requerido \n'
+                        if not self.partner_id.canton_id:
+                            msg += 'En el Cliente, el canton es requerido \n'
 
-                    if not self.partner_id.street:
-                        msg += 'En el Cliente, el campo otras señas es requerido \n'
+                        if not self.partner_id.distrito_id:
+                            msg += 'En el Cliente, el distrito es requerido \n'
+
+                        if not self.partner_id.street:
+                            msg += 'En el Cliente, el campo otras señas es requerido \n'
 
             if not self.fe_activity_code_id:
                 msg += 'Falta la actividad económica \n'
