@@ -829,41 +829,18 @@ class AccountMoveFunctions(models.Model):
                 _logger.info(f"DEF829 before action post=== res.name: {s.name}\n\n")
                 
                 number_to_use = sequence.number_next_actual
-                sequence_str = sequence.get_next_char( sequence.number_next_actual  )
-                _logger.info(f"DEF833 number_to_use: {number_to_use} / sequence_str: {sequence_str}")
+                s.name = sequence.get_next_char( sequence.number_next_actual  )
+                s.sequence_prefix = sequence._get_prefix_suffix()[0]
+                
                 sequence._next_do()
-                '''
-                _logger.info(f"DEF801 number_next_actual: {sequence.number_next_actual}")
-                _logger.info(f"DEF802 get_next_char: {sequence.get_next_char( sequence.number_next_actual  )}")
-                #_logger.info(f"DEF839 _next: {sequence._next()}") # Incrementa el proximo número
-                #_logger.info(f"DEF839 _next_do: {sequence._next_do()}") # Calcula el próximo número
-                _logger.info(f"DEF803 _get_prefix_suffix: {sequence._get_prefix_suffix()}")
-                _logger.info(f"DEF804 number_next_actual: {sequence.number_next_actual}")
-                #_logger.info(f"DEF805 _next: {sequence._next()}") # Incrementa el proximo número
-                _logger.info(f"DEF806 get_next_char: {sequence.get_next_char( sequence.number_next_actual  )}")
-                #_logger.info(f"DEF807 number_next: {sequence.number_next}")
-                _logger.info(f"DEF808 _next_do: {sequence._next_do()}") # Calcula el próximo número  Por probar
-                _logger.info(f"DEF809 number_next_actual: {sequence.number_next_actual}")
                 
-                # _logger.info(f"DEF835 number_next: {sequence.number_next}")
-                # _logger.info(f"DEF836 _set_number_next_actual: {sequence._set_number_next_actual()}")
-                # _logger.info(f"DEF837 number_next_actual: {sequence.number_next_actual}")
-                # _logger.info(f"DEF838 _get_current_sequence: {sequence._get_current_sequence()}")
-                # _logger.info(f"DEF839 get_next_char: {sequence.get_next_char()}")
-                '''
-                
-                
-                
-                
-                STOP833
-                # s.write({
-                #     'name': '123jkh123khk'
-                # })
-                
-                
+                _logger.info(f"DEF836 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
                 res = super(AccountMoveFunctions, s).action_post()
-                _logger.info(f"DEF831 after action post=== res.name: {res.name}")
-                STOP832
+                
+                s.write({ 'sequence_prefix': sequence._get_prefix_suffix()[0]  })
+                
+                _logger.info(f"DEF838 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
+                
                 tz = pytz.timezone('America/Costa_Rica')
                 
                 if not date_temp:
@@ -880,7 +857,7 @@ class AccountMoveFunctions(models.Model):
                 #s.validacion()
                 s._validate_invoice_line()
                 _logger.info(f"DEF844 res.name: {s.name}")
-                STOP849
+                STOP860
             else:
                 log.info('--> 1575061637')
                 res = super(AccountMoveFunctions, s).action_post()
