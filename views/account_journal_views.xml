@@ -5,13 +5,28 @@
   <field name="model">account.journal</field>
   <field name="inherit_id" ref="account.view_account_journal_form"/>
   <field name="arch" type="xml">
-    <!--     Comentado por Upgrade -->
-    <field name="refund_sequence" position="after">
-        <p>commented by upgrade</p>
-    </field>
-    <!-- <field name="refund_sequence_id" position="replace">
-      <field name="refund_sequence_id" readonly="0"/>
-    </field> -->
+    
+    <xpath expr="//notebook" position="inside">
+      <page name="l10n_cr_einvoice" string="Factura Electronica" attrs="{'invisible': [('type', '!=', 'sale'),('type', '!=', 'purchase')]}">
+        <group attrs="{'invisible': [('type', '!=', 'sale')]}">
+          <group>
+            <h3>Secuencias</h3><br/>
+            <field name="sequence_fe" string="Factura Electrónica"/>
+            <field name="sequence_nd" string="Nota Débito"/>
+            <!-- <field name="sequence_nc" string="Nota Crédito"/> -->
+            <field name="sequence_te" string="Tiquete Electrónico"/>
+            <field name="sequence_fee" string="Factura Electrónica Exportación"/>
+          </group>
+        </group>
+        <group attrs="{'invisible': [('type', '!=', 'purchase')]}">
+          <group>
+            <h3>Secuencias</h3>
+            <field name="sequence_fec" string="Factura Electrónica Compra"/>
+          </group>
+        </group>
+      </page>
+    </xpath>
+      
   </field>
 </record>
 

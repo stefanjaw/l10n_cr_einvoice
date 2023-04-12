@@ -266,7 +266,7 @@ class AccountMoveFunctions(models.Model):
            root_xml = self._remove_sign(self.fe_xml_supplier_hacienda)
            dic = self.convert_xml_to_dic(self.fe_xml_supplier_hacienda)
            if not dic.get("MensajeHacienda"):
-               raise exceptions.Warning(("El xml de hacienda no es un archivo valido"))
+               raise exceptions.UserError(("El xml de hacienda no es un archivo valido"))
 
     @api.onchange("fe_xml_supplier")
     def _onchange_xml_factura(self):
@@ -277,7 +277,7 @@ class AccountMoveFunctions(models.Model):
             root_xml = self._remove_sign(self.fe_xml_supplier)
             dic = self.convert_xml_to_dic(self.fe_xml_supplier)
             if not dic.get("FacturaElectronica"):
-                raise exceptions.Warning(("La factura xml no es un archivo de factura valido"))
+                raise exceptions.UserError(("La factura xml no es un archivo de factura valido"))
             doc_type = self.get_doc_type(dic)
             # 1570054332
             self.fe_xml_supplier_xslt = self.transform_doc(root_xml,doc_type)
@@ -299,14 +299,14 @@ class AccountMoveFunctions(models.Model):
         #if self.state != 'open':  #Se cambio de 'open' a draft or cancel
         #if (self.state != 'open' and self.state != 'paid'):
         #   msg = 'La factura debe de estar en Open o Paid para poder confirmarse'
-        #   raise exceptions.Warning((msg))
+        #   raise exceptions.UserError((msg))
         if self.fe_msg_type == False:
             msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
-            raise exceptions.Warning((msg))
+            raise exceptions.UserError((msg))
         else:
             if self.fe_detail_msg == False and  self.fe_msg_type != '1':
                 msg = 'Falta el detalle mensaje'
-                raise exceptions.Warning((msg))
+                raise exceptions.UserError((msg))
 
 
         log.info('===> XXXX VALIDACION QUE HAY ADJUNTO UN XML DEL EMISOR/PROVEEDOR')
@@ -343,12 +343,12 @@ class AccountMoveFunctions(models.Model):
             return self.invoice
         else:
             msg = 'adjunte una factura electronica antes de confirmar la aceptacion'
-            raise exceptions.Warning((msg))
+            raise exceptions.UserError((msg))
 
     def _cr_post_server_side(self):
         _logger.info(f"DEF349 =====")
         if not self.company_id.fe_certificate:
-            raise exceptions.Warning(('No se encuentra el certificado en compañia'))
+            raise exceptions.UserError(('No se encuentra el certificado en compañia'))
             
         log.info('--> factelec-Invoice-_cr_post_server_side')
         
@@ -410,13 +410,13 @@ class AccountMoveFunctions(models.Model):
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
         if self.state == 'draft':
-           raise exceptions.Warning('VALIDE primero este documento')
+           raise exceptions.UserError('VALIDE primero este documento')
 
         elif not self.fe_payment_type:
-           raise exceptions.Warning('Seleccione el TIPO de PAGO')
+           raise exceptions.UserError('Seleccione el TIPO de PAGO')
 
         if self.fe_xml_hacienda:
-           raise exceptions.Warning("Ya se tiene la RESPUESTA de Hacienda")
+           raise exceptions.UserError("Ya se tiene la RESPUESTA de Hacienda")
 
         country_code = self.company_id.partner_id.country_id.code
 
@@ -449,7 +449,7 @@ class AccountMoveFunctions(models.Model):
                 if self.fe_xml_hacienda:
                    msg = '--> Ya se tiene el XML de Hacienda Almacenado'
                    log.info(msg)
-                   raise exceptions.Warning((msg))
+                   raise exceptions.UserError((msg))
 
                 else:
                    self.fe_doc_type = "MensajeReceptor"
@@ -511,7 +511,7 @@ class AccountMoveFunctions(models.Model):
         return new_date
 
     def _validate_company(self):
-        _logger.info(f"DEF514 =====")
+        _logger.info(f"DEF514 ===== _validate_company")
         log.info('--> _validate_company')
         error = False
         msg = 'En Compania:\n'
@@ -526,7 +526,7 @@ class AccountMoveFunctions(models.Model):
             error = True
             msg += "Falta agregar codigo de actividad en Settings/User & Companies/TAB: Factura Electronica\n"
         if error:
-            raise exceptions.Warning((msg))
+            raise exceptions.UserError((msg))
 
     def _validate_invoice_line(self):
         _logger.info(f"DEF532 =====")
@@ -537,20 +537,20 @@ class AccountMoveFunctions(models.Model):
         log.info('--> _validate_invoice_line')
         for line in self.invoice_line_ids:
             if len(line.name) > 200:
-                raise exceptions.Warning(("La descripción del producto {0} no puede ser mayor a 200 caracteres".format(line.name)))
+                raise exceptions.UserError(("La descripción del producto {0} no puede ser mayor a 200 caracteres".format(line.name)))
             if line.product_id:
                 if line.product_id.type == 'service':
                     if line.product_uom_id.uom_mh not in service_units:
-                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
+                        raise exceptions.UserError(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
                 else: 
                     if line.product_uom_id.uom_mh not in units:
-                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
+                        raise exceptions.UserError(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
             else:
                 if line.product_uom_id.uom_mh not in units:
-                        raise exceptions.Warning(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
+                        raise exceptions.UserError(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
 
             if not line.product_id.cabys_code_id:
-                raise exceptions.Warning(("El producto {0} no contiene código CABYS".format(line.product_id.name)))
+                raise exceptions.UserError(("El producto {0} no contiene código CABYS".format(line.product_id.name)))
 
 
             if line.tax_ids:
@@ -559,15 +559,15 @@ class AccountMoveFunctions(models.Model):
 
                   if tax_id.type == 'OTHER':
                      if not tax_id.tipo_documento:
-                        raise exceptions.Warning(("CONFIGURE el TIPO de DOCUMENTO de OTROS CARGOS  en Accounting/Configuration/Taxes"))
+                        raise exceptions.UserError(("CONFIGURE el TIPO de DOCUMENTO de OTROS CARGOS  en Accounting/Configuration/Taxes"))
                         return
                   else:
                      if not tax_id.codigo_impuesto:
-                        raise exceptions.Warning(("CONFIGURE el TIPO de IMPUESTO en Accounting/Configuration/Taxes"))
+                        raise exceptions.UserError(("CONFIGURE el TIPO de IMPUESTO en Accounting/Configuration/Taxes"))
                         return
 
                      if not tax_id.tarifa_impuesto:
-                        raise exceptions.Warning(("Configure la TARIFA de IMPUESTO en Accounting/Configuration/Taxes"))
+                        raise exceptions.UserError(("Configure la TARIFA de IMPUESTO en Accounting/Configuration/Taxes"))
                         return
 
            
@@ -740,65 +740,89 @@ class AccountMoveFunctions(models.Model):
 
 
     def action_post(self,validate = True):
-        _logger.info(f"DEF743 ===== action_post self: {self}")
+        _logger.info(f"DEF743 ===== action_post self: {self} fe_invoice_type: {self.fe_doc_type} validate: {validate}\n")
         for s in self:
             log.info('--> action_post')
-            if s.company_id.country_id.code == 'CR' and s.fe_in_invoice_type != 'OTRO':
+            _logger.info(f"DEF746 ===== action_post self: {s} fe_invoice_type: {s.fe_doc_type} fe_msg_type: {s.fe_msg_type}\n")
+            #_logger.info(f"DEF747 ===== journal_id: {dir(s.journal_id)}\n")
+            _logger.info(f"DEF747 ===== journal_id refund_sequence: {s.journal_id.refund_sequence}\n")
+            
+            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False:
+                _logger.info(f"DEF748 Not Electronic Invoice or validate False =============\n")
+                continue
+            
+            if s.company_id.country_id.code == 'CR' and s.fe_doc_type != False:
                 if validate:
-                            if s.fe_msg_type != '3':
-                                log.info('--> 1570130084')
-                                for item in s.invoice_line_ids:
-                                    if item.price_subtotal == False:
+                    if s.fe_msg_type != '3':
+                        log.info('--> 1570130084')
+                        for item in s.invoice_line_ids:
+                            if item.price_subtotal == False:
+                                return {
+                                        'type': 'ir.actions.act_window',
+                                        'name': '¡Alerta!',
+                                        'res_model': 'confirm.message',
+                                        'view_type': 'form',
+                                        'view_mode': 'form',
+                                        'views': [(False, 'form')],
+                                        'target': 'new',
+                                        'context': {'invoice': s.id}
+                                }
+                        #es mensaje de aceptacion??
+                        #_logger.info(f"DEF771 sequence: {s.journal_id.sequence}")
+                        
+                        if s.fe_doc_type == "fe":
+                            sequence = s.journal_id.sequence_fe
+                        elif s.fe_doc_type == "nd":
+                            sequence = s.journal_id.sequence_nd
+                        # elif s.fe_doc_type == "nd":
+                        #     sequence = s.journal_id.sequence_nc
+                        elif s.fe_doc_type == "te":
+                            sequence = s.journal_id.sequence_te
+                        elif s.fe_doc_type == "fee":
+                            sequence = s.journal_id.sequence_fee
+                        elif s.fe_doc_type == "fec":
+                            sequence = s.journal_id.sequence_fec
+                        else:
+                            sequence = False
+                            
+                        _logger.info(f"DEF775 sequence: {sequence.name}")
+                        _logger.info(f"DEF776 prefix: {sequence.prefix}")
+                        
+                        if len(sequence.prefix) >= 10:
+                            if sequence.prefix[8:10] == '05':
+                                    if s.fe_xml_supplier == False:
+                                        msg = 'Falta el XML del proveedor'
+                                        raise exceptions.UserError((msg))
+                                    if s.fe_msg_type == False:
+                                        msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
+                                        raise exceptions.UserError((msg))
+
+                                    bill_dic = s.convert_xml_to_dic(s.fe_xml_supplier)
+                                    total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
+                                    if float(total) != s.amount_total:
                                         return {
-                                                'type': 'ir.actions.act_window',
-                                                'name': '¡Alerta!',
-                                                'res_model': 'confirm.message',
-                                                'view_type': 'form',
-                                                'view_mode': 'form',
-                                                'views': [(False, 'form')],
-                                                'target': 'new',
-                                                'context': {'invoice': s.id}
+                                            'type': 'ir.actions.act_window',
+                                            'name': '¡Alerta!',
+                                            'res_model': 'confirm.alert',
+                                            'view_type': 'form',
+                                            'view_mode': 'form',
+                                            'views': [(False, 'form')],
+                                            'target': 'new',
+                                            'context': {'invoice': s.id}
                                         }
-                                #es mensaje de aceptacion??
-                                _logger.info(f"DEF763 sequence: {s.journal_id.sequence}")
-                                if len(s.journal_id.sequence_id.prefix) >= 10:
-                                    if s.journal_id.sequence_id.prefix[8:10] == '05':
-                                            if s.fe_xml_supplier == False:
-                                                msg = 'Falta el XML del proveedor'
-                                                raise exceptions.Warning((msg))
-                                            if s.fe_msg_type == False:
-                                                msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
-                                                raise exceptions.Warning((msg))
+                    else:
 
-                                            bill_dic = s.convert_xml_to_dic(s.fe_xml_supplier)
-                                            total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
-                                            if float(total) != s.amount_total:
-                                                return {
-                                                    'type': 'ir.actions.act_window',
-                                                    'name': '¡Alerta!',
-                                                    'res_model': 'confirm.alert',
-                                                    'view_type': 'form',
-                                                    'view_mode': 'form',
-                                                    'views': [(False, 'form')],
-                                                    'target': 'new',
-                                                    'context': {'invoice': s.id}
-                                                }
-                            else:
-
-                                if s.fe_msg_type == False:
-                                    msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
-                                    raise exceptions.Warning((msg))
-                                else:
-                                    if s.fe_detail_msg == False and  s.fe_msg_type != '1':
-                                        msg = 'Falta el detalle mensaje'
-                                        raise exceptions.Warning((msg))
-                                    if s.fe_msg_type == '3':
-                                        if s.amount_total > 0:
-                                            raise exceptions.Warning('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
-                                    
-
-
-
+                        if s.fe_msg_type == False:
+                            msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
+                            raise exceptions.UserError((msg))
+                        else:
+                            if s.fe_detail_msg == False and  s.fe_msg_type != '1':
+                                msg = 'Falta el detalle mensaje'
+                                raise exceptions.UserError((msg))
+                            if s.fe_msg_type == '3':
+                                if s.amount_total > 0:
+                                    raise exceptions.UserError('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
+                
                 date_temp = s.invoice_date 
                 log.info('--> 1575061615')
                 res = super(AccountMoveFunctions, s).action_post()
@@ -820,16 +844,17 @@ class AccountMoveFunctions(models.Model):
             else:
                 log.info('--> 1575061637')
                 res = super(AccountMoveFunctions, s).action_post()
-
+        
+        STOP823_action_post
 
 
     def get_invoice(self):
         _logger.info(f"DEF826 =====")
         for s in self:
             if not s.fe_server_state:
-                raise exceptions.Warning('Porfavor envie el documento antes de consultarlo')
+                raise exceptions.UserError('Porfavor envie el documento antes de consultarlo')
             if s.state == 'draft':
-              raise exceptions.Warning('VALIDE primero este documento')
+              raise exceptions.UserError('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
             log.info('--> 1569447129')
             log.info('--> get_invoice')
