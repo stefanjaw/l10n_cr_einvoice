@@ -2,8 +2,10 @@ from odoo import models, fields, api, exceptions
 from odoo.exceptions import ValidationError
 from datetime import datetime,timezone
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
-from openerp.osv import osv
-from openerp.tools.translate import _
+# from openerp.osv import osv
+from odoo.osv import osv
+#from openerp.tools.translate import _
+from odoo.tools.translate import _
 from .xslt import __path__ as path
 import lxml.etree as ET
 import pytz
@@ -429,6 +431,7 @@ class AccountMoveFunctions(models.Model):
                 self._validate_invoice_line()                   #FACTURA ELECTRONICA
                 self.fe_doc_type = "FacturaElectronica"
                 self._cr_post_server_side()
+                
 
             elif self.name[8:10] == "02":
                 self._validate_company()
@@ -774,24 +777,29 @@ class AccountMoveFunctions(models.Model):
                         #es mensaje de aceptacion??
                         #_logger.info(f"DEF771 sequence: {s.journal_id.sequence}")
                         
-                        if s.fe_doc_type == "fe":
+                        if s.fe_doc_type == "FacturaElectronica":
                             sequence = s.journal_id.sequence_fe
-                        elif s.fe_doc_type == "nd":
+                        elif s.fe_doc_type == "NotaDebitoElectronica":
                             sequence = s.journal_id.sequence_nd
-                        # elif s.fe_doc_type == "nd":
+                        # elif s.fe_doc_type == "NotaCreditoElectronica":
                         #     sequence = s.journal_id.sequence_nc
-                        elif s.fe_doc_type == "te":
+                        elif s.fe_doc_type == "TiqueteElectronico":
                             sequence = s.journal_id.sequence_te
-                        elif s.fe_doc_type == "fee":
+                        elif s.fe_doc_type == "FacturaElectronicaExportacion":
                             sequence = s.journal_id.sequence_fee
-                        elif s.fe_doc_type == "fec":
+                        elif s.fe_doc_type == "FacturaElectronicaCompra":
                             sequence = s.journal_id.sequence_fec
                         else:
                             sequence = False
-                            
+                        
                         _logger.info(f"DEF788 sequence: {s.name}")
-                        _logger.info(f"DEF789 sequence: {sequence.name}")
+                        
+                        _logger.info(f"DEF789 sequence: {sequence} / sequence_name: {sequence.name}")
                         _logger.info(f"DEF790 prefix: {sequence.prefix}")
+                        
+                        if  len(sequence) == 0:
+                            msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name}'
+                            raise exceptions.UserError((msg))                         
                         
                         if len(sequence.prefix) >= 10:
                             if sequence.prefix[8:10] == '05':
@@ -923,12 +931,14 @@ class AccountMoveFunctions(models.Model):
                 
                 
     def _get_pdf_bill(self,id):
-        _logger.info(f"DEF877 =====")
+        _logger.info(f"DEF877 ===== _get_pdf_bill self: {self} id: {id}")
         log.info('--> _get_pdf_bill')
         ctx = self.env.context.copy()
-        ctx.pop('default_type', False)
+        ctx.pop('default_move_type', False)
+        _logger.info(f"DEF938 ctx: {ctx}")
         #pdf = self.env.ref('account.account_invoices_without_payment').with_context(ctx).render(id)
-        pdf = self.env.ref('account.account_invoices').with_context(ctx).render(id)
+        #pdf = self.env.ref('account.account_invoices').with_context(ctx).render(id) # Version 13
+        pdf = self.env.ref('account.account_invoices').with_context(ctx)._render( 'account.account_invoices', [id] )
         pdf64 = base64.b64encode(pdf[0]).decode('utf-8')
         return pdf64
 
@@ -963,69 +973,71 @@ class AccountMoveFunctions(models.Model):
 
 
     def _cr_xml_factura_electronica(self):
-        _logger.info(f"DEF917 =====")
+        _logger.info(f"DEF974 ===== self: {self}")
         log.info('--> factelec-Invoice-_cr_xml_factura_electronica')
         for s in self:
-            s.invoice = {}
-            s.invoice[s.fe_doc_type] = {'CodigoActividad':s.fe_activity_code_id.code}
-            s.invoice[s.fe_doc_type].update({'Clave':s.fe_clave})
-            s.invoice[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
-            s.invoice[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
-            s.invoice[s.fe_doc_type].update({'Emisor':{
+            #changed s.invoice to invoice_data
+            invoice_data = {}
+            
+            invoice_data[s.fe_doc_type] = {'CodigoActividad':s.fe_activity_code_id.code}
+            invoice_data[s.fe_doc_type].update({'Clave':s.fe_clave})
+            invoice_data[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
+            invoice_data[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
+            invoice_data[s.fe_doc_type].update({'Emisor':{
                 'Nombre':s.company_id.company_registry
             }})
-            s.invoice[s.fe_doc_type]['Emisor'].update({
+            invoice_data[s.fe_doc_type]['Emisor'].update({
             'Identificacion':{
                 'Tipo': s.company_id.fe_identification_type or None,
                 'Numero':s.company_id.vat.replace('-','').replace(' ','') or None,
             },
             })
-
-            if s.company_id.fe_comercial_name:
-                s.invoice[s.fe_doc_type]['Emisor'].update({'NombreComercial':s.company_id.fe_comercial_name})
             
-            s.invoice[s.fe_doc_type]['Emisor'].update({'Ubicacion':{
+            if s.company_id.fe_comercial_name:
+                invoice_data[s.fe_doc_type]['Emisor'].update({'NombreComercial':s.company_id.fe_comercial_name})
+            
+            invoice_data[s.fe_doc_type]['Emisor'].update({'Ubicacion':{
             'Provincia':s.company_id.state_id.fe_code,
             'Canton':s.company_id.canton_id.code,
             'Distrito':s.company_id.distrito_id.code,
             }})
 
             if s.company_id.barrio_id.code:
-                s.invoice[s.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':s.company_id.barrio_id.code})
+                invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':s.company_id.barrio_id.code})
 
-            s.invoice[s.fe_doc_type]['Emisor']['Ubicacion'].update({'OtrasSenas':s.company_id.street})
+            invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'OtrasSenas':s.company_id.street})
 
             if s.company_id.phone:
-                s.invoice[s.fe_doc_type]['Emisor'].update({'Telefono':{
+                invoice_data[s.fe_doc_type]['Emisor'].update({'Telefono':{
                     'CodigoPais':str(s.company_id.country_id.phone_code),
-                    'NumTelefono':s.company_id.phone.replace('-','').replace(' ',''),
+                    'NumTelefono':s.company_id.phone.replace('-','').replace(' ','').replace('+506','').replace('+',''),
                 }})
             if s.env.user.company_id.fe_fax_number:
-                s.invoice[s.fe_doc_type]['Emisor'].update({'Fax':{
+                invoice_data[s.fe_doc_type]['Emisor'].update({'Fax':{
                     'CodigoPais':str(s.company_id.country_id.phone_code),
-                    'NumTelefono':s.company_id.fe_fax_number,
+                    'NumTelefono':s.company_id.fe_fax_number.replace('-','').replace(' ','').replace('+506','').replace('+',''),
                 }})
 
-            s.invoice[s.fe_doc_type]['Emisor'].update({'CorreoElectronico':s.company_id.email})
+            invoice_data[s.fe_doc_type]['Emisor'].update({'CorreoElectronico':s.company_id.email})
 
-            s.invoice[s.fe_doc_type].update({'Receptor':{
+            invoice_data[s.fe_doc_type].update({'Receptor':{
             'Nombre':s.partner_id.name,
             }})
 
             if s.partner_id.vat:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'Identificacion':{
+                invoice_data[s.fe_doc_type]['Receptor'].update({'Identificacion':{
                     'Tipo':s.partner_id.fe_identification_type,
                     'Numero':s.partner_id.vat.replace('-','').replace(' ','') or None,
                 }})
 
             if s.partner_id.fe_receptor_identificacion_extranjero:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'IdentificacionExtranjero':s.partner_id.fe_receptor_identificacion_extranjero})
+                invoice_data[s.fe_doc_type]['Receptor'].update({'IdentificacionExtranjero':s.partner_id.fe_receptor_identificacion_extranjero})
 
             if s.partner_id.fe_comercial_name:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'NombreComercial':s.partner_id.fe_comercial_name})
+                invoice_data[s.fe_doc_type]['Receptor'].update({'NombreComercial':s.partner_id.fe_comercial_name})
 
             if s.partner_id.state_id.fe_code:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'Ubicacion':{
+                invoice_data[s.fe_doc_type]['Receptor'].update({'Ubicacion':{
                     'Provincia':s.partner_id.state_id.fe_code or '',
                     'Canton':s.partner_id.canton_id.code or '',
                     'Distrito':s.partner_id.distrito_id.code or '',
@@ -1033,39 +1045,39 @@ class AccountMoveFunctions(models.Model):
                 }})
 
             if  s.partner_id.state_id.fe_code and s.partner_id.barrio_id.code:
-                s.invoice[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_id.code})
+                invoice_data[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_id.code})
 
             #if s.partner_id.fe_receptor_otras_senas_extranjero:
-            #   s.invoice[s.fe_doc_type]['Receptor'].update({'OtrasSenasExtranjero':s.partner_id.fe_receptor_otras_senas_extranjero})
+            #   invoice_data[s.fe_doc_type]['Receptor'].update({'OtrasSenasExtranjero':s.partner_id.fe_receptor_otras_senas_extranjero})
 
             if s.partner_id.phone:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'Telefono':{
+                invoice_data[s.fe_doc_type]['Receptor'].update({'Telefono':{
                     'CodigoPais':str(s.company_id.country_id.phone_code),
-                    'NumTelefono':s.partner_id.phone.replace('-','').replace(' ','').replace('+506','') or None,
+                    'NumTelefono':s.partner_id.phone.replace('-','').replace(' ','').replace('+506','').replace('+','') or None,
                 }})
 
             if s.partner_id.fe_fax_number:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'Fax':{
+                invoice_data[s.fe_doc_type]['Receptor'].update({'Fax':{
                     'CodigoPais':str(s.company_id.country_id.phone_code),
-                    'NumTelefono':s.partner_id.fe_fax_number,
+                    'NumTelefono':s.partner_id.fe_fax_number.replace('-','').replace(' ','').replace('+506','').replace('+',''),
                 }})
 
             if s.partner_id.email:
-                s.invoice[s.fe_doc_type]['Receptor'].update({'CorreoElectronico':s.partner_id.email})
+                invoice_data[s.fe_doc_type]['Receptor'].update({'CorreoElectronico':s.partner_id.email})
 
-            s.invoice[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
+            invoice_data[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
 
             if s.invoice_payment_term_id.payment_term_hacienda:
-                s.invoice[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.payment_term_hacienda})
+                invoice_data[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.payment_term_hacienda})
             if s.fe_condicion_impuesto:
-                s.invoice[s.fe_doc_type].update({'CondicionImpuesto':s.fe_condicion_impuesto})
+                invoice_data[s.fe_doc_type].update({'CondicionImpuesto':s.fe_condicion_impuesto})
             
-            s.invoice[s.fe_doc_type].update({'MedioPago':s.fe_payment_type})
+            invoice_data[s.fe_doc_type].update({'MedioPago':s.fe_payment_type})
             
             if s.fe_msg_type:
-                s.invoice[s.fe_doc_type].update({'Mensaje':s.fe_msg_type})
+                invoice_data[s.fe_doc_type].update({'Mensaje':s.fe_msg_type})
                 if s.fe_detail_msg:
-                    s.invoice[s.fe_doc_type].update({'DetalleMensaje':s.fe_detail_msg})
+                    invoice_data[s.fe_doc_type].update({'DetalleMensaje':s.fe_detail_msg})
 
             inv_lines = []
             OtrosCargos_array = []
@@ -1236,15 +1248,15 @@ class AccountMoveFunctions(models.Model):
                 NumeroLinea = NumeroLinea + 1
                 arrayCount = arrayCount + 1
 
-            s.invoice[s.fe_doc_type]['DetalleServicio'] = {'LineaDetalle':inv_lines}
+            invoice_data[s.fe_doc_type]['DetalleServicio'] = {'LineaDetalle':inv_lines}
 
 
 
-            s.invoice[s.fe_doc_type].update({
+            invoice_data[s.fe_doc_type].update({
             'OtrosCargos':OtrosCargos_array
             })
 
-            s.invoice[s.fe_doc_type].update(
+            invoice_data[s.fe_doc_type].update(
                 {'ResumenFactura':{
                     'CodigoTipoMoneda':{
                         'CodigoMoneda':s.currency_id.name,
@@ -1259,51 +1271,51 @@ class AccountMoveFunctions(models.Model):
             TotalVentaNeta = TotalVenta - TotalDescuentos
 
             if TotalServGravados:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServGravados':'{0:.5f}'.format(TotalServGravados)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServGravados':'{0:.5f}'.format(TotalServGravados)})
 
             if TotalServExentos:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExentos':'{0:.5f}'.format(TotalServExentos)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServExentos':'{0:.5f}'.format(TotalServExentos)})
 
             if TotalServExonerado:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(TotalServExonerado)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(TotalServExonerado)})
 
             if TotalMercanciasGravadas:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasGravadas':'{0:.5f}'.format(TotalMercanciasGravadas)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasGravadas':'{0:.5f}'.format(TotalMercanciasGravadas)})
 
             if TotalMercanciasExentas:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasExentas':'{0:.5f}'.format(TotalMercanciasExentas)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasExentas':'{0:.5f}'.format(TotalMercanciasExentas)})
 
             if TotalMercExonerada:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(TotalMercExonerada)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(TotalMercExonerada)})
 
             if TotalGravado:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
             else:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'0'})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'0'})
 
             if TotalExento:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
 
             if TotalExonerado:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(TotalServExonerado + TotalMercExonerada)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(TotalServExonerado + TotalMercExonerada)})
 
             if TotalVenta:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'{0:.5f}'.format(TotalVenta)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'{0:.5f}'.format(TotalVenta)})
             else:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'0'})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'0'})
 
             if TotalDescuentos:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalDescuentos':'{0:.5f}'.format(TotalDescuentos)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalDescuentos':'{0:.5f}'.format(TotalDescuentos)})
 
             if TotalVentaNeta:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'{0:.5f}'.format(TotalVentaNeta)})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'{0:.5f}'.format(TotalVentaNeta)})
             else:
-                s.invoice[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'0'})
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'0'})
 
             if TotalImpuesto:
-                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '{0:.5f}'.format(TotalImpuesto)
+                invoice_data[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '{0:.5f}'.format(TotalImpuesto)
             else:
-                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '0'
+                invoice_data[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '0'
 
 
 
@@ -1314,14 +1326,14 @@ class AccountMoveFunctions(models.Model):
                 #Es un número decimal compuesto por 13 enteros y 5 decimales.
 
             if TotalOtrosCargos:
-                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalOtrosCargos'] = '{0:.5f}'.format(TotalOtrosCargos)
+                invoice_data[s.fe_doc_type]['ResumenFactura']['TotalOtrosCargos'] = '{0:.5f}'.format(TotalOtrosCargos)
 
             TotalComprobante = TotalVentaNeta + TotalImpuesto #+ TotalOtrosCargos - TotalIVADevuelto
             if TotalComprobante:
-                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] = '{0:.5f}'.format(TotalComprobante) #'PENDIENTE_TOTAL_Comprobante'
+                invoice_data[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] = '{0:.5f}'.format(TotalComprobante) #'PENDIENTE_TOTAL_Comprobante'
             #SUMA DE: "total venta neta" + "monto total del impuesto" + "total otros cargos" - total IVA devuelto
             else:
-                s.invoice[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
+                invoice_data[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] ='0'
 
             if s.name[8:10] == "02" or s.name[8:10] == "03" or  s.name[8:10] == "08":
                 if not s.fe_doc_ref:
@@ -1332,7 +1344,7 @@ class AccountMoveFunctions(models.Model):
                         origin_doc = s.search([('name', '=', s.fe_doc_ref)])
                         if origin_doc:
                             origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
-                            s.invoice[s.fe_doc_type].update({
+                            invoice_data[s.fe_doc_type].update({
                                 'InformacionReferencia':{
                                 'TipoDoc':s.fe_tipo_documento_referencia,
                                 'Numero':origin_doc.name,
@@ -1346,7 +1358,7 @@ class AccountMoveFunctions(models.Model):
                             msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
                     else:
                         if s.fe_doc_ref:
-                            s.invoice[s.fe_doc_type].update({
+                            invoice_data[s.fe_doc_type].update({
                                     'InformacionReferencia':{
                                     'TipoDoc':s.fe_tipo_documento_referencia,
                                     'Numero':s.fe_doc_ref,
@@ -1357,7 +1369,7 @@ class AccountMoveFunctions(models.Model):
                                 })
             else:
                 if s.fe_doc_ref:
-                    s.invoice[s.fe_doc_type].update({
+                    invoice_data[s.fe_doc_type].update({
                         'InformacionReferencia':{
                             'TipoDoc':s.fe_tipo_documento_referencia,
                             'Numero':s.fe_doc_ref,
@@ -1368,7 +1380,7 @@ class AccountMoveFunctions(models.Model):
                     })
                             
             if s.narration:
-                s.invoice[s.fe_doc_type].update({
+                invoice_data[s.fe_doc_type].update({
                     'Otros':{
                         'OtroTexto':s.narration,
                         #'OtroContenido':'ELEMENTO OPCIONAL'
@@ -1377,8 +1389,9 @@ class AccountMoveFunctions(models.Model):
             #PDF de FE,FEE,FEC,ND,NC
             #En caso de que el server-side envie el mail
 
-            s.invoice[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
-            return s.invoice
+            invoice_data[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
+            _logger.info(f"DEF1391 invoice_data: {str(invoice_data)[:2000]}")
+            return invoice_data#s.invoice
 
     @api.model
     def cron_send_json(self):

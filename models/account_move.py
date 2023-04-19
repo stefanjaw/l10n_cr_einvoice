@@ -37,13 +37,13 @@ class AccountMove(models.Model):
     ], string="Situación del comprobante", track_visibility='onchange',required=False, 
     states={'posted': [('readonly', True)]}) #Cambio de True a False, se debe colocar True pero en la vista Invoice
     fe_doc_type = fields.Selection([
-            ('fe', 'Factura Electronica'),
-            ('nd', 'Nota de Debito Electronica'),
-            ('nc', 'Nota de Credito Electronica'),
-            ('te', 'Tiquete Electronico'),
+            ('FacturaElectronica', 'Factura Electronica'),
+            ('NotaDebitoElectronica', 'Nota de Debito Electronica'),
+            ('NotaCreditoElectronica', 'Nota de Credito Electronica'),
+            ('TiqueteElectronico', 'Tiquete Electronico'),
             ('MensajeReceptor', 'Mensaje Receptor'),
-            ('fec', 'Factura Electronica de Compra'),
-            ('fee', 'Factura Electronica de Exportacion'),
+            ('FacturaElectronicaCompra', 'Factura Electronica de Compra'),
+            ('FacturaElectronicaExportacion', 'Factura Electronica de Exportacion'),
         ],
         default=lambda self: self.fields_get().get('fe_doc_type').get('selection')[0][0],
         string="Tipo Documento"
