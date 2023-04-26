@@ -781,8 +781,8 @@ class AccountMoveFunctions(models.Model):
                             sequence = s.journal_id.sequence_fe
                         elif s.fe_doc_type == "NotaDebitoElectronica":
                             sequence = s.journal_id.sequence_nd
-                        # elif s.fe_doc_type == "NotaCreditoElectronica":
-                        #     sequence = s.journal_id.sequence_nc
+                        elif s.fe_doc_type == "NotaCreditoElectronica":
+                            sequence = s.journal_id.sequence_nc
                         elif s.fe_doc_type == "TiqueteElectronico":
                             sequence = s.journal_id.sequence_te
                         elif s.fe_doc_type == "FacturaElectronicaExportacion":
@@ -794,17 +794,17 @@ class AccountMoveFunctions(models.Model):
                         
                         _logger.info(f"DEF788 sequence: {s.name}")
                         
-                        _logger.info(f"DEF789 sequence: {sequence} / sequence_name: {sequence.name}")
-                        _logger.info(f"DEF790 prefix: {sequence.prefix}")
-                        
-                        if  len(sequence) == 0:
-                            msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name}'
+                        if sequence == False:
+                            msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name} para {s.fe_doc_type}'
                             raise exceptions.UserError((msg))                         
-                        
-                        if sequence.prefix == False:
+                        elif sequence.prefix == False:
                             msg = f'Falta configurar el prefijo en la secuencia: {sequence.name}'
-                            raise exceptions.UserError((msg))                         
+                            raise exceptions.UserError((msg))
                         elif len(sequence.prefix) >= 10:
+                            
+                            _logger.info(f"DEF811 sequence: {sequence} / sequence_name: {sequence.name}")
+                            _logger.info(f"DEF812 prefix: {sequence.prefix}")
+                            
                             if sequence.prefix[8:10] == '05':
                                     if s.fe_xml_supplier == False:
                                         msg = 'Falta el XML del proveedor'

@@ -14,6 +14,7 @@ from . import account_payment
 from . import currency
 from . import currency_rate
 from . import product_template
+from . import product_product
 from . import res_country_state
 from . import account_move_reversal
 from . import account_move_reversal_func
@@ -26,3 +27,8 @@ from . import wizard_agregar_contabilidad
 from . import wizard_account_debit
 from . import ir_sequence
 from . import electronic_doc_line
+from . import cabys
+from . import account_fisical_position
+from . import wizard_account_move_reversal
+from . import fetch_email
+from . import uom_uom
