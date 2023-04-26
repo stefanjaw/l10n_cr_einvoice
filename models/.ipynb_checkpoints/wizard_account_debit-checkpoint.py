@@ -3,6 +3,7 @@ from odoo import api, fields, models, _
 class accountMoveDebit(models.TransientModel):
     _name = "account.move.debit"
     _description = "Debit Note"
+    
     fe_reason = fields.Char(string="reason", )
     journal_id = fields.Many2one("account.journal", string="Journal")
     
@@ -33,21 +34,26 @@ class accountMoveDebit(models.TransientModel):
         ],)
 
     def add_note(self):
+        _logger.info(f"DEF40 wizard context: {self._context} journal_id: {self.journal_id}")
+        
         id = self.env.context.get('active_id')
         doc_ref = self.env.context.get('doc_ref')
-        copy = self.env['account.move'].browse(id).copy({'debit_note':True,
-                                                         'journal_id':self.journal_id.id,
+        journal_id = self.env.context.get('journal_id')
+        
+        move_id = self.env['account.move'].browse(id).copy({'debit_note':True,
                                                          'ref':self.fe_reason,
                                                          'fe_doc_ref':doc_ref,
                                                          'fe_informacion_referencia_codigo':self.fe_informacion_referencia_codigo,
                                                          'fe_tipo_documento_referencia':self.fe_tipo_documento_referencia,
                                                          'fe_in_invoice_type':'ND',
+                                                         'fe_doc_type': 'NotaDebitoElectronica'
                                                         })
+        
         return {
             'name': _("Debit Notes"),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
-            'res_id':copy.id,
+            'res_id':move_id.id,
             'view_type': 'form',
             'view_mode': 'form',
         }

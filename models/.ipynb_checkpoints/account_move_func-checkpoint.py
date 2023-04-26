@@ -801,7 +801,10 @@ class AccountMoveFunctions(models.Model):
                             msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name}'
                             raise exceptions.UserError((msg))                         
                         
-                        if len(sequence.prefix) >= 10:
+                        if sequence.prefix == False:
+                            msg = f'Falta configurar el prefijo en la secuencia: {sequence.name}'
+                            raise exceptions.UserError((msg))                         
+                        elif len(sequence.prefix) >= 10:
                             if sequence.prefix[8:10] == '05':
                                     if s.fe_xml_supplier == False:
                                         msg = 'Falta el XML del proveedor'
@@ -1424,5 +1427,6 @@ class AccountMoveFunctions(models.Model):
                 'context': {
                     'active_id':self.id,
                     'doc_ref':self.name,
+                    'journal_id': self.journal_id.id
                  }
              }    
