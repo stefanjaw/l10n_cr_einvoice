@@ -4,6 +4,8 @@ from odoo import models, fields, api
 
 class ActivityCode(models.Model):
     _name = "activity.code"
+    _description = "Activity Code"
+    
     name = fields.Char(string="descripcion", compute = 'compute_name' )
     code = fields.Char(string="Codigo", )
     description = fields.Char(string="Descripcion", )
@@ -11,7 +13,7 @@ class ActivityCode(models.Model):
         string="Compañia",
         comodel_name="res.company",
         ondelete="set null",
-        default= lambda self: self.env.company_id.id,
+        default= lambda self: self.env.company.id,
     )
     invoice_ids = fields.One2many(
         string="Invoice",

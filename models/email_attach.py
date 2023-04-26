@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 
 class attachments(models.Model):
     _name = 'email.attach'
+    _description = "email.attach"
+    
     email_id = fields.Many2one(comodel_name='email',ondelete='cascade',required = True)
     name = fields.Char()
     doc = fields.Binary(string="Attachment")

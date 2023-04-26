@@ -4,6 +4,8 @@ log = logging.getLogger(__name__)
 
 class ElectronicDocLine(models.Model):
     _name = 'electronic.doc.line'
+    _description = "electronic.doc.line"
+    
     electronic_doc_id = fields.Many2one('electronic.doc',string='documento electronico')
     name = fields.Char(string='Descripción')
     quantity = fields.Float(string='Cantidad')

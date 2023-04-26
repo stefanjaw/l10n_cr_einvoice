@@ -11,27 +11,27 @@ import base64
 import pytz
 import json
 import requests
-
-
-
-
 from io import BytesIO
 
 log = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class ElectronicDoc(models.Model):
 
     _name = 'electronic.doc'
+    _description = "electronic.doc"
+    
     _rec_name = 'display_name'
     _inherit = ['mail.thread']
     
-    invoice_id = fields.Many2one('account.move', string='invoice',readonly = True,)
+    invoice_id = fields.Many2one('account.move', string='Invoice',readonly = True,)
     key = fields.Char(string="Clave")
     consecutivo = fields.Char(string="Consecutivo")
     electronic_doc_bill_number = fields.Char(string="Numero Factura", )
 
     provider = fields.Char(string="Proveedor", )
+    provider_vat = fields.Char(string="Proveedor Identificacion", )
     receiver_number = fields.Char(string="Identificacion del Receptor", )
     receiver_name = fields.Char(string="Receptor", )
 
@@ -49,6 +49,7 @@ class ElectronicDoc(models.Model):
                                 selection=[
                                     ('TE', 'Tiquete Electronico'),
                                     ('FE', 'Factura Electronica'),
+                                    ('NC', 'Nota Crédito Electronica'),
                                     ('MH', 'Aceptacion Ministerio Hacienda'),
                                     ('OT', 'Otro'),
                                 ])
@@ -68,15 +69,16 @@ class ElectronicDoc(models.Model):
     xslt = fields.Html(string="Representacion Grafica", )
 
     fe_msg_type = fields.Selection([ # 1570035130
-            ('1', 'Accept'),
-            ('2', 'Partially Accept'),
-            ('3', 'Reject'),
+            ('1', 'Aceptado'),
+            ('2', 'Aceptación parcial'),
+            ('3', 'Rechazado'),
         ], string="Mensaje", track_visibility="onchange",)
 
     fe_detail_msg = fields.Text(string="Detalle Mensaje", size=80, copy=False,)# 1570035143
     
-    sequence_id = fields.Many2one('ir.sequence', string='Secuencia',)
-    
+    sequence_id = fields.Many2one('ir.sequence', string='Secuencia')
+    fe_name_pdf = fields.Char(string="nombre pdf", )
+    fe_pdf = fields.Binary(string="pdf", )
     fe_name_xml_sign = fields.Char(string="nombre xml firmado", )
     fe_xml_sign = fields.Binary(string="XML firmado", )
     fe_name_xml_hacienda = fields.Char(string="nombre xml hacienda", )
@@ -85,7 +87,7 @@ class ElectronicDoc(models.Model):
     company_id = fields.Many2one(
         'res.company',
         'Company',
-         default=lambda self: self.env.company.id 
+         default=lambda self: self.env.company.id,
     )
     
     fe_monto_total_impuesto = fields.Float(string="Monto Total Impuesto", )
@@ -100,9 +102,9 @@ class ElectronicDoc(models.Model):
     fe_monto_total_impuesto_acreditar = fields.Float(string="Monto Total Impuesto Acreditar",compute = '_compute_impuesto_acreditar' )
     fe_monto_total_gasto_aplicable = fields.Float(string="Monto Total De Gasto Aplicable",compute = '_compute_gasto_aplicable' )
     fe_actividad_economica = fields.Many2one('activity.code',string='Actividad Económica')
-    line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True, readonly=True,ondelete="cascade",
-        states={'draft': [('readonly', False)]})
-    
+    line_ids = fields.One2many('electronic.doc.line', 'electronic_doc_id', string='Lineas', copy=True,ondelete="cascade",)
+    currency_id = fields.Many2one('res.currency', string='Moneda')
+    currency_exchange = fields.Float(string="Tipo de Cambio")
     display_name = fields.Char(
         string='Name',
         compute='_compute_display_name',
@@ -130,7 +132,15 @@ class ElectronicDoc(models.Model):
                     impuesto = impuesto + line.tax_amount
             self.fe_monto_total_impuesto_acreditar = impuesto
             
-            
+    @api.onchange('line_ids')
+    def _onchange_line_ids(self):
+        for record in self:
+            impuesto = 0
+            for line in record.line_ids:
+                if line.is_selected:
+                    impuesto = impuesto + line.tax_amount
+            self.fe_monto_total_impuesto_acreditar = impuesto
+
     @api.onchange("sequence_id")
     def _onchange_sequence_id(self):
         if self.sequence_id:
@@ -159,23 +169,39 @@ class ElectronicDoc(models.Model):
     @api.onchange("xml_bill")
     def _onchange_load_xml(self):
         if self.xml_bill:
-            if 'xml' in self.xml_bill_name:
+            if '.xml' in self.xml_bill_name.lower():
                 dic = self.convert_xml_to_dic(self.xml_bill)
                 doc_type = self.get_doc_type(dic)
-                if doc_type == 'TE' or doc_type == 'FE':
-                    list = self.crear_lineas_xml(self.xml_bill)
+                if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
+                    list_lineas = self.crear_lineas_xml(self.xml_bill)
+                    xml_currency = self.get_currency(dic, doc_type).get('CodigoMoneda')
+                    currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
+                    currency_exchange = self.get_currency(dic, doc_type).get('TipoCambio')
+
+                    receiver_number = self.get_receiver_identification(dic, doc_type)
+                    receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
+                    if receiver_company.id != self.env.company.id:
+                        message1 = "Error:\n El receptor de este document es: {}\n y fue enviado por: {},\nLa compañía seleccionada es: {}".format( 
+                           self.get_receiver_name(dic, doc_type), self.get_provider(dic, doc_type),
+                           self.env.company.name
+                        )
+                        raise ValidationError( _(message1) )
+
                     self.write({
                         'key':self.get_key(dic, doc_type),
                         'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
+                        'currency_id':currency_id,
+                        'currency_exchange': currency_exchange,
                         'electronic_doc_bill_number':self.get_bill_number(dic, doc_type),
                         'date':self.get_date(dic, doc_type),
                         'doc_type':doc_type,
                         'provider':self.get_provider(dic, doc_type),
-                        'receiver_name':self.get_receiver_name(dic, doc_type),
-                        'receiver_number':self.get_receiver_identification(dic, doc_type),
-                        'total_amount':self.get_total_amount(dic, doc_type),
-                        'fe_monto_total_impuesto':self.get_total_tax(dic, doc_type),
-                        'line_ids':[(6, 0, list)],
+                        'provider_vat':self.get_provider_identification(dic, doc_type),
+                        'receiver_name':self.get_receiver_name(dic, doc_type) or self.env.user.company_id.name,
+                        'receiver_number':self.get_receiver_identification(dic, doc_type) or self.env.user.company_id.vat,
+                        'total_amount':self.format_to_valid_float(self.get_total_amount(dic, doc_type)),
+                        'fe_monto_total_impuesto':self.format_to_valid_float(self.get_total_tax(dic, doc_type)),
+                        'line_ids':list_lineas,
                     })
                                         
                 else:
@@ -248,7 +274,7 @@ class ElectronicDoc(models.Model):
     def validar_xml_aceptacion(self):
          for record in self:
             if record.xml_acceptance:
-                if 'xml' in record.xml_acceptance_name:
+                if '.xml' in record.xml_acceptance_name.lower():
                     dic = record.convert_xml_to_dic(record.xml_acceptance)
                     doc_type = record.get_doc_type(dic)
                     if doc_type != 'MH':
@@ -309,6 +335,7 @@ class ElectronicDoc(models.Model):
         if form:
             name = form.group(0).split('}')[0].strip('{')
         return {'xmlns': name}
+
     def crear_lineas_xml(self,xml):
             root_xml = fromstring(base64.b64decode(xml))
             ds = "http://www.w3.org/2000/09/xmldsig#"
@@ -320,26 +347,50 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['account.account'].search([("code","=","0-511301")])
-                
-                
+            account = self.env.company.default_account_for_invoice_email
+            if not account:
+                  account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
+
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
+                    discount = linea.xpath("xmlns:Descuento/xmlns:MontoDescuento", namespaces=namespace)
+                    log.info("============descuento2==========={0}".format(str(discount)))
+                    if len(discount)>0:
+                        discount = float(discount[0].text)
+                    else:
+                        discount = 0
                     tax = False
                     if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text.replace(',','.')),("company_id","=",self.company_id.id)])
                         if tax:
+                            if len(tax)>1:
+                                tax = tax[0]
                             tax = [(6,0,[tax.id])]
-                    line = self.env['electronic.doc.line'].create({'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'tax_ids': tax,
+                    obj =  {
+                            'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                            'tax_ids': tax,
+                            'account_id': account.id,
+                            'discount':discount,
+                            'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
+                            'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
+                            }
+
+                    line =  [0,0,obj]                
+                    invoice_lines.append(line)
+
+            otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
+            for otro in otros_cargos:
+                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'tax_ids': False,
                                         'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
-                                       })
-                    invoice_lines.append(line.id)
+                                        'quantity': '1',
+                                        'price_unit':otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
+                                       }]
+                invoice_lines.append(new_line)
+
             return invoice_lines
         
-    def cargar_lineas_xml(self,xml):
+    def cargar_lineas_xml(self,xml,company_id=False):
             root_xml = fromstring(base64.b64decode(xml))
             ds = "http://www.w3.org/2000/09/xmldsig#"
             xades = "http://uri.etsi.org/01903/v1.3.2#"
@@ -350,67 +401,105 @@ class ElectronicDoc(models.Model):
             lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
             invoice_lines = []   
-            account = self.env['account.account'].search([("code","=","0-511301")])
-                
-                
+            account = company_id.default_account_for_invoice_email
+            if not account:
+                  account = self.env['account.account'].search([("company_id","=",self.company_id.id)])[0]
+                                
             for linea in lineasDetalle: 
                     percent = linea.xpath("xmlns:Impuesto/xmlns:Tarifa", namespaces=namespace)
+                    discount = linea.xpath("xmlns:Descuento/xmlns:MontoDescuento", namespaces=namespace)
+                    log.info("============descuento2==========={0}".format(str(discount)))
+                    if len(discount)>0:
+                        discount = float(discount[0].text)
+                    else:
+                        discount = 0
                     tax = False
                     if percent:
-                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text)])
+                        tax = self.env['account.tax'].search([("type_tax_use","=","purchase"),("amount","=",percent[0].text.replace(',','.')),("company_id","=",company_id.id)])
                         if tax:
+                            if len(tax)>1:
+                                tax = tax[0]
                             tax = [(6,0,[tax.id])]
                     new_line =  [0, 0, {'name': linea.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
                                         'tax_ids': tax,
                                         'account_id': account.id,
-                                        'quantity': linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text,
-                                        'price_unit':linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text,
+                                        'discount':discount,
+                                        'quantity': self.format_to_valid_float(linea.xpath("xmlns:Cantidad", namespaces=namespace)[0].text),
+                                        'price_unit':self.format_to_valid_float(linea.xpath("xmlns:PrecioUnitario", namespaces=namespace)[0].text),
                                        }]
                     invoice_lines.append(new_line)
+
+            otros_cargos = root_xml.xpath("xmlns:OtrosCargos", namespaces=namespace)
+            for otro in otros_cargos:
+                new_line =  [0, 0, {'name': otro.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
+                                        'tax_ids': False,
+                                        'account_id': account.id,
+                                        'quantity': '1',
+                                        'price_unit':self.format_to_valid_float(otro.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text),
+                                       }]
+                invoice_lines.append(new_line)
+            
+
             return invoice_lines
         
-    def create_electronic_doc(self, xml, xml_name):
+    def create_electronic_doc(self, xml, xml_name,company=False):
 
         dic = self.convert_xml_to_dic(xml)
         doc_type = self.get_doc_type(dic)
 
         key = self.get_key(dic, doc_type)
-
+        
         electronic_doc = self.env['electronic.doc']
         "UC07"
         if (not electronic_doc.search([('key', '=', key),
                                        ('doc_type', '=', doc_type)])):
             "UC05A"
             provider = self.get_provider(dic, doc_type)
-            receiver_number = self.get_receiver_identification(dic, doc_type)
-            receiver_name = self.get_receiver_name(dic, doc_type)
-            bill_number = self.get_bill_number(dic, doc_type)
+            receiver_number = self.get_receiver_identification(dic, doc_type) or company.vat or False
+            
+            new_company = self.env['res.company'].search([ ( 'vat', '=', receiver_number ) ])
+            if new_company:
+                company = new_company
+            else:
+                _logger.info("ERROR:   Vendor Bill with Receiver Tax ID: %s Not Found", receiver_number)
+                return False
+
+            receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
+            bill_number = self.get_bill_number(dic, doc_type) 
             xml_bill = xml
             xml_bill_name = xml_name
             date = self.get_date(dic, doc_type)
-            total_amount = self.get_total_amount(dic, doc_type)
+            total_amount = self.format_to_valid_float(self.get_total_amount(dic, doc_type))
+            fe_monto_total_impuesto = self.format_to_valid_float(self.get_total_tax(dic, doc_type))
+            xml_currency = self.get_currency(dic, doc_type).get('CodigoMoneda')
+            currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
+            currency_exchange = self.get_currency(dic, doc_type).get('TipoCambio')
 
             "UC05C"
             xslt = self.transform_to_xslt(xml, doc_type)
             if (not receiver_number):
                 receiver_number = ''
                 log.info(
-                    '\n "el documento XML Clave: %s no contiene numero del proveedor \n',
+                    '\n "el documento XML Clave: %s no contiene numero del receptor \n',
                     key)
             "UC05C"
-            if (not receiver_name):
+            if not receiver_name:
                 receiver_name = ''
                 log.info(
-                    '\n "el documento XML Clave: %s no contiene nombre del proveedor \n',
+                    '\n "el documento XML Clave: %s no contiene nombre del receptor \n',
                     key)
-            
-         
-            invoice_lines = self.cargar_lineas_xml(self.xml_bill)    
-            electronic_doc.create({
+             
+            invoice_lines = self.cargar_lineas_xml(xml,company) 
+    
+            comprobante = electronic_doc.create({
                 'key': key,
                 'provider': provider,
+                'currency_id':currency_id.id,
+                'currency_exchange': currency_exchange,
+                'company_id':company.id or False,
                 'receiver_number': receiver_number,
                 'receiver_name': receiver_name,
+                'fe_monto_total_impuesto': fe_monto_total_impuesto,
                 'electronic_doc_bill_number': bill_number,
                 'xml_bill': xml,
                 'xml_bill_name': xml_bill_name,
@@ -420,11 +509,12 @@ class ElectronicDoc(models.Model):
                 'line_ids': invoice_lines,
                 'xslt': xslt,
             })
+            log.info("============Comprobante=={}======{}===Creado".format(bill_number,comprobante))
         else:
             self.key = ""
             "UC09"
             log.info(
-                '\n "el documento XML Clave: %s tipo %s ya se encuentra en la base de datos \n',
+                '\n "el documento XML Clave: %s tipo %s ya se encuentra en la base de datos. Refresque la Pantalla\n',
                 key, doc_type)
 
     def add_acceptance(self, xml_acceptance, xml_acceptance_name):
@@ -438,6 +528,15 @@ class ElectronicDoc(models.Model):
             document.update({
                 'xml_acceptance': xml_acceptance,
                 'xml_acceptance_name': xml_acceptance_name or '{}_aceptacion.xml'.format(key),
+            })
+
+    def add_pdf(self,key,pdf,fname):
+        log.info("=====pdf========{}".format(key))
+        document = self.env['electronic.doc'].search([('key', '=', key)])
+        if (document):
+            document.update({
+                'fe_pdf': base64.b64encode(pdf),
+                'fe_name_pdf': fname,
             })
 
     def transform_to_xslt(self, root_xml, doc_type):
@@ -454,6 +553,12 @@ class ElectronicDoc(models.Model):
                 ET.parse(
                     ruta
                 ))
+        elif (doc_type == 'NC'):
+            ruta = path._path[0]+"/nc.xslt"
+            transform = ET.XSLT(
+                ET.parse(
+                    ruta
+                ))
         nuevodom = transform(dom)
         return ET.tostring(nuevodom, pretty_print=True)
 
@@ -462,8 +567,9 @@ class ElectronicDoc(models.Model):
     def get_doc_type(self, dic):
                  
         tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
-        tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronica'
+        tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
         tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
+        tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
         try:
             if 'TiqueteElectronico' in dic.keys():
                 if dic['TiqueteElectronico']['@xmlns'] == tag_TE:
@@ -474,6 +580,9 @@ class ElectronicDoc(models.Model):
             elif 'MensajeHacienda' in dic.keys():
                 if dic['MensajeHacienda']['@xmlns'] == tag_MH:
                     return 'MH'
+            elif 'NotaCreditoElectronica' in dic.keys():
+                if dic['NotaCreditoElectronica']['@xmlns'] == tag_NC:
+                    return 'NC'
         except Exception as e:
             log.info('\n "erro al obtener tipo de archivo xml %s"\n', e)
             return False
@@ -485,7 +594,21 @@ class ElectronicDoc(models.Model):
             key = 'MensajeHacienda'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['Clave']
+
+
+    def get_inverse_doc_type(self, dic, doc_type):
+        if (doc_type == 'TE'):
+            key = 'TiqueteElectronico'
+        elif (doc_type == 'MH'):
+            key = 'MensajeHacienda'
+        elif (doc_type == 'FE'):
+            key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
+        return key
 
     def get_bill_number(self, dic, doc_type):
         try:
@@ -493,6 +616,8 @@ class ElectronicDoc(models.Model):
                 key = 'TiqueteElectronico'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['NumeroConsecutivo']
         except Exception as e:
             return False
@@ -504,7 +629,29 @@ class ElectronicDoc(models.Model):
             key = 'MensajeHacienda'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['Emisor']['Nombre']
+
+
+    def get_currency(self, dic, doc_type):
+        if (doc_type == 'TE'):
+            key = 'TiqueteElectronico'
+        elif (doc_type == 'MH'):
+            key = 'MensajeHacienda'
+        elif (doc_type == 'FE'):
+            key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
+            
+        if dic[key]['ResumenFactura'].get('CodigoTipoMoneda') == None:
+            return { 'CodigoMoneda': 'CRC', 'TipoCambio': 1,}
+        elif dic[key]['ResumenFactura'].get('CodigoTipoMoneda').get('CodigoMoneda') == None:
+            return { 'CodigoMoneda': 'CRC', 'TipoCambio': 1,}
+
+        return  { 'CodigoMoneda': dic[key]['ResumenFactura']['CodigoTipoMoneda']['CodigoMoneda'],
+                 'TipoCambio': dic[key]['ResumenFactura']['CodigoTipoMoneda']['TipoCambio']
+                }
     
     def get_provider_identification(self, dic, doc_type):
         #this method validate that exist a receiver number
@@ -515,6 +662,8 @@ class ElectronicDoc(models.Model):
                 key = 'MensajeHacienda'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['Emisor']['Identificacion']['Numero']
 
         except:
@@ -527,6 +676,8 @@ class ElectronicDoc(models.Model):
             key = 'MensajeHacienda'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['FechaEmision']
 
     def get_receiver_identification(self, dic, doc_type):
@@ -538,6 +689,8 @@ class ElectronicDoc(models.Model):
                 key = 'MensajeHacienda'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['Receptor']['Identificacion']['Numero']
 
         except:
@@ -551,6 +704,8 @@ class ElectronicDoc(models.Model):
                 key = 'MensajeHacienda'
             elif (doc_type == 'FE'):
                 key = 'FacturaElectronica'
+            elif (doc_type == 'NC'):
+                key = 'NotaCreditoElectronica'
             return dic[key]['Receptor']['Nombre']
 
         except:
@@ -564,6 +719,8 @@ class ElectronicDoc(models.Model):
             key = 'TiqueteElectronico'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
         return dic[key]['ResumenFactura']['TotalComprobante']
     
     def get_total_tax(self, dic, doc_type):
@@ -571,26 +728,48 @@ class ElectronicDoc(models.Model):
             key = 'TiqueteElectronico'
         elif (doc_type == 'FE'):
             key = 'FacturaElectronica'
-        return dic[key]['ResumenFactura']['TotalImpuesto']
+        elif (doc_type == 'NC'):
+            key = 'NotaCreditoElectronica'
+
+        if dic[key]['ResumenFactura'].get('TotalImpuesto'):
+            return dic[key]['ResumenFactura']['TotalImpuesto']
+        else:
+            return "0"
     
     def convert_xml_to_dic(self, xml):
         dic = xmltodict.parse(base64.b64decode(xml))
         return dic
 
-    def automatic_bill_creation(self, docs_tuple):
+    def automatic_bill_creation(self, docs_tuple,company=None):
+        clave = False
         for doc_list in docs_tuple:
             for item in doc_list:
 
-                xml = base64.b64encode(item.content)
-                xml_name = item.fname
-                dic = self.convert_xml_to_dic(xml)
-                doc_type = self.get_doc_type(dic)
+                if '.xml' in str(item.fname).lower():
+                    xml = base64.b64encode(item.content)
+                    xml_name = item.fname
+                    dic = self.convert_xml_to_dic(xml)
+                    doc_type = self.get_doc_type(dic)
+                    if doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC' or doc_type == 'ND' :
+                        clave = self.get_key(dic,doc_type)
+                        is_created = self.create_electronic_doc(xml, xml_name,company)
+                        if is_created == False:
+                            return
 
-                if doc_type == 'FE' or doc_type == 'TE':
-                    self.create_electronic_doc(xml, xml_name)
+                    elif doc_type == 'MH':
+                        self.add_acceptance(xml, xml_name)
 
-                elif doc_type == 'MH':
-                    self.add_acceptance(xml, xml_name)
+                log.info("pdf ======={}====clave=={}".format(str(item.fname).lower(),clave))
+                if '.pdf' in str(item.fname).lower() and clave:
+                    if 'interpretacion' in str(item.fname).lower():
+                        _logger.info("ERROR: PDF COMIENZA CON LA PALABRA INTERPRETACION, NO SE TOMA EN CUENTA")
+                        continue
+                    log.info("pdf ======creando====")
+                    pdf = item.content
+                    self.add_pdf( clave, pdf, str(item.fname).lower() )
+
+             
+
                     
                     
     def send_bill(self):
@@ -629,25 +808,26 @@ class ElectronicDoc(models.Model):
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
 
         bill_dic = self.convert_xml_to_dic(self.xml_bill)
-
-        if 'FacturaElectronica' in bill_dic.keys():
+        doc_type = self.get_doc_type(bill_dic)
+        key = self.get_inverse_doc_type(bill_dic, doc_type)
+        if key in bill_dic.keys():
             tz = pytz.timezone('America/Costa_Rica')
             fecha = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
             json = {'MensajeReceptor':{
-                'Clave':bill_dic['FacturaElectronica']['Clave'],
-                'NumeroCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Numero'],
-                'TipoCedulaEmisor':bill_dic['FacturaElectronica']['Emisor']['Identificacion']['Tipo'],
+                'Clave':bill_dic[key]['Clave'],
+                'NumeroCedulaEmisor':bill_dic[key]['Emisor']['Identificacion']['Numero'],
+                'TipoCedulaEmisor':bill_dic[key]['Emisor']['Identificacion']['Tipo'],
                 'FechaEmisionDoc':fecha.split(' ')[0]+'T'+fecha.split(' ')[1]+'-06:00',
                 'Mensaje':self.fe_msg_type,
                 'DetalleMensaje':self.fe_detail_msg,
-                'MontoTotalImpuesto':self.fe_monto_total_impuesto,
-                'MontoTotalAcreditar':self.fe_monto_total_impuesto_acreditar,
+                'MontoTotalImpuesto':'{0:.5f}'.format(self.fe_monto_total_impuesto),
+                'MontoTotalAcreditar':'{0:.5f}'.format(self.fe_monto_total_impuesto_acreditar),
                 'ActividadEconomica':self.fe_actividad_economica.code,
                 'CondicionImpuesto':self.fe_condicio_impuesto,
-                'MontoTotalGastoAplicable':self.fe_monto_total_gasto_aplicable,
-                'TotalFactura':bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante'],
+                'MontoTotalGastoAplicable':'{0:.5f}'.format(self.fe_monto_total_gasto_aplicable),
+                'TotalFactura':'{0:.5f}'.format(float(self.format_to_valid_float(bill_dic[key]['ResumenFactura']['TotalComprobante']))),
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
-                'TipoCedulaReceptor':bill_dic['FacturaElectronica']['Receptor']['Identificacion']['Tipo'],
+                'TipoCedulaReceptor':bill_dic[key]['Receptor']['Identificacion']['Tipo'],
                 'NumeroConsecutivoReceptor':self.consecutivo,
                 }}
             return json
@@ -820,3 +1000,28 @@ class ElectronicDoc(models.Model):
             if item.company_id.country_id.code == 'CR':
                 log.info(' item name %s',item.consecutivo)
                 item.get_bill()
+
+    def format_to_valid_float(self,str_number):
+        new_str = ''
+        comma = 0
+        dot = 0
+        for i in str_number:
+            if i == ',':
+                comma = comma + 1
+            elif i == '.':
+                dot = dot + 1
+        if comma > 0 and dot > 0:
+            if comma < dot:
+                new_str = str_number.replace(".","").replace(",",".")
+            if comma > dot:
+                new_str = str_number.replace(",","")
+        elif comma > 1 and dot == 0:
+            new_str = str_number.replace(",","")
+        elif dot > 1 and comma == 0:
+            new_str = str_number.replace(".","")
+        else:
+             new_str = str_number.replace(",",".")
+             
+        return new_str
+
+

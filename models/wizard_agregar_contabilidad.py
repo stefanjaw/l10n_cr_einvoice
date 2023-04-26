@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 class wizardAgregarContabilidad(models.TransientModel):
     _name='wizard.agregar.contabilidad'
+    _description = "Wizard Add to Accounting"
     
     opciones = fields.Selection([
            ('1', 'Crear nueva factura'),

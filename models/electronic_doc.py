@@ -20,6 +20,8 @@ _logger = logging.getLogger(__name__)
 class ElectronicDoc(models.Model):
 
     _name = 'electronic.doc'
+    _description = "electronic.doc"
+    
     _rec_name = 'display_name'
     _inherit = ['mail.thread']
     

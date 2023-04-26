@@ -12,13 +12,16 @@ log = logging.getLogger(__name__)
 
 class attachments(models.Model):
     _name = 'email.attach'
+    _description = "email.attach"
+    
     email_id = fields.Many2one(comodel_name='email',ondelete='cascade',required = True)
     name = fields.Char()
     doc = fields.Binary(string="Attachment")
     doc_type = fields.Selection(string='Tipo',
                                 selection=[
-                                    ('TE', 'Tiquete Electronico'),
-                                    ('FE', 'Factura Electronica'),
-                                    ('MH', 'Aceptacion Ministerio Hacienda'),
+                                    ('TE', 'Tiquete Electrónico'),
+                                    ('FE', 'Factura Electrónica'),
+                                    ('NC', 'Nota Crédito Electronica'),
+                                    ('MH', 'Aceptación Ministerio Hacienda'),
                                     ('OT', 'Otro'),
                                 ])

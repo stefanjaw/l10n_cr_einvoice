@@ -12,8 +12,11 @@ log = logging.getLogger(__name__)
 
 class email(models.Model):
     _name = 'email'
+    _description = "email"
+    
     _inherit = ['mail.thread']
     _rec_name = 'display_name'
+    
     message_id = fields.Char()
     date = fields.Char()
     email_from = fields.Char()

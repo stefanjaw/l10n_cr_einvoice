@@ -12,6 +12,7 @@ log = logging.getLogger(__name__)
 
 class wizardAgregarContabilidad(models.TransientModel):
     _name='wizard.agregar.contabilidad'
+    _description = "Wizard Add to Accounting"
     
     opciones = fields.Selection([
            ('1', 'Crear nueva factura'),
@@ -19,16 +20,26 @@ class wizardAgregarContabilidad(models.TransientModel):
     ], string="Acción",default = '1'
     )
     invoice_id = fields.Many2one('account.move', string='invoice',)
- 
+    company_id = fields.Many2one(
+        'res.company',
+        'Company',
+         default=lambda self: self.env.company.id,
+    )
     def agregar(self):
         doc = self.env['electronic.doc'].search([("id","=",self._context['doc'])])
+        if doc.company_id != self.company_id:
+            raise ValidationError("Este documento pertenece a la compañía {} si desea agregarlo a contabilidad por favor cámbiese a esta".format(doc.company_id.name))
         if self.opciones == '1':
                 xml = self._context['xml']
                 bill_dict = self.env['electronic.doc'].convert_xml_to_dic(xml)
                 bill_type =  self.env['electronic.doc'].get_doc_type(bill_dict)
                 
                 identificacion =  self.env['electronic.doc'].get_provider_identification(bill_dict, bill_type)
+                
                 contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
+                if len(contacto)>1:
+                    contacto = contacto[0]
+
                 if not contacto:
                     nombre = self.env['electronic.doc'].get_provider(bill_dict,bill_type)
                     contacto = self.env['res.partner'].create({
@@ -49,7 +60,6 @@ class wizardAgregarContabilidad(models.TransientModel):
                 
                 invoice_lines = []   
                 
-                account_id = self.env['account.account'].search([("code","=","0-511301")])
                 for linea in doc.line_ids:
                     if linea.is_selected:
                         taxes = []
@@ -60,30 +70,27 @@ class wizardAgregarContabilidad(models.TransientModel):
                         new_line =  [0, 0, {'name': linea.name,
                                             'tax_ids': tax_ids,
                                             'account_id': linea.account_id.id,
+                                            'discount': linea.discount_percent,
                                             'quantity': linea.quantity,
                                             'price_unit':linea.price_unit,
                                            }]
                         invoice_lines.append(new_line)
-                
-                otros_cargos = root_xml.xpath(
-                    "xmlns:OtrosCargos", namespaces=namespace)
-                
-                for otros in otros_cargos:
-                    new_line =  [0, 0, {'name': otros.xpath("xmlns:Detalle", namespaces=namespace)[0].text,
-                                        'account_id': account_id.id,
-                                        'quantity': 1,
-                                        'price_unit':otros.xpath("xmlns:MontoCargo", namespaces=namespace)[0].text,
-                                       }]
-                    invoice_lines.append(new_line)
                     
+                if doc.doc_type == 'FE' or doc.doc_type == 'TE':
+                     doc_type = 'in_invoice'
+                elif doc.doc_type == 'NC':
+                     doc_type = 'in_refund'
 
                 record = self.env['account.move'].create({
                     'partner_id': contacto.id,
-                    'ref': 'Factura importada desde correo consecutivo : {}'.format(doc.consecutivo),
-                    'type' : 'in_invoice',
+                    'currency_id':doc.currency_id.id,
+                    'ref': 'Factura consecutivo : {}'.format(doc.electronic_doc_bill_number),
+                    'type' : doc_type,
                     'invoice_date':doc.date,
                     'invoice_line_ids':invoice_lines,
+                    'invoice_payment_term_id': contacto.property_supplier_payment_term_id.id,
                     'electronic_doc_id':doc.id,
+                    'company_id':doc.company_id,
                 })
                 
                 doc.update({'invoice_id':record.id})
@@ -91,7 +98,7 @@ class wizardAgregarContabilidad(models.TransientModel):
         elif self.opciones == '2':
              self.invoice_id.update({
                     'electronic_doc_id':doc.id,
-                    'ref': 'Factura importada desde correo consecutivo : {}'.format(doc.consecutivo),
+                    'ref': 'Factura consecutivo : {}'.format(doc.consecutivo),
                 })
              doc.update({'invoice_id':self.invoice_id})
         
