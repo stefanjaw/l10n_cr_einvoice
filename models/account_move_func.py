@@ -447,6 +447,13 @@ class AccountMoveFunctions(models.Model):
                 self._validate_invoice_line()                 #NOTA CREDITO ELECTRONICA
                 self.fe_doc_type = "NotaCreditoElectronica"
                 self._cr_post_server_side()
+            
+            elif self.name[8:10] == "04": 
+                self._validate_company()
+                self.validar_datos_factura()
+                self._validate_invoice_line()                 #NOTA TIQUETE ELECTRONICO
+                self.fe_doc_type = "TiqueteElectronico"
+                self._cr_post_server_side()
 
             elif self.name[8:10] == "05":                 #Vendor Bill - Mensaje Receptor - Aceptar Factura
 
@@ -1393,7 +1400,6 @@ class AccountMoveFunctions(models.Model):
             #En caso de que el server-side envie el mail
 
             invoice_data[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
-            _logger.info(f"DEF1391 invoice_data: {str(invoice_data)[:2000]}")
             return invoice_data#s.invoice
 
     @api.model
