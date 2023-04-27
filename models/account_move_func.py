@@ -707,7 +707,9 @@ class AccountMoveFunctions(models.Model):
             if not self.company_id.email:
                  msg += 'En compañia, el correo electronico es requerido \n'
             
-            if  self.name[8:10] != '09':
+            _logger.info(f"DEF710 name: {self.name}\n")
+            
+            if  self.name[8:10] not in ['03', '04', '09']:
             
                 if not self.partner_id.fe_identification_type:
                     msg += 'En el cliente, falta el tipo de identificación \n'
@@ -726,9 +728,9 @@ class AccountMoveFunctions(models.Model):
                 if len(self.partner_id.fe_fax_number)  < 8 and len(self.partner_id.fe_fax_number) > 20:
                    msg += 'En el cliente, el numero de fax debe ser igual o mayor que 8 y menor que 20 \n'
             
-            if not self.partner_id.email:
+            if not self.partner_id.email and self.name[8:10] not in ['03', '04']:
                  msg += 'En el cliente, el correo electrónico es requerido \n'
-                    
+            
             if msg:        
                 raise ValidationError(msg)
    
