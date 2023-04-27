@@ -798,7 +798,7 @@ class AccountMoveFunctions(models.Model):
                             msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name} para {s.fe_doc_type}'
                             raise exceptions.UserError((msg))                         
                         elif sequence.prefix == False:
-                            msg = f'Falta configurar el prefijo en la secuencia: {sequence.name}'
+                            msg = f'Falta configurar el prefijo en la secuencia: {sequence.name} para {s.fe_doc_type}'
                             raise exceptions.UserError((msg))
                         elif len(sequence.prefix) >= 10:
                             
@@ -915,8 +915,7 @@ class AccountMoveFunctions(models.Model):
                     raise ValidationError(ex) 
 
             data = r.json()
-            log.info('---> %s',data)
-            log.info('-->1569447795')
+            log.info('-->1569447795 result')
             #alamacena la informacion suministrada por el servidor
             if data.get('result'):
 
@@ -1429,4 +1428,4 @@ class AccountMoveFunctions(models.Model):
                     'doc_ref':self.name,
                     'journal_id': self.journal_id.id
                  }
-             }    
+             }
