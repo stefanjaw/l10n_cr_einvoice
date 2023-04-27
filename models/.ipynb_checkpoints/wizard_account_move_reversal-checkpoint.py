@@ -11,7 +11,6 @@ class wizardReversal(models.TransientModel):
     def reverse_moves(self):
         _logger.info(f"  Reversing Moves\n")
         move_data = super(wizardReversal,self).reverse_moves()
-        _logger.info(f"DEF14 move_data: {move_data}\n")
         
         res_model = move_data.get('res_model')
         res_id_int = move_data.get('res_id')

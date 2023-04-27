@@ -93,7 +93,7 @@ class AccountMoveFunctions(models.Model):
                             
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
-        _logger.info(f"DEF92 ===== _constrains_fe_doc_ref para nota credito o nota debito")
+        _logger.info(f"===== _constrains_fe_doc_ref para nota credito o nota debito")
         if self.name[8:10] == '03' or self.name[8:10] == '02':
             doc = self.search([('name', '=', self.fe_doc_ref)])
             if not doc:
@@ -125,8 +125,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.depends('company_id')
     def _get_country_code(self):
-        _logger.info(f"DEF126 ===== _get_country_code self: {self}")
-        log.info('--> 1575319718')
+        log.info('--> 1575319718 _get_country_code ')
         for s in self:
             s.fe_current_country_company_code = s.company_id.country_id.code
 
@@ -151,6 +150,7 @@ class AccountMoveFunctions(models.Model):
                                 record.TotalMercExonerada = record.TotalMercExonerada + i.price_subtotal * ( percent / LineaImpuestoTarifa )
 
                       record.TotalExonerado = record.TotalServExonerado + record.TotalMercExonerada
+    
     def _compute_gravados_exentos(self):
         _logger.info(f"DEF153 =====")
         for record in self:
@@ -366,7 +366,8 @@ class AccountMoveFunctions(models.Model):
                       'token_user_name':self.company_id.fe_user_name,
                       }
         json_to_send = json.dumps(json_string)
-        log.info('========== json to send : \n%s\n', json_string)
+        _logger.info(f"========== json to send : \n {json_to_send[:2000]} \n")
+        
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
         try:
