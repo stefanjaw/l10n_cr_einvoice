@@ -2,6 +2,8 @@
 
 from odoo import _, api, fields, models
 
+import datetime, pytz
+
 import logging
 _logging = _logger = logging.getLogger(__name__)
 
@@ -29,4 +31,9 @@ class wizardReversal(models.TransientModel):
                 
                 credit_move_id._generar_clave()
             
+            if credit_move_id.fe_informacion_referencia_fecha == False:
+                fe_fecha_emision_str = credit_move_id.reversed_entry_id.fe_fecha_emision
+                fe_fecha_emision_utc = datetime.datetime.fromisoformat( fe_fecha_emision_str + '-06:00').astimezone( pytz.timezone('UTC') )
+                
+                credit_move_id.fe_informacion_referencia_fecha = fe_fecha_emision_utc.strftime('%Y-%m-%d %H:%M:%S')
         return move_data

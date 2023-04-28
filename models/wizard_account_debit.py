@@ -34,7 +34,7 @@ class accountMoveDebit(models.TransientModel):
         ],)
 
     def add_note(self):
-        _logger.info(f"DEF40 wizard context: {self._context} journal_id: {self.journal_id}")
+        #_logger.info(f"DEF40 wizard context: {self._context} journal_id: {self.journal_id}")
         
         id = self.env.context.get('active_id')
         doc_ref = self.env.context.get('doc_ref')

@@ -8,6 +8,9 @@ log = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    clave_proveedor = fields.Char("Clave Proveedor")
+    numero_consecutivo_aceptacion = fields.Char("Numero Consecutivo Aceptacion")
+    
     log.info('--> Class factelec-Invoice')    
     date = fields.Date(string='Date', required=True, index=True, readonly=True,
         states={'draft': [('readonly', False)]},

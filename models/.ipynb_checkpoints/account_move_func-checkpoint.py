@@ -367,7 +367,7 @@ class AccountMoveFunctions(models.Model):
                       }
         json_to_send = json.dumps(json_string)
         _logger.info(f"========== json to send : \n {json_to_send[:2000]} \n")
-        
+
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
         try:
@@ -1355,7 +1355,8 @@ class AccountMoveFunctions(models.Model):
                     if len(s.fe_doc_ref) == 20:
                         origin_doc = s.search([('name', '=', s.fe_doc_ref)])
                         if origin_doc:
-                            origin_doc_fe_fecha_emision = origin_doc.fe_fecha_emision.split(' ')[0] + 'T' + origin_doc.fe_fecha_emision.split(' ')[1]+'-06:00'
+                            origin_doc_fe_fecha_emision = s.fe_informacion_referencia_fecha.astimezone( pytz.timezone('America/Costa_Rica') ).isoformat('T')
+                            
                             invoice_data[s.fe_doc_type].update({
                                 'InformacionReferencia':{
                                 'TipoDoc':s.fe_tipo_documento_referencia,
