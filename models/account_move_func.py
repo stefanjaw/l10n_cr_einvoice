@@ -98,6 +98,9 @@ class AccountMoveFunctions(models.Model):
             doc = self.search([('name', '=', self.fe_doc_ref)])
             if not doc:
                 raise ValidationError('El documento de referencia no existe')
+        
+        
+        
     
     def _rate(self,date):
         _logger.info(f"DEF101 =====")
@@ -731,7 +734,11 @@ class AccountMoveFunctions(models.Model):
             if not self.partner_id.email and self.name[8:10] not in ['03', '04']:
                  msg += 'En el cliente, el correo electrónico es requerido \n'
             
-            if msg:        
+            _logger.info(f"DEF734 {self} - {self.name[8:10]}")
+            if self.name[8:10] in ['02', '03'] and self.fe_informacion_referencia_fecha == False:
+                msg += 'La Fecha de información de referencia hace falta\n'
+            
+            if msg:
                 raise ValidationError(msg)
    
            
@@ -769,6 +776,7 @@ class AccountMoveFunctions(models.Model):
                 continue
             
             if s.company_id.country_id.code == 'CR' and s.fe_doc_type != False:
+                
                 if validate:
                     if s.fe_msg_type != '3':
                         log.info('--> 1570130084')
@@ -848,6 +856,9 @@ class AccountMoveFunctions(models.Model):
                             if s.fe_msg_type == '3':
                                 if s.amount_total > 0:
                                     raise exceptions.UserError('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
+                
+                if s.fe_doc_type in ['NotaDebitoElectronica', 'NotaCreditoElectronica'] and s.fe_informacion_referencia_fecha == False:
+                    raise ValidationError(f'  Error: Fecha de Información de Referencia está pendiente')
                 
                 date_temp = s.invoice_date 
                 log.info('--> 1575061615')
