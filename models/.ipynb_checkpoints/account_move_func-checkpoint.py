@@ -98,10 +98,7 @@ class AccountMoveFunctions(models.Model):
             doc = self.search([('name', '=', self.fe_doc_ref)])
             if not doc:
                 raise ValidationError('El documento de referencia no existe')
-        
-        
-        
-    
+                
     def _rate(self,date):
         _logger.info(f"DEF101 =====")
         rate_obj = self.env['res.currency.rate'].search([('name','=',date),('company_id','=',self.company_id.id)])
@@ -859,7 +856,7 @@ class AccountMoveFunctions(models.Model):
                 
                 if s.fe_doc_type in ['NotaDebitoElectronica', 'NotaCreditoElectronica'] and s.fe_informacion_referencia_fecha == False:
                     raise ValidationError(f'  Error: Fecha de Información de Referencia está pendiente')
-                
+                    
                 date_temp = s.invoice_date 
                 log.info('--> 1575061615')
                 _logger.info(f"DEF829 before action post=== res.name: {s.name}\n\n")
