@@ -4,6 +4,7 @@
 <record id="l10n_cr_einvoice.account_move_form" model="ir.ui.view">
   <field name="name">l10n_cr_einvoice.account.move.form</field>
   <field name="model">account.move</field>
+  <field name="active">True</field>
   <field name="priority">98</field>
   <field name="inherit_id" ref="account.view_move_form"/>
   <field name="arch" type="xml">

@@ -3,6 +3,8 @@
 <record id="l10n_cr_einvoice.account_journal" model="ir.ui.view">
   <field name="name">l10n_cr_einvoice.account.journal.form</field>
   <field name="model">account.journal</field>
+  <field name="active">True</field>
+  <field name="priority">98</field>
   <field name="inherit_id" ref="account.view_account_journal_form"/>
   <field name="arch" type="xml">
     

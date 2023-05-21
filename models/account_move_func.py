@@ -399,6 +399,7 @@ class AccountMoveFunctions(models.Model):
                         _logging.info(f"DEF373 {self.name} Error: {result}\n")
                         body = "Error "+result
                         self.write_chatter(body)
+                        
 
         except Exception as e:
             body = "Error "+str(e)
