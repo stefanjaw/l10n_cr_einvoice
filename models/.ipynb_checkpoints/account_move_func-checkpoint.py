@@ -760,14 +760,11 @@ class AccountMoveFunctions(models.Model):
                             sequence = s.journal_id.sequence_fee
                         elif s.fe_doc_type == "FacturaElectronicaCompra":
                             sequence = s.journal_id.sequence_fec
-                        elif s.fe_doc_type == "MensajeReceptor" and s.move_type in ["out_invoice"]:
-                            msg = f'Error: Tipo Documento: "{s.fe_doc_type}" no válido'
-                            raise exceptions.UserError((msg))
                         else:
                             sequence = False
                         
                         _logger.info(f"DEF788 sequence: {s.name}")
-                        STOP763
+                        
                         if sequence == False:
                             msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name} para {s.fe_doc_type}'
                             raise exceptions.UserError((msg))                         
