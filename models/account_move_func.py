@@ -708,10 +708,24 @@ class AccountMoveFunctions(models.Model):
             
             _logger.info(f"DEF772 ===== sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
             
-            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False or s.fe_doc_type == "MensajeReceptor":
-                _logger.info(f"DEF748 Not Electronic Invoice or validate False =============\n")
+            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False:
+                _logger.info(f"DEF748a Not Electronic Invoice or validate False =============\n sequence_fe: {s.journal_id.sequence_fe}\n")
+                _logger.info(f"DEF748b Not Electronic Invoice or validate False =============\n sequence_nd: {s.journal_id.sequence_nd}\n")
+                _logger.info(f"DEF748c Not Electronic Invoice or validate False =============\n fe_doc_type: {s.fe_doc_type}\n")
+                _logger.info(f"DEF748c {s.move_type} fe_doc_type: {s.fe_doc_type}\n")
+                
+                if s.fe_doc_type == False and ( len(s.journal_id.sequence_fe) != 0 or len(s.journal_id.sequence_nd) != 0):
+                    msg = f'Error: El diario "{s.journal_id.name}" es solo para Documentos Electrónicos'
+                    msg = msg + f"\nSeleccione el tipo de documento correspondiente"
+                    msg = msg + f"\nEn caso de ser necesario, vaya a Diarios y configure un nuevo diario"
+                    raise ValidationError(msg)
+                
                 res = super(AccountMoveFunctions, s).action_post()
                 return res
+        
+            elif s.move_type == "out_invoice" and s.fe_doc_type in ["NotaCreditoElectronica", "MensajeReceptor", "FacturaElectronicaCompra"]:
+                msg = f'Error: El Tipo de Documento: {s.fe_doc_type} no es válido'
+                raise ValidationError(msg)
             
             if s.company_id.country_id.code == 'CR' and s.fe_doc_type != False:
                 
@@ -746,11 +760,14 @@ class AccountMoveFunctions(models.Model):
                             sequence = s.journal_id.sequence_fee
                         elif s.fe_doc_type == "FacturaElectronicaCompra":
                             sequence = s.journal_id.sequence_fec
+                        elif s.fe_doc_type == "MensajeReceptor" and s.move_type in ["out_invoice"]:
+                            msg = f'Error: Tipo Documento: "{s.fe_doc_type}" no válido'
+                            raise exceptions.UserError((msg))
                         else:
                             sequence = False
                         
                         _logger.info(f"DEF788 sequence: {s.name}")
-                        
+                        STOP763
                         if sequence == False:
                             msg = f'Falta configurar el número consecutivo en el diario/journal: {s.journal_id.name} para {s.fe_doc_type}'
                             raise exceptions.UserError((msg))                         
