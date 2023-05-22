@@ -23,6 +23,7 @@
         <group attrs="{'invisible': [('type', '!=', 'purchase')]}">
           <group>
             <h3>Secuencias</h3>
+            <field name="sequence" string="Sequencia"/>
             <field name="sequence_fec" string="Factura Electrónica Compra"/>
           </group>
         </group>

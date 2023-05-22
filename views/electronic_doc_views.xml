@@ -93,6 +93,7 @@
                             <field name = 'tax_amount' invisible = 'True'/>
                             <field name = 'discount' readonly = 'True'/>
                             <field name = 'discount' invisible = 'True'/>
+                            <field name = 'account_id' invisible = 'False' readonly="False"/>
                             <field name = 'price_subtotal' readonly = 'True'/>
                             <field name = 'price_subtotal' invisible = 'True'/>
                             <field name = 'price_total' readonly = 'True'/>

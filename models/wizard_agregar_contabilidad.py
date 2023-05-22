@@ -8,7 +8,7 @@ import logging
 import base64
 import logging
 
-log = logging.getLogger(__name__)
+log = _logger = logging.getLogger(__name__)
 
 class wizardAgregarContabilidad(models.TransientModel):
     _name='wizard.agregar.contabilidad'
@@ -74,6 +74,8 @@ class wizardAgregarContabilidad(models.TransientModel):
                                             'quantity': linea.quantity,
                                             'price_unit':linea.price_unit,
                                            }]
+                        if len(linea.account_id) == 0:
+                            raise ValidationError(f"Error: Linea sin Cuenta Contable\n {linea.name}")
                         invoice_lines.append(new_line)
                     
                 if doc.doc_type == 'FE' or doc.doc_type == 'TE':
@@ -81,17 +83,21 @@ class wizardAgregarContabilidad(models.TransientModel):
                 elif doc.doc_type == 'NC':
                      doc_type = 'in_refund'
 
-                record = self.env['account.move'].create({
+                _logger.info(f"DEF84 doc_type: {doc_type}\nInvoice_lines: {invoice_lines}\n")
+                record_data = {
                     'partner_id': contacto.id,
                     'currency_id':doc.currency_id.id,
                     'ref': 'Factura consecutivo : {}'.format(doc.electronic_doc_bill_number),
-                    'type' : doc_type,
+                    'move_type' : doc_type,
                     'invoice_date':doc.date,
                     'invoice_line_ids':invoice_lines,
                     'invoice_payment_term_id': contacto.property_supplier_payment_term_id.id,
                     'electronic_doc_id':doc.id,
-                    'company_id':doc.company_id,
-                })
+                    'company_id':doc.company_id.id,
+                }
+                _logger.info(f"DEF98 record: {record_data}")
+                
+                record = self.env['account.move'].create(record_data)
                 
                 doc.update({'invoice_id':record.id})
                 

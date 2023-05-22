@@ -30,67 +30,6 @@ TYPE2REFUND = {
 class AccountMoveFunctions(models.Model):
     _inherit = "account.move"
     
-
-    @api.model
-    def default_fe_in_invoice_type(self):
-        _logger.info(f"DEF34 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
-        
-        '''
-        #journal = super(AccountMoveFunctions, self)._get_default_journal()
-        journal = self.env['account.journal'].search([('company_id', '=', self.env.company.id), ('type', '=', 'general')], limit=1)
-        if len(journal.sequence_id.prefix) == 10 :
-                if journal.sequence_id.prefix[8:10] == '08':
-                   return 'FEC'
-                elif journal.sequence_id.prefix[8:10] == '09':
-                    return 'FEX'
-                elif journal.sequence_id.prefix[8:10] == '01':
-                    return 'FE'
-                elif journal.sequence_id.prefix[8:10] == '02':
-                    return 'ND'
-                else:
-                    return 'OTRO'
-        else:
-            return 'OTRO'
-        '''
-
-
-    @api.onchange("journal_id",)
-    def _onchange_journal_id(self):
-        _logger.info(f"DEF57 _onchange_journal_id self: {self} Comentado por Upgrade\n")
-        '''
-        self.fe_in_invoice_type = 'OTRO'
-        if self.journal_id:
-            if len(self.journal_id.sequence_id.prefix) == 10 :
-                if self.journal_id.sequence_id.prefix[8:10] == '08':
-                    self.fe_in_invoice_type = 'FEC'
-                elif self.journal_id.sequence_id.prefix[8:10] == '09':
-                    self.fe_in_invoice_type = 'FEX'
-                elif self.journal_id.sequence_id.prefix[8:10] == '01':
-                    self.fe_in_invoice_type = 'FE'
-                elif self.journal_id.sequence_id.prefix[8:10] == '02':
-                    self.fe_in_invoice_type = 'ND'
-                else:
-                    self.fe_in_invoice_type = 'OTRO'
-            else:
-                self.fe_in_invoice_type = 'OTRO'
-                log.info('largo del prefijo del diario menor a 10')
-        '''
-    
-    @api.onchange("currency_id","invoice_date",)
-    def _onchange_currency_rate(self):
-        _logger.info(f"DEF77 ===== _onchange_currency_rate self: {self} comentado por upgrade")  # comentado por upgrade
-        #buscar error con respecto a dolares
-        '''for s in self:
-            log.info('-->577381353')
-            if s.currency_id.name == "USD": 
-                date = None
-                if not s.invoice_date:
-                    date = time.strftime("%Y-%m-%d")
-                else:
-                    date = s.invoice_date 
-                                        
-                s._rate(date)'''
-                            
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
         _logger.info(f"===== _constrains_fe_doc_ref para nota credito o nota debito")
@@ -120,9 +59,6 @@ class AccountMoveFunctions(models.Model):
                 self.fe_currency_rate = "No existe el tipo de cambio"
                 return 
     
-    
-    
-
     @api.depends('company_id')
     def _get_country_code(self):
         log.info('--> 1575319718 _get_country_code ')
@@ -762,16 +698,20 @@ class AccountMoveFunctions(models.Model):
 
 
     def action_post(self,validate = True):
-        _logger.info(f"DEF743 ===== action_post self: {self} fe_invoice_type: {self.fe_doc_type} validate: {validate}\n")
+        _logger.info(f"DEF743a ===== action_post self: {self} fe_invoice_type: {self.fe_doc_type} validate: {validate}\n")
+        _logger.info(f"DEF743b ===== move_type: {self.move_type}")
         for s in self:
             log.info('--> action_post')
             _logger.info(f"DEF746 ===== action_post self: {s} fe_invoice_type: {s.fe_doc_type} fe_msg_type: {s.fe_msg_type}\n")
             #_logger.info(f"DEF747 ===== journal_id: {dir(s.journal_id)}\n")
             _logger.info(f"DEF747 ===== journal_id refund_sequence: {s.journal_id.refund_sequence}\n")
             
+            _logger.info(f"DEF772 ===== sequence: {dir(s)}\n sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
+            
             if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False:
                 _logger.info(f"DEF748 Not Electronic Invoice or validate False =============\n")
-                continue
+                res = super(AccountMoveFunctions, s).action_post()
+                return res
             
             if s.company_id.country_id.code == 'CR' and s.fe_doc_type != False:
                 
@@ -779,6 +719,7 @@ class AccountMoveFunctions(models.Model):
                     if s.fe_msg_type != '3':
                         log.info('--> 1570130084')
                         for item in s.invoice_line_ids:
+                            
                             if item.price_subtotal == False:
                                 return {
                                         'type': 'ir.actions.act_window',
@@ -1448,3 +1389,63 @@ class AccountMoveFunctions(models.Model):
                     'journal_id': self.journal_id.id
                  }
              }
+
+    @api.onchange("currency_id","invoice_date",)
+    def _onchange_currency_rate(self):
+        _logger.info(f"DEF77 ===== _onchange_currency_rate self: {self} comentado por upgrade")  # comentado por upgrade
+        #buscar error con respecto a dolares
+        '''for s in self:
+            log.info('-->577381353')
+            if s.currency_id.name == "USD": 
+                date = None
+                if not s.invoice_date:
+                    date = time.strftime("%Y-%m-%d")
+                else:
+                    date = s.invoice_date 
+                                        
+                s._rate(date)'''
+    
+    
+    @api.onchange("journal_id",)
+    def _onchange_journal_id(self):
+        _logger.info(f"DEF57 _onchange_journal_id self: {self} Comentado por Upgrade\n")
+        '''
+        self.fe_in_invoice_type = 'OTRO'
+        if self.journal_id:
+            if len(self.journal_id.sequence_id.prefix) == 10 :
+                if self.journal_id.sequence_id.prefix[8:10] == '08':
+                    self.fe_in_invoice_type = 'FEC'
+                elif self.journal_id.sequence_id.prefix[8:10] == '09':
+                    self.fe_in_invoice_type = 'FEX'
+                elif self.journal_id.sequence_id.prefix[8:10] == '01':
+                    self.fe_in_invoice_type = 'FE'
+                elif self.journal_id.sequence_id.prefix[8:10] == '02':
+                    self.fe_in_invoice_type = 'ND'
+                else:
+                    self.fe_in_invoice_type = 'OTRO'
+            else:
+                self.fe_in_invoice_type = 'OTRO'
+                log.info('largo del prefijo del diario menor a 10')
+        '''
+    
+    @api.model
+    def default_fe_in_invoice_type(self):
+        _logger.info(f"DEF34 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
+        
+        '''
+        #journal = super(AccountMoveFunctions, self)._get_default_journal()
+        journal = self.env['account.journal'].search([('company_id', '=', self.env.company.id), ('type', '=', 'general')], limit=1)
+        if len(journal.sequence_id.prefix) == 10 :
+                if journal.sequence_id.prefix[8:10] == '08':
+                   return 'FEC'
+                elif journal.sequence_id.prefix[8:10] == '09':
+                    return 'FEX'
+                elif journal.sequence_id.prefix[8:10] == '01':
+                    return 'FE'
+                elif journal.sequence_id.prefix[8:10] == '02':
+                    return 'ND'
+                else:
+                    return 'OTRO'
+        else:
+            return 'OTRO'
+        '''
