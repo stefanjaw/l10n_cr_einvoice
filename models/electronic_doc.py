@@ -59,7 +59,7 @@ class ElectronicDoc(models.Model):
             ('draft', 'Draft'),
             ('posted', 'Posted'),
             ('accounting', 'Accounting')
-        ], string='Status', required=True, readonly=True, copy=False, tracking=True,
+        ], string='Status', required=True, copy=False, tracking=True,
         default='draft')
 
     fe_server_state = fields.Char(string="Estado Hacienda", )
@@ -317,7 +317,7 @@ class ElectronicDoc(models.Model):
                  }                                       
 
                     
-    def confirmar(self):
+    def action_confirm(self):
         self.validar_xml_aceptacion
         if self.sequence_id:
             next_number = self.sequence_id.next_by_id()

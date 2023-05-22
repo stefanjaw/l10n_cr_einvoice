@@ -6,7 +6,7 @@
       <form string="">
           
           <header>
-               <button  type="object" class="oe_highlight"  name='confirmar' string="Confirm"  attrs="{'invisible': [('state','in',['posted','accounting'])]}"/> 
+               <button  type="object" class="oe_highlight"  name='action_confirm' string="Confirm"  attrs="{'invisible': [('state','in',['posted','accounting'])]}"/> 
                <field name="state" widget="statusbar" statusbar_visible="draft,posted,accounting"/>
           </header>
           
@@ -137,7 +137,7 @@
     <field name="name">doc.tree</field>
     <field name="model">electronic.doc</field>
     <field name="arch" type="xml">
-      <tree string="">
+      <tree string="" default_order="date desc">
         <field name="state" string="Estado Contable"/>
         <field name="consecutivo"/>
         <field name="key" string="Clave Proveedor"/>

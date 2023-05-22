@@ -706,9 +706,9 @@ class AccountMoveFunctions(models.Model):
             #_logger.info(f"DEF747 ===== journal_id: {dir(s.journal_id)}\n")
             _logger.info(f"DEF747 ===== journal_id refund_sequence: {s.journal_id.refund_sequence}\n")
             
-            _logger.info(f"DEF772 ===== sequence: {dir(s)}\n sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
+            _logger.info(f"DEF772 ===== sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
             
-            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False:
+            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False or s.fe_doc_type == "MensajeReceptor":
                 _logger.info(f"DEF748 Not Electronic Invoice or validate False =============\n")
                 res = super(AccountMoveFunctions, s).action_post()
                 return res

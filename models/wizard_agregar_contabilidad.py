@@ -27,6 +27,7 @@ class wizardAgregarContabilidad(models.TransientModel):
     )
     def agregar(self):
         doc = self.env['electronic.doc'].search([("id","=",self._context['doc'])])
+        
         if doc.company_id != self.company_id:
             raise ValidationError("Este documento pertenece a la compañía {} si desea agregarlo a contabilidad por favor cámbiese a esta".format(doc.company_id.name))
         if self.opciones == '1':
@@ -84,16 +85,18 @@ class wizardAgregarContabilidad(models.TransientModel):
                      doc_type = 'in_refund'
 
                 _logger.info(f"DEF84 doc_type: {doc_type}\nInvoice_lines: {invoice_lines}\n")
+                
                 record_data = {
                     'partner_id': contacto.id,
                     'currency_id':doc.currency_id.id,
-                    'ref': 'Factura consecutivo : {}'.format(doc.electronic_doc_bill_number),
+                    'ref': 'F.Prov: {}'.format(doc.electronic_doc_bill_number),
                     'move_type' : doc_type,
                     'invoice_date':doc.date,
                     'invoice_line_ids':invoice_lines,
                     'invoice_payment_term_id': contacto.property_supplier_payment_term_id.id,
                     'electronic_doc_id':doc.id,
                     'company_id':doc.company_id.id,
+                    'fe_doc_type': "MensajeReceptor"
                 }
                 _logger.info(f"DEF98 record: {record_data}")
                 
