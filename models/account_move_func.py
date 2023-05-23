@@ -817,6 +817,13 @@ class AccountMoveFunctions(models.Model):
                 log.info('--> 1575061615')
                 _logger.info(f"DEF829 before action post=== res.name: {s.name}\n\n")
                 
+                activity_codes = self.env['activity.code'].search([('company_id', '=', s.company_id.id)])
+                _logger.info(f"DEF820: company_id: self.company_id: {s.company_id} - activties codes: {activity_codes}")
+                if len(activity_codes) == 1:
+                    s.fe_activity_code_id = activity_codes.id
+                
+                _logger.info(f"DEF820: s.fe_activity_code_id: {s.fe_activity_code_id}")
+                
                 number_to_use = sequence.number_next_actual
                 s.name = sequence.get_next_char( sequence.number_next_actual  )
                 s.sequence_prefix = sequence._get_prefix_suffix()[0]

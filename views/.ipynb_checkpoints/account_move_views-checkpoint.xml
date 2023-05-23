@@ -52,12 +52,12 @@
       
       
       <xpath expr="//div[@name='journal_div']" position="after">
-        <h3>Referencias Documentos</h3><br/>
-        <field name="fe_tipo_documento_referencia"/> <!-- attrs="{'invisible': [('fe_doc_ref','=', False )] }" -->
-        <field name="fe_doc_ref" help="Numero de Referencia del Documento" placeholder="Documento de Referencia"/>
-        <field name="fe_informacion_referencia_codigo"/> <!-- attrs="{'invisible': [('fe_doc_ref','=', False )] }" -->
-        <field name="fe_informacion_referencia_fecha"/> <!-- attrs="{'invisible': [('fe_doc_ref','=', False )] }" -->
-        <field name="ref" string="Razon"/> <!-- attrs="{'invisible': [('fe_doc_ref','=', False )] }"-->
+        <h3 attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}">Referencias Documentos</h3><br/>
+        <field name="fe_doc_ref" help="Numero de Referencia del Documento" placeholder="Documento de Referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
+        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|', '|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
+        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
+        <field name="fe_informacion_referencia_fecha" attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
+        <field name="ref" string="Razon" attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/> 
       </xpath>
       
       <!--
@@ -82,14 +82,14 @@
       
       <xpath expr="//group[@id='header_left_group']" position="inside">
           <br/><h3>Factura Electrónica</h3><br/>
-          <field name="fe_doc_type" invisible="False" readonly="0"/>
-          <field name="fe_current_country_company_code" invisible="0"/>
-          <field name="fe_in_invoice_type" invisible="True"/>
-          <field name="fe_payment_type" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
-          <field name="fe_receipt_status" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
-          <field name="fe_activity_code_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
-          <field name="fe_server_state" readonly="0" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
-          <field name="fe_currency_rate" readonly="0" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+            <field name="fe_doc_type" invisible="False" readonly="0"/>
+            <field name="fe_current_country_company_code" invisible="0"/>
+            <field name="fe_in_invoice_type" invisible="True"/>
+            <field name="fe_payment_type" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
+            <field name="fe_receipt_status" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
+            <field name="fe_activity_code_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
+            <field name="fe_server_state" readonly="0" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
+            <field name="fe_currency_rate" readonly="0" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
       </xpath>
       <!--<div groups="base.group_multi_currency" position="after">
         <field name = "fe_currency_rate" readonly="1"/>
