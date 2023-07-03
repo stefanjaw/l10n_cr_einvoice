@@ -54,7 +54,7 @@ class email(models.Model):
                 to = msg_dict.get('to', '')
 
                 'Desactived auto commit for use transactions'
-                self._cr.autocommit(False)
+                #self._cr.autocommit(False)
                 try:
 
                     Mail = self.env['email'].create({

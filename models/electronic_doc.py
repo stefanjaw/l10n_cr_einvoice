@@ -443,7 +443,7 @@ class ElectronicDoc(models.Model):
             return invoice_lines
         
     def create_electronic_doc(self, xml, xml_name,company=False):
-
+        
         dic = self.convert_xml_to_dic(xml)
         doc_type = self.get_doc_type(dic)
 
@@ -456,8 +456,9 @@ class ElectronicDoc(models.Model):
             "UC05A"
             provider = self.get_provider(dic, doc_type)
             receiver_number = self.get_receiver_identification(dic, doc_type) or company.vat or False
-            
+
             new_company = self.env['res.company'].search([ ( 'vat', '=', receiver_number ) ])
+
             if new_company:
                 company = new_company
             else:
@@ -746,7 +747,11 @@ class ElectronicDoc(models.Model):
             for item in doc_list:
 
                 if '.xml' in str(item.fname).lower():
-                    xml = base64.b64encode(item.content)
+                    item_content = item.content
+                    if type(item_content) == str:
+                        item_content = item_content.encode("utf-8")
+                    
+                    xml = base64.b64encode(item_content)
                     xml_name = item.fname
                     dic = self.convert_xml_to_dic(xml)
                     doc_type = self.get_doc_type(dic)
