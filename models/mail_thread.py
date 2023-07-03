@@ -56,8 +56,16 @@ class mailThread(models.AbstractModel):
 
         for item in attachments:
             if ('.xml' in str(item.fname).lower()):
-                doc = base64.b64encode(item.content)
-                dic = self.env['electronic.doc'].convert_xml_to_dic(doc)
+                item_content = item.content
+                if type(item_content) == str:
+                    item_content = item_content.encode("utf-8")
+                    
+                doc = base64.b64encode(item_content)
+                try:
+                    dic = self.env['electronic.doc'].convert_xml_to_dic(doc)
+                except:
+                    continue
+                
                 doc_type = electronic_doc.get_doc_type(dic)
                 if (doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC'):
                     bills.append(item)
