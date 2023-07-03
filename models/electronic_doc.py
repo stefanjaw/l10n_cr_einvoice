@@ -744,7 +744,11 @@ class ElectronicDoc(models.Model):
             for item in doc_list:
 
                 if '.xml' in str(item.fname).lower():
-                    xml = base64.b64encode(item.content)
+                    item_content = item.content
+                    if type(item_content) == str:
+                        item_content = item_content.encode("utf-8")
+                    
+                    xml = base64.b64encode(item_content)
                     xml_name = item.fname
                     dic = self.convert_xml_to_dic(xml)
                     doc_type = self.get_doc_type(dic)
