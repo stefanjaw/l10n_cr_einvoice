@@ -64,7 +64,7 @@ class mailThread(models.AbstractModel):
                 try:
                     dic = self.env['electronic.doc'].convert_xml_to_dic(doc)
                 except:
-                    _logger.info(f"  Error: Can't convert XML {item.fname}")
+                    _logger.info(f"  Error: Can't convert XML {item.fname} - Content: \n{item_content}\n")
                     continue
                 
                 doc_type = electronic_doc.get_doc_type(dic)
