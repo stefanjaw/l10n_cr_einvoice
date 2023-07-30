@@ -8,118 +8,93 @@
   <field name="priority">98</field>
   <field name="inherit_id" ref="base.view_company_form"/>
   <field name="arch" type="xml">
-            
-       <xpath expr="//page" position="after">
-               <field name ="fe_current_country_company_code" invisible="1"/>
-               <page name="" string="Facturacion electronica" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}">
-                  <form>
-                      <sheet>
-                         <group>
-                             <field name="fe_url_server" string="Server URL"/>
-                             <field name="fe_certificate_name" invisible = "1"/>
-                             <field name="fe_certificate" filename='fe_certificate_name'/>
-                             <field name="fe_password_certificate" password='1'  attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-                             <field name="fe_user_name"/>
-                             <field name="fe_user_password" password='1'  attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-                          </group>
-                          <button name='update_credentials_server_side' string="Actualizar Credenciales en el servidor"  type="object" class="oe_highlight" />
-                          <group>
-                            <field name="fe_activity_code_ids">
-                             <tree editable="1">
-                                  <field name="code" required='1'/>
-                                  <field name="description" required='1'/>
-                             </tree>
-                            </field>
-                              
-                            <field name="fe_email" required='1'/>
-                            <field name="fecth_server" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-                            <field name="default_account_for_invoice_email" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}" /> 
-                         </group>
-                      </sheet>
-                  </form>
-               </page>
-            </xpath>
       
-            <field name="country_id" position="replace">
-              <field name="country_id" required="1" placeholder="Country"/>
-            </field>
-            <field name="vat" position="before">
-                <field name = "fe_comercial_name" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
-                <field name="fe_identification_type" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')],'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-            </field>
+    <field name="vat" position="before">
+      <field name="invoice_is_electronic" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+    </field>
+    
+    <xpath expr="//page" position="after">
+      <field name="fe_current_country_company_code" invisible="1"/>
+         
+      <page name="" string="Facturacion electronica"
+        attrs="{'invisible': [ '|', ('fe_current_country_company_code', '!=', 'CR'), ('invoice_is_electronic','=', False)] }">
+        
+        <form>
+          <sheet>
+            <group>
+              <group string="Configuracion Compañía">
+                <field name="fe_comercial_name" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+                <field name="company_registry" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+                <field name="vat" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+                <field name="fe_identification_type" readonly="0"
+                    attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')],
+                            'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
+                <field name="currency_id" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+                <field name="phone" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+                <field name="fe_fax_number" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
+              </group>
+                     
+              <group string="Ubicacion">
+                <field name="country_id" string="País" readonly="1"
+                    options="{'no_create': True, 'no_create_edit': True}" placeholder="Country Code"/>
+                        
+                <field name="state_id" string="Provincia" placeholder="Seleccionar Provincia"
+                    domain="[('country_id', '=',country_id)]" options="{'no_create': True, 'no_create_edit': True}"/>
+                        
+                <field name="canton_id" string="Canton" placeholder="Seleccionar Canton" readonly="0"
+                    domain="[('state_id', '=',state_id)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+            
+                        
+                <field name="distrito_id" string="Distrito" placeholder="Seleccionar Distrito" readonly="0"
+                    domain="[('canton_id', '=',canton_id)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                        
+                <field name="barrio_id" string="Barrio" placeholder="Seleccionar Barrio" readonly="0"
+                    domain="[('distrito_id', '=',distrito_id)]" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                
+                <field name="street" string="Otras Señas" placeholder="Otras Señas" readonly="0"
+                    options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                
+                <field name="street2" string="Otras Señas2" placeholder="Otras Señas2" readonly="0"
+                    options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+              </group>
+                     
+              <group string="Configuracion Credenciales">
+                <field name="fe_user_name"/>
+                <field name="fe_user_password" password="1" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
+                <field name="fe_certificate_name" invisible="1"/>
+                <field name="fe_certificate" filename="fe_certificate_name"/>
+                <field name="fe_password_certificate" password="1" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
+              </group>
+                      
+              <group string="Actividades Comerciales">
+                <field name="fe_activity_code_ids">
+                  <tree editable="1">
+                    <field name="code" required="1"/>
+                    <field name="description" required="1"/>
+                  </tree>
+                </field>                              
+              </group>
+                      
+              <group string="Configuracion Emails">
+                <field name="fe_email" required="1"/>
+                <field name="fecth_server" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
+                <field name="default_account_for_invoice_email" attrs="{'required':  [('fe_current_country_company_code', '=', 'CR')]}"/> 
+              </group> 
 
-           <!-- <field name="phone" position="before">
-                <field name="fe_canton_id" readonly="0" options="{'no_create': True, 'no_create_edit': True}"
-                    domain="[('state_id', '=', state_id)]" string = "Canton" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')],'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-                <field name="fe_district_id" readonly="0" options="{'no_create': True, 'no_create_edit': True}"
-                    domain="[('canton_id', '=', fe_canton_id)]" string = "Distrito" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')],'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-                <field name="fe_neighborhood_id" readonly="0" options="{'no_create': True, 'no_create_edit': True}"
-                    domain="[('district_id', '=', fe_district_id)]"  string = "Barrio" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
-                <field name = "fe_other_signs" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')],'required':  [('fe_current_country_company_code', '=', 'CR')]}"/>
-            </field> -->
+              <group string="Configuracion Servidor">
+                <field name="fe_url_server" string="Server URL"/>
+                <button name="update_credentials_server_side" string="Actualizar Credenciales en el servidor" 
+                  type="object" class="oe_highlight"/>
+              </group>
+                
+            </group>
+                    
+          </sheet>
+        </form>
+      </page>
+    </xpath>
 
-            <field name="phone" position="before" attrs="{'required','=',1}">
-              <field name = "fe_fax_number" readonly="0" attrs="{'invisible':  [('fe_current_country_company_code', '!=', 'CR')]}"/>
-            </field>
-                       
-           <xpath expr="//field[@name='country_id']" position="attributes">
-                <attribute name="attrs">
-                    {"invisible": True }
-                </attribute>
-            </xpath>
-  
-            <xpath expr="//field[@name='state_id']" position="attributes">
-                <attribute name="attrs">
-                    {"invisible": [["fe_current_country_company_code","=","CR"]] }
-                </attribute>
-                <attribute name="placeholder">Provincia</attribute>
-            </xpath>
-  
-            <xpath expr="//field[@name='city']" position="attributes">
-                <attribute name="attrs">
-                    {"invisible": [["fe_current_country_company_code","=","CR"]] }
-                </attribute>
-            </xpath>
-  
-            <xpath expr="//field[@name='zip']" position="attributes">
-                <attribute name="attrs">
-                    {"invisible": [["fe_current_country_company_code","=","CR"]] }
-                </attribute>
-            </xpath>
-  
-            <xpath expr="//field[@name='street']" position="attributes">
-                <attribute name="placeholder">Otras señas</attribute>
-            </xpath>
-            
-            <xpath expr="//field[@name='street2']" position="attributes">
-                <attribute name="placeholder">Otras señas2</attribute>
-            </xpath>
-  
-        <field name="street" position="before">
 
-          <field name="country_id" string="País"
-                   options="{'no_create': True, 'no_create_edit': True}"
-                   placeholder="Country Code"/>
-            
-            <field name="state_id" string="Provincia" placeholder="Provincia"
-                domain="[('country_id', '=',country_id)]" options="{'no_create': True, 'no_create_edit': True}"
-                attrs="{'invisible':[('fe_current_country_company_code', '!=', 'CR') ]}" />
-            
-            <field name="canton_id" string="Canton" placeholder="Canton" readonly="0" domain="[('state_id', '=',state_id)]"
-                options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                attrs="{'invisible':[('state_id', '=', False) ]}" />
-
-            
-            <field name="distrito_id" string="Distrito" placeholder="Distrito"  readonly="0" domain="[('canton_id', '=',canton_id)]" 
-                options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                attrs="{'invisible':[('canton_id', '=', False) ]}" />
-            
-            <field name="barrio_id" string="Barrio" placeholder="Barrio"  readonly="0" domain="[('distrito_id', '=',distrito_id)]"
-                options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                attrs="{'invisible':[('distrito_id', '=', False) ]}" />
-           
-       </field>
-      
   </field>
 </record>
 

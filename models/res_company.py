@@ -41,6 +41,8 @@ class ResCompany(models.Model):
     default_account_for_invoice_email = fields.Many2one('account.account', string='Cuenta contable facturas por email',
     help="Esta cuenta sera asignada por default a las lineas de las facturas creadas automaticamente por email")
 
+    invoice_is_electronic = fields.Boolean('Habilitar Factura Electronica')
+    
     @api.constrains('fecth_server')
     def _constrains_fecth_server(self):
         for record in self:
