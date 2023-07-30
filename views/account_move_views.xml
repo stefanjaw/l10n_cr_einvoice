@@ -19,7 +19,7 @@
       
       <xpath expr="//page[last()]" position="after">
         <field name="fe_current_country_company_code" invisible="1"/>
-        <!--<page string="Facturacion electrónica" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}">-->
+        
         <page string="Facturacion electrónica">
           <form>
             <group>
@@ -37,9 +37,6 @@
           </form>
         </page>
       </xpath>
-      <!--<xpath expr="//sheet/h1" position="after">
-          <h3><field name="fe_clave" readonly="1"/></h3>
-      </xpath>-->
       
      <field name="name" position="after">
             <h3><field name="fe_clave" readonly="1" attrs="{'invisible': [('state','=','draft')]}"/></h3>
@@ -50,27 +47,6 @@
            <attribute name="attrs">{ 'required':[('fe_doc_ref','!=',False),('move_type','=','in_invoice')] }</attribute>
        </field>
       
-      
-      <xpath expr="//div[@name='journal_div']" position="after">
-        <h3 attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}">Referencias Documentos</h3><br/>
-        <field name="fe_doc_ref" help="Numero de Referencia del Documento" placeholder="Documento de Referencia" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
-        <field name="fe_tipo_documento_referencia" attrs="{'invisible': ['|', '|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
-        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
-        <field name="fe_informacion_referencia_fecha" attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
-        <field name="ref" string="Razon" attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/> 
-      </xpath>
-      
-      <!--
-      <field name="journal_id" position="replace">
-        <field name="journal_id" options="{'no_create': True}" domain="[('type', '=?', invoice_filter_type_domain)]" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')]}"/>
-        <field name="fe_tipo_documento_referencia" attrs="{'invisible': [('fe_doc_ref','=', False )] }"/>
-        <field name="fe_doc_ref" help="Numero de Referencia del Documento" placeholder="Documento de Referencia"/>
-        <field name="fe_informacion_referencia_codigo" attrs="{'invisible': [('fe_doc_ref','=', False )] }"/>
-        <field name="fe_informacion_referencia_fecha" attrs="{'invisible': [('fe_doc_ref','=', False )] }"/>
-        <field name="ref" string="Razon" attrs="{'invisible': [('fe_doc_ref','=', False )] }"/>
-      </field>
-      -->
-      
       <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
             <group>
               <group>
@@ -80,30 +56,44 @@
             </group>
       </xpath>
       
-      <xpath expr="//group[@id='header_left_group']" position="inside">
-            <br attrs="{'invisible': ['|', ('fe_current_country_company_code', '!=', 'CR'), ('move_type','not in',['out_invoice'])]}"/>
-            <h3>Factura Electrónica</h3><br/>
-            <field name="fe_doc_type" invisible="False" readonly="0"/>
-            <field name="fe_current_country_company_code" invisible="0"/>
-            <field name="fe_in_invoice_type" invisible="True"/>
-            <field name="fe_payment_type"
-                   attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/>
-            <field name="fe_receipt_status"
-                   attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/>
-            <field name="fe_activity_code_id"
-                   domain="[('company_id', '=', company_id)]"
-                   options="{'no_create': True, 'no_create_edit': True,'no_open': True,}"
-                   attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/>
-            <field name="fe_server_state"
-                   readonly="1"
-                   attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False), ('move_type','not in',['out_invoice'])]}"/>
-            <field name="fe_currency_rate"
-                   readonly="0"
-                   attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False), ('move_type','not in',['out_invoice'])]}"/>
+      <xpath expr="//group[@id='header_right_group']" position="after">
+            <group string="Factura Electrónica CR"
+                attrs="{'invisible': [ '|', ('fe_current_country_company_code', '!=', 'CR'), ('fe_doc_type','=',False) ]}">
+                <field name="fe_doc_type" invisible="False" readonly="0"/>
+                <field name="fe_current_country_company_code" invisible="0"/>
+                <field name="fe_in_invoice_type" invisible="True"/>
+                <field name="fe_payment_type"
+                       attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/>
+                <field name="fe_receipt_status"
+                       attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/>
+                <field name="fe_activity_code_id"
+                       domain="[('company_id', '=', company_id)]"
+                       options="{'no_create': True, 'no_create_edit': True,'no_open': True,}"
+                       attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/>
+                <field name="fe_server_state"
+                       readonly="1"
+                       attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False), ('move_type','not in',['out_invoice'])]}"/>
+                <field name="fe_currency_rate"
+                       readonly="0"
+                       attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False), ('move_type','not in',['out_invoice'])]}"/>
+            </group>
+
+            <group string="Referencias Documentos"
+                attrs="{'invisible': [ '|', ('fe_current_country_company_code', '!=', 'CR'), ('fe_doc_type','=',False) ]}">
+                <field name="fe_doc_ref" help="Numero de Referencia del Documento"
+                    placeholder="Documento de Referencia"
+                    attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
+                <field name="fe_tipo_documento_referencia"
+                    attrs="{'invisible': ['|', '|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
+                <field name="fe_informacion_referencia_codigo"
+                    attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
+                <field name="fe_informacion_referencia_fecha"
+                    attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
+                <field name="ref" string="Razon"
+                    attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/> 
+            </group>
       </xpath>
-      <!--<div groups="base.group_multi_currency" position="after">
-        <field name = "fe_currency_rate" readonly="1"/>
-      </div>-->
+
       <!--Vendor bill-->
       <field name="narration" nolabel="1" height="50" position="after">
          <field name="fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
@@ -146,8 +136,5 @@
       action="action_for_debit_notes"
       sequence="5"
   /> 
-    
-    
-    
     
 </odoo>
