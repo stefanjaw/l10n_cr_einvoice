@@ -823,12 +823,13 @@ class AccountMoveFunctions(models.Model):
                     s.fe_activity_code_id = activity_codes.id
                 
                 _logger.info(f"DEF820: s.fe_activity_code_id: {s.fe_activity_code_id}")
-                
-                number_to_use = sequence.number_next_actual
-                s.name = sequence.get_next_char( sequence.number_next_actual  )
-                s.sequence_prefix = sequence._get_prefix_suffix()[0]
-                
-                sequence._next_do()
+
+                if s.name in ["", "/"]:
+                    number_to_use = sequence.number_next_actual
+                    s.name = sequence.get_next_char( sequence.number_next_actual  )
+                    s.sequence_prefix = sequence._get_prefix_suffix()[0]
+                    
+                    sequence._next_do()
                 
                 _logger.info(f"DEF836 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
                 res = super(AccountMoveFunctions, s).action_post()

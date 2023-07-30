@@ -49,8 +49,6 @@ class AccountMoveReversal(models.TransientModel):
         data['fe_receipt_status'] = move_id.fe_receipt_status
         data['fe_activity_code_id'] = move_id.fe_activity_code_id.id
 
-        # 1690737986
-        number_next_actual = move_id.journal_id.sequence_nc.number_next_actual
-        data['name'] = move_id.journal_id.sequence_nc.get_next_char( number_next_actual  )
+        data['name'] = "/"
         
         return data
