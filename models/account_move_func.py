@@ -702,7 +702,7 @@ class AccountMoveFunctions(models.Model):
         _logger.info(f"DEF743b ===== move_type: {self.move_type}")
         for s in self:
             log.info('--> action_post')
-            _logger.info(f"DEF746 ===== action_post self: {s} fe_invoice_type: {s.fe_doc_type} fe_msg_type: {s.fe_msg_type}\n")
+            _logger.info(f"DEF746 ===== action_post self: {s} fe_invoice_type: {s.fe_doc_type} fe_msg_type: {s.fe_msg_type}\n    Name: {s.name}\n")
             #_logger.info(f"DEF747 ===== journal_id: {dir(s.journal_id)}\n")
             _logger.info(f"DEF747 ===== journal_id refund_sequence: {s.journal_id.refund_sequence}\n")
             
@@ -1413,7 +1413,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.onchange("currency_id","invoice_date",)
     def _onchange_currency_rate(self):
-        _logger.info(f"DEF77 ===== _onchange_currency_rate self: {self} comentado por upgrade")  # comentado por upgrade
+        _logger.info(f"DEF1416 ===== _onchange_currency_rate self: {self} comentado por upgrade")  # comentado por upgrade
         #buscar error con respecto a dolares
         '''for s in self:
             log.info('-->577381353')
@@ -1429,7 +1429,12 @@ class AccountMoveFunctions(models.Model):
     
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):
-        _logger.info(f"DEF57 _onchange_journal_id self: {self} Comentado por Upgrade\n")
+        _logger.info(f"DEF1432 _onchange_journal_id self: {self} Comentado por Upgrade\nContext: {self._context}\n")
+        default_move_type = self._context.get('default_move_type')
+        _logger.info(f"DEF1434 default_move_type: {default_move_type}\n")
+        if default_move_type == "out_refund":
+            self.fe_doc_type  = "NotaCreditoElectronica"
+        
         '''
         self.fe_in_invoice_type = 'OTRO'
         if self.journal_id:
@@ -1451,7 +1456,7 @@ class AccountMoveFunctions(models.Model):
     
     @api.model
     def default_fe_in_invoice_type(self):
-        _logger.info(f"DEF34 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
+        _logger.info(f"DEF1454 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
         
         '''
         #journal = super(AccountMoveFunctions, self)._get_default_journal()
