@@ -782,9 +782,9 @@ class ElectronicDoc(models.Model):
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
         if self.state == 'draft':
-           raise exceptions.Warning('VALIDE primero este documento')
+            raise ValidationError('VALIDE primero este documento')
         if self.fe_xml_hacienda:
-           raise exceptions.Warning("Ya se tiene la RESPUESTA de Hacienda")
+            raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
 
         country_code = self.company_id.partner_id.country_id.code 
         if country_code == 'CR':
@@ -792,9 +792,9 @@ class ElectronicDoc(models.Model):
             if self.consecutivo[8:10] == "05" or self.consecutivo[8:10] == "06" or  self.consecutivo[8:10] == "07":                
 
                 if self.fe_xml_hacienda:
-                   msg = '--> Ya se tiene el XML de Hacienda Almacenado'
-                   log.info(msg)
-                   raise exceptions.Warning((msg))
+                    msg = '--> Ya se tiene el XML de Hacienda Almacenado'
+                    log.info(msg)
+                    raise ValidationError(msg)
 
                 else:
                    self._cr_post_server_side()
@@ -838,7 +838,7 @@ class ElectronicDoc(models.Model):
             return json
         else:
             msg = 'adjunte una factura electronica antes de confirmar la aceptacion'
-            raise exceptions.Warning((msg))
+            raise ValidationError(msg)
             
     def validar_compania(self):
         
@@ -902,7 +902,7 @@ class ElectronicDoc(models.Model):
     def get_bill(self):
         for s in self:
             if s.state == 'draft':
-              raise exceptions.Warning('VALIDE primero este documento')
+              raise ValidationError('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
             log.info('--> 1569447129')
             log.info('--> get_invoice')
@@ -944,7 +944,7 @@ class ElectronicDoc(models.Model):
                 
     def _cr_post_server_side(self):
         if not self.company_id.fe_certificate:
-            raise exceptions.Warning(('No se encuentra el certificado en compañia'))
+            raise ValidationError('No se encuentra el certificado en compañia')
             
         log.info('--> factelec-Invoice-_cr_post_server_side')
         
