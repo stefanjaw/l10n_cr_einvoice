@@ -65,8 +65,10 @@ class AccountMoveFunctions(models.Model):
         for s in self:
             s.fe_current_country_company_code = s.company_id.country_id.code
 
+
+    
     def _compute_exoneraciones(self):
-                _logger.info(f"DEF132 =====")
+                _logger.info(f"DEF132 ===== _compute_exoneraciones")
                 for record in self:
                   record.TotalServExonerado = 0
                   record.TotalMercExonerada = 0
@@ -81,21 +83,27 @@ class AccountMoveFunctions(models.Model):
                             LineaImpuestoTarifa = round(old_tax.amount,2)
                             percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                             if i.product_id.type == 'service':
-                                record.TotalServExonerado = record.TotalServExonerado + i.price_subtotal * ( percent / LineaImpuestoTarifa )
+                                record.TotalServExonerado =   \
+                                    record.TotalServExonerado + i.price_subtotal * ( percent / LineaImpuestoTarifa )
                             else:
                                 record.TotalMercExonerada = record.TotalMercExonerada + i.price_subtotal * ( percent / LineaImpuestoTarifa )
 
                       record.TotalExonerado = record.TotalServExonerado + record.TotalMercExonerada
     
     def _compute_gravados_exentos(self):
-        _logger.info(f"DEF153 =====")
+        _logger.info(f"DEF92 ===== _compute_gravados_exentos: {self}")
         for record in self:
+            fiscal_position_id = record.fiscal_position_id
+            _logger.info(f"DEF98 fiscal_position_id: {fiscal_position_id.id}- {fiscal_position_id.name}\n")
             for i in record.invoice_line_ids:
                 if not i.tax_ids:
                     continue
+                _logger.info(f"DEF96 invoice_line description: {i.name}\n")
                 fiscal = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]) 
+                
                 old_tax = record.fiscal_position_id.tax_ids.search([('tax_dest_id','=',i.tax_ids[0].id)]).tax_src_id        
                 LineaImpuestoTarifa = round(old_tax.amount,2)
+                _logger.info(f"DEF101 invoice_line LineaImpuestoTarifa: {LineaImpuestoTarifa}\n")
                 percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                 LineaMontoTotal = round((i.quantity * i.price_unit),5)
                 if i.product_id.type == 'service':
@@ -119,8 +127,18 @@ class AccountMoveFunctions(models.Model):
             record.fe_total_gravado = record.fe_total_servicio_gravados + record.fe_total_mercancias_gravadas
             record.fe_total_exento = record.fe_total_mercancias_exentas + record.fe_total_servicio_exentos
 
+
+            _logger.info(f"record.fe_total_servicio_gravados: {record.fe_total_servicio_gravados}")
+            _logger.info(f"record.fe_total_servicio_exentos: {record.fe_total_servicio_exentos}")
+            _logger.info(f"record.fe_total_mercancias_gravadas: {record.fe_total_servicio_gravados}")
+            _logger.info(f"record.fe_total_mercancias_exentas: {record.fe_total_servicio_exentos}")
+            _logger.info(f"record.fe_total_gravado: {record.fe_total_gravado}")
+            _logger.info(f"record.fe_total_exento: {record.fe_total_exento}")
+            
+            STOP122
+
     def _compute_total_descuento(self):
-        _logger.info(f"DEF185 =====")
+        _logger.info(f"DEF185 ===== _compute_total_descuento")
         log.info('--> factelec/_compute_total_descuento')
         for s in self:
             totalDiscount = 0
@@ -132,7 +150,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _compute_total_venta(self):
-        _logger.info(f"DEF197 =====")
+        _logger.info(f"DEF197 ===== _compute_total_venta")
         log.info('--> factelec/_compute_total_venta')
         for s in self:
             totalSale = 0
@@ -145,7 +163,7 @@ class AccountMoveFunctions(models.Model):
 
     @api.depends("fe_total_mercancias_exentas")
     def _compute_total_mercancias_exentas(self):
-        _logger.info(f"DEF210 =====")
+        _logger.info(f"DEF210 ===== fe_total_mercancias_exentas")
         log.info('--> factelec/_compute_total_mercancias_exentas REPETIDO2')
         total_mercancias_exentas = 0
         for s in self:

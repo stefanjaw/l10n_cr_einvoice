@@ -103,6 +103,11 @@
          <field name="fe_xml_supplier_xslt" invisible="1"/>
       </field>
 
+     <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+       <field name="product_type" optional="show"/>
+       <field name="cabys_code" string="Cabys" optional="show"/>
+     </xpath>
+      
   </field>
 </record>
 
