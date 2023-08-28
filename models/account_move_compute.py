@@ -27,8 +27,11 @@ class AccountMoveFunctions(models.Model):
                 if len(line_id.tax_ids) > 1:
                     raise ValidationError("Alert Einvoice CR: Configured 2 taxes in the line")
                 
+                if line_id.product_type == False or line_id.cabys_code:
+                    line_id._compute_cabys_code()
+                
                 line_total_venta = line_id.quantity * line_id.price_unit
-
+                
                 line_total_descuento = line_total_venta - line_id.price_subtotal
                 
                 line_total_impuestos = line_id.price_total - line_id.price_subtotal
