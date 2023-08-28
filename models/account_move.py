@@ -1,9 +1,6 @@
 from odoo import models, fields, api, exceptions
 from datetime import datetime,timezone
 import pytz
-import logging
-
-log = logging.getLogger(__name__)
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -11,7 +8,6 @@ class AccountMove(models.Model):
     clave_proveedor = fields.Char("Clave Proveedor")
     numero_consecutivo_aceptacion = fields.Char("Numero Consecutivo Aceptacion")
     
-    log.info('--> Class factelec-Invoice')    
     date = fields.Date(string='Date', required=True, index=True, readonly=True,
         states={'draft': [('readonly', False)]},
          default=datetime.now(tz=pytz.timezone('America/Costa_Rica')).strftime("%Y-%m-%d %H:%M:%S"))
@@ -101,10 +97,17 @@ class AccountMove(models.Model):
 
     fe_total_servicio_gravados = fields.Float(string="Total servicios gravados",digits=(15,2), compute = '_compute_total_serv_merc' )
     fe_total_servicio_exentos = fields.Float(string="Total servicios exentos",digits=(15,2), compute = '_compute_gravados_exentos' )
+
+    TotalServExonerado = fields.Float(string='Servicio Exonerados',compute="_compute_exoneraciones", digits=(15, 2))
+
     fe_total_mercancias_gravadas = fields.Float(string="Total mercancias gravadas",digits=(15,2), compute = '_compute_gravados_exentos' )
     fe_total_mercancias_exentas = fields.Integer(string="Total mercancias exentas",digits=(15,2), compute = '_compute_gravados_exentos')
+    TotalMercExonerada = fields.Float(string='Mercancias Exonerados',compute="_compute_exoneraciones", digits=(15, 2))
+    
     fe_total_gravado = fields.Float(string="Total gravado",digits=(15,2), compute = '_compute_gravados_exentos')
     fe_total_exento = fields.Float(string="Total exento",digits=(15,2), compute = '_compute_gravados_exentos' )
+    TotalExonerado = fields.Float(string='Total Exonerado',compute="_compute_exoneraciones", digits=(15,2))
+    
     fe_total_venta = fields.Float(string="Total venta",compute = '_compute_total_venta' )
     fe_total_descuento = fields.Float(string="Total descuento", compute = '_compute_total_descuento' )
 
@@ -174,8 +177,4 @@ class AccountMove(models.Model):
 
     fecha_factura_simplificada = fields.Datetime(string='Fecha Emisión')
 
-    TotalServExonerado = fields.Float(string='Servicio Exonerados',compute="_compute_exoneraciones", digits=(15, 2))
 
-    TotalMercExonerada = fields.Float(string='Mercancias Exonerados',compute="_compute_exoneraciones", digits=(15, 2))
-
-    TotalExonerado = fields.Float(string='Total Exonerado',compute="_compute_exoneraciones", digits=(15,2))

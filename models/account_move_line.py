@@ -1,10 +1,6 @@
 from odoo import models, fields, api, exceptions
 from odoo.exceptions import ValidationError
 
-import logging
-
-_logger = log = logging.getLogger(__name__)
-
 class AccountMoveLineEinvoice(models.Model):
     _inherit = "account.move.line"
 
@@ -18,7 +14,6 @@ class AccountMoveLineEinvoice(models.Model):
 
     @api.onchange('product_id')
     def _compute_cabys_code(self):
-        _logger.info(f"DEF19 self: {self}-{self.product_id.detailed_type} \n\n")
         try:
             if self.product_id.detailed_type == "service":
                 product_type = "service"
@@ -35,6 +30,3 @@ class AccountMoveLineEinvoice(models.Model):
             pass
         
         return
-        
-
-    
