@@ -146,6 +146,7 @@
         <field name="provider"/>
         <field name="receiver_name"/>
         <field name="total_amount"/>
+        <field name="currency_id"/>
         <field name="doc_type"/>
         <field string="XML Aceptación" name="has_acceptance" optional="show"/>
         <field string="Estado Hacienda" name="fe_server_state" optional="show"/>
