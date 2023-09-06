@@ -876,7 +876,7 @@ class AccountMoveFunctions(models.Model):
             _logger.info(f"DEF865 s.name: {s.name} {s.sequence_prefix}")
 
         
-        _logger.info(f"DEF868 s.name: {s.name}")
+            _logger.info(f"DEF868 s.name: {s.name}")
 
                 
     def get_invoice(self):
