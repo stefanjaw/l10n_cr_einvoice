@@ -726,7 +726,7 @@ class AccountMoveFunctions(models.Model):
             
             _logger.info(f"DEF772 ===== sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
             
-            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False:
+            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False or s.move_type == 'entry':
                 _logger.info(f"DEF748a Not Electronic Invoice or validate False =============\n sequence_fe: {s.journal_id.sequence_fe}\n")
                 _logger.info(f"DEF748b Not Electronic Invoice or validate False =============\n sequence_nd: {s.journal_id.sequence_nd}\n")
                 _logger.info(f"DEF748c Not Electronic Invoice or validate False =============\n fe_doc_type: {s.fe_doc_type}\n")
