@@ -46,8 +46,8 @@
       <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
             <group>
               <group>
-                  <field name="electronic_doc_id" attrs="{'invisible': [ ('move_type','!=','in_invoice') ]}" readonly="1" groups="!account.group_account_user" string="XML3b1."/>
-                  <field name="electronic_doc_id" attrs="{'invisible': [ ('move_type','!=','in_invoice') ]}" readonly="0" groups="account.group_account_user" string="XML3b2."/>
+                  <field name="electronic_doc_id" attrs="{'invisible': [ ('move_type','!=','in_invoice') ]}" readonly="1" groups="!account.group_account_user" string="XML Proveedor"/>
+                  <field name="electronic_doc_id" attrs="{'invisible': [ ('move_type','!=','in_invoice') ]}" readonly="0" groups="account.group_account_user" string="XML Proveedor."/>
               </group>
             </group>
       </xpath>
