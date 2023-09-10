@@ -906,6 +906,7 @@ class AccountMoveFunctions(models.Model):
             try:
                 r = requests.get(url, headers = header, data=json.dumps({}))
             except Exception as ex:
+                _logger.info(f"Error al conectarse url: {url}")
                 if 'Name or service not known' in str(ex.args):
                     raise ValidationError('Error al conectarse con el servidor! valide que sea un URL valido ya que el servidor no responde')
                 else:
