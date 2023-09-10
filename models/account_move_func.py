@@ -888,7 +888,7 @@ class AccountMoveFunctions(models.Model):
               raise exceptions.UserError('VALIDE primero este documento')
             #peticion al servidor a partir de la clave
             log.info('--> 1569447129')
-            log.info('--> get_invoice')
+            log.info(f'--> get_invoice: {s.name}')
             if not 'http://' in s.company_id.fe_url_server and  not 'https://' in s.company_id.fe_url_server:
                raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
             if s.fe_xml_hacienda:
