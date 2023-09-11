@@ -169,7 +169,7 @@ class AccountMove(models.Model):
     
     fe_currency_rate = fields.Char(string="Tipo de cambio",)
     
-    fe_doc_ref = fields.Char(string="Documento Referencia",states={'posted': [('readonly', True)]})
+    fe_doc_ref = fields.Char(string="Documento Electrónico de Referencia",states={'posted': [('readonly', True)]})
     
     electronic_doc_id = fields.Many2one('electronic.doc', string='XML',readonly = True, )
     

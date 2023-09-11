@@ -381,6 +381,7 @@ class AccountMoveFunctions(models.Model):
         self.source_date = self.invoice_date
 
         if country_code == 'CR':
+            
             if self.name[8:10] == "01": 
                 self._validate_company()
                 self.validar_datos_factura()
@@ -538,10 +539,52 @@ class AccountMoveFunctions(models.Model):
 
            
     def validar_datos_factura(self):
-            _logger.info(f"DEF575 ===== validar_datos_factura")
+            _logger.info(f"DEF541 ===== validar_datos_factura: {self.name}")
             if len( self.name ) != 20:
                 return
             msg = ''
+            #_logger.info(f"DEF545 {self.name} url: {self.company_id.fe_url_server}")
+            doc_fields = [  'id', 'name', 'partner_id', 'state', 'move_type', 'ref',
+                            'invoice_payment_term_id', 'country_code', 'currency_id',
+                            'fe_clave', 'fe_doc_type', 'fe_payment_type', 'fe_receipt_status',
+                            'fe_activity_code_id', 'fe_doc_ref', 'fe_tipo_documento_referencia',
+                            'fe_informacion_referencia_codigo', 'fe_informacion_referencia_fecha',
+                         ]
+            data = self.search_read([
+                ('id', '=', self.id)
+            ],doc_fields)
+            if len(data) != 1:
+                raise ValidationError("Error: Multiple Records Found: {data}")
+            else:
+                data = data[0]
+            
+            data['partner_country_code'] = self.partner_id.country_id.code
+            data['partner_state_fe_code'] = self.partner_id.state_id.fe_code
+            data['partner_canton_fe_code'] = self.partner_id.canton_id.code
+            data['partner_distrito_fe_code'] = self.partner_id.distrito_id.code
+            data['partner_barrio_fe_code'] = self.partner_id.barrio_id.code
+        
+            _logger.info(f"DEF561 ===== {data}")
+            
+            url = f'{self.company_id.fe_url_server}'.replace('/api/v1/billing/','')
+            url += '/api/v1/validate'
+            
+            header = { 'Content-Type': 'application/json', }
+            response = requests.post(url,
+                            headers = header,
+                            data = json.dumps(data, default=str),
+                            timeout=15)
+            #_logger.info(f"DEF565a response: {response}\n{response.json()}")
+            try:
+                msg_errors = response.json().get('result').get('is_valid')
+            except:
+                raise ValidationError(f"Error Server-Side: \n{response.text}")
+            
+            #_logger.info(f"DEF565b msg_errors: {msg_errors}")
+            if len(msg_errors) > 0:
+                for msg_error in msg_errors:
+                    msg += (msg_error + "\n")
+            
             if self.name[8:10] != '08':
                 if len(self.partner_id.country_id) == 0 or self.partner_id.country_id.code == "CR":
                     if self.partner_id.state_id:
@@ -691,9 +734,8 @@ class AccountMoveFunctions(models.Model):
                 msg += 'La Fecha de información de referencia hace falta\n'
             
             if msg:
-                raise ValidationError(msg)
-   
-           
+                self.write_chatter("Errores:\n" + msg)
+                raise ValidationError("Errores:\n" + msg)
 
     def _generar_clave(self):
         _logger.info(f"DEF726 ===== _generar_clave self: {self} name: {self.name}\n")
@@ -716,6 +758,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def action_post(self,validate = True):
+        
         _logger.info(f"DEF743a ===== action_post self: {self} fe_invoice_type: {self.fe_doc_type} validate: {validate}\n")
         _logger.info(f"DEF743b ===== move_type: {self.move_type}")
         for s in self:
@@ -750,6 +793,7 @@ class AccountMoveFunctions(models.Model):
                 if validate:
                     if s.fe_msg_type != '3':
                         log.info('--> 1570130084')
+                        
                         for item in s.invoice_line_ids:
                             
                             if item.price_subtotal == False:
