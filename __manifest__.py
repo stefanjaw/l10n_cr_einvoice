@@ -37,6 +37,7 @@
         'views/cron_job_views.xml',
         'views/res_country_state_views.xml',
         # 'views/account_move_reversal_views.xml', # See note inside this document
+        'views/account_move_reversal_views.xml',
         'views/report_invoice_document_with_payments.xml',
         'views/electronic_doc_views.xml',
         'views/email_views.xml',

@@ -16,10 +16,14 @@ class AccountMoveReversal(models.TransientModel):
     
     def _prepare_default_reversal(self, move_id ):
         _logger.info(f"  Reversal default values\n")
+        _logger.info(f"DEF19a  refund_method: {self.refund_method}")
+        _logger.info(f"DEF19b  context: {self._context}")
+        
 
         data = super(AccountMoveReversal,self)._prepare_default_reversal(move_id)
         
         data['fe_informacion_referencia_codigo'] = self.fe_informacion_referencia_codigo
+        _logger.info(f"DEF26 data: {data}")
         
         if move_id.name[8:10] == '01':
             fe_tipo_documento_referencia = '01'
