@@ -80,9 +80,11 @@
 
             <group string="Referencias Documentos"
                 attrs="{'invisible': [ '|', ('fe_current_country_company_code', '!=', 'CR'), ('fe_doc_type','=',False) ] }">
-                
+
+                <field name="ref" string="Referencia de Cliente"/> 
+              
                 <field name="fe_doc_ref" help="Numero de Referencia del Documento"
-                    placeholder="Documento de Referencia"
+                    placeholder="Documento Electrónico de Referencia"
                     attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False)]}"/>
                 <field name="fe_tipo_documento_referencia"
                     attrs="{'invisible': ['|', '|',('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False),('fe_doc_ref','=',False)]}"/>
