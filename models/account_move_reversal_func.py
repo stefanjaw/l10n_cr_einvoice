@@ -2,6 +2,9 @@ from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
 from odoo.exceptions import UserError
 
+import json
+import requests
+
 import logging
 _logging = _logger = logging.getLogger(__name__)
 
@@ -56,3 +59,59 @@ class AccountMoveReversal(models.TransientModel):
         data['name'] = "/"
         
         return data
+
+    def reverse_moves(self):
+        _logger.info(f"DEF64 self: {self} self._context: {self._context}\n")
+        
+        url = f'{self.company_id.fe_url_server}'.replace('/api/v1/billing/','')
+        url += '/api/v1/reverse_moves'
+        
+        doc_fields = [  'id', 'move_ids',
+                        'refund_method', 'reason', 'date_mode', 'date',
+                        'fe_payment_type', 'payment_term_id', 'fe_receipt_status',
+                        'fe_tipo_documento_referencia', 'fe_informacion_referencia_codigo'
+                     ]
+        data = self.search_read([
+            ('id', '=', self.id)
+        ],doc_fields)
+        _logger.info(f"DEF83 data: {data}")
+
+        if len(data) != 1:
+            raise ValidationError("Error: Multiple Records Found: {data}")
+        else:
+            data = data[0]
+
+        active_id = self._context.get('active_id')
+        _logger.info(f"DEF74 active_id: {active_id}\n")
+        if active_id:
+            move_id = self.env['account.move'].browse(active_id)
+            data['fe_consecutivo'] = move_id.name
+            data['fe_clave'] = move_id.fe_clave
+            
+        #data['move_id'] = self.partner_id.country_id.code
+        _logger.info(f"DEF90 data: {data}")
+        
+        
+        #raise UserError("STOP90")
+        
+        header = { 'Content-Type': 'application/json', }
+        response = requests.post(url,
+                        headers = header,
+                        data = json.dumps(data, default=str),
+                        timeout=15)
+        _logger.info(f"DEF84 response: {response}\n{response.json()}")
+        
+        try:
+            msg_errors = response.json().get('result').get('is_valid')
+        except:
+            raise ValidationError(f"Error Server-Side: \n{response.text}")
+        
+        _logger.info(f"DEF109 msg_errors: {msg_errors}")
+        msg = ""
+        if len(msg_errors) > 0:
+            for msg_error in msg_errors:
+                msg += msg_error + "\n"
+            raise UserError(f"Errores:\n{msg}")
+        action = super(AccountMoveReversal, self).reverse_moves()
+        return action
+        
