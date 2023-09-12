@@ -332,7 +332,7 @@ class AccountMoveFunctions(models.Model):
             else:
                  raise ValidationError(ex) 
         try:
-           log.info('===340==== Response : \n  %s',response.text )
+           log.info('===335==== Response : \n  %s',response.text )
            '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
            json_response = json.loads(response.text)
            
@@ -346,11 +346,11 @@ class AccountMoveFunctions(models.Model):
 
                elif "error" in  result.keys():
                     if self.name in str(result) and 'already exists' in str(result):
-                        _logging.info(f"DEF369 {self.name} - Already Processed or Duplicated\n")
+                        _logging.info(f"DEF349 {self.name} - Already Processed or Duplicated\n")
                         self.update({'fe_server_state':'enviado a procesar'})
                     else:
                         result = json_response['result']['error']
-                        _logging.info(f"DEF373 {self.name} Error: {result}\n")
+                        _logging.info(f"DEF353 {self.name} Error: {result}\n")
                         body = "Error "+result
                         self.write_chatter(body)
                         
@@ -581,6 +581,7 @@ class AccountMoveFunctions(models.Model):
                 raise ValidationError(f"Error Server-Side: \n{response.text}")
             
             #_logger.info(f"DEF565b msg_errors: {msg_errors}")
+            #raise ValidationError(f"DEF584 msg_errros\n {msg_errors}")
             if len(msg_errors) > 0:
                 for msg_error in msg_errors:
                     msg += (msg_error + "\n")
@@ -633,15 +634,15 @@ class AccountMoveFunctions(models.Model):
             if not self.fe_receipt_status:
                 msg += 'Falta la situación del comprobante \n'
             
-            if self.name[8:10] == '03' or self.name[8:10] == '02':
-                if not self.fe_doc_ref:
-                    msg += 'Falta el documento de referencia \n'
-                if not self.fe_tipo_documento_referencia:
-                    msg += 'Falta el tipo documento referencia \n'
-                if not self.fe_informacion_referencia_codigo:
-                    msg += 'Falta el codigo referencia \n'
-                if not self.ref:
-                    msg += 'Falta la razón en el campo referencia \n'
+            #if self.name[8:10] == '03' or self.name[8:10] == '02':
+                #if not self.fe_doc_ref:
+                #    msg += 'Falta el documento de referencia \n'
+                #if not self.fe_tipo_documento_referencia:
+                #    msg += 'Falta el tipo documento referencia \n'
+                #if not self.fe_informacion_referencia_codigo:
+                #    msg += 'Falta el codigo referencia \n'
+                #if not self.ref:
+                #    msg += 'Falta la razón en el campo referencia \n'
             
                 
             if not self.company_id.company_registry:
@@ -729,14 +730,16 @@ class AccountMoveFunctions(models.Model):
             if not self.partner_id.email and self.name[8:10] not in ['03', '04']:
                  msg += 'En el cliente, el correo electrónico es requerido \n'
             
-            _logger.info(f"DEF734 {self} - {self.name[8:10]}")
-            if self.name[8:10] in ['02', '03'] and self.fe_informacion_referencia_fecha == False:
-                msg += 'La Fecha de información de referencia hace falta\n'
+            #_logger.info(f"DEF734 {self} - {self.name[8:10]}")
+            #if self.name[8:10] in ['02', '03'] and self.fe_informacion_referencia_fecha == False:
+            #    msg += 'La Fecha de información de referencia hace falta\n'
             
             if msg:
                 self.write_chatter("Errores:\n" + msg)
                 raise ValidationError("Errores:\n" + msg)
 
+            
+    
     def _generar_clave(self):
         _logger.info(f"DEF726 ===== _generar_clave self: {self} name: {self.name}\n")
         
@@ -872,8 +875,8 @@ class AccountMoveFunctions(models.Model):
                                 if s.amount_total > 0:
                                     raise exceptions.UserError('Esta factura fue rechazada, por lo tanto su total no puede ser mayor a cero')
                 
-                if s.fe_doc_type in ['NotaDebitoElectronica', 'NotaCreditoElectronica'] and s.fe_informacion_referencia_fecha == False:
-                    raise ValidationError(f'  Error: Fecha de Información de Referencia está pendiente')
+                #if s.fe_doc_type in ['NotaDebitoElectronica', 'NotaCreditoElectronica'] and s.fe_informacion_referencia_fecha == False:
+                #    raise ValidationError(f'  Error: Fecha de Información de Referencia está pendiente')
                     
                 date_temp = s.invoice_date 
                 log.info('--> 1575061615')
@@ -891,6 +894,7 @@ class AccountMoveFunctions(models.Model):
                     sequence._next_do()
                 
                 _logger.info(f"DEF836 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
+                
                 res = super(AccountMoveFunctions, s).action_post()
                 
                 s.write({ 'sequence_prefix': sequence._get_prefix_suffix()[0]  })
