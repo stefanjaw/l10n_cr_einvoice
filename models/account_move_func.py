@@ -889,7 +889,7 @@ class AccountMoveFunctions(models.Model):
                 
                 _logger.info(f"DEF820: s.fe_activity_code_id: {s.fe_activity_code_id}")
 
-                if s.name in ["", "/"]:
+                if s.name in ["", "/", False]:
                     
                     s.name = sequence._next_do()
                 
