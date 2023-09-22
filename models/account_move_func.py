@@ -891,7 +891,7 @@ class AccountMoveFunctions(models.Model):
 
                 if s.name in ["", "/"]:
                     
-                    sequence._next_do()
+                    s.name = sequence._next_do()
                 
                 _logger.info(f"DEF836 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
                 
