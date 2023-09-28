@@ -1,6 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.tools.safe_eval import safe_eval
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 import json
 import requests
@@ -18,15 +18,18 @@ class AccountMoveReversal(models.TransientModel):
     
     
     def _prepare_default_reversal(self, move_id ):
-        _logger.info(f"  Reversal default values\n")
-        _logger.info(f"DEF19a  refund_method: {self.refund_method}")
-        _logger.info(f"DEF19b  context: {self._context}")
         
+        _logger.info(f"  Reversal default values\n")
 
         data = super(AccountMoveReversal,self)._prepare_default_reversal(move_id)
         
         data['fe_informacion_referencia_codigo'] = self.fe_informacion_referencia_codigo
-        _logger.info(f"DEF26 data: {data}")
+
+        if self.refund_method in ["cancel", "modify"]:
+            raise ValidationError("Error: Temporarily Unavailable, select Partial")
+        
+        if self.refund_method in ["refund", "cancel"]:
+            data['fe_doc_type'] = "NotaCreditoElectronica"
         
         if move_id.name[8:10] == '01':
             fe_tipo_documento_referencia = '01'
@@ -112,6 +115,8 @@ class AccountMoveReversal(models.TransientModel):
             for msg_error in msg_errors:
                 msg += msg_error + "\n"
             raise UserError(f"Errores:\n{msg}")
+        
         action = super(AccountMoveReversal, self).reverse_moves()
+        
         return action
         

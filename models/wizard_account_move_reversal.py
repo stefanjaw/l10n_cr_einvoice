@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 import datetime, pytz
 
@@ -16,13 +17,16 @@ class wizardReversal(models.TransientModel):
         
         res_model = move_data.get('res_model')
         res_id_int = move_data.get('res_id')
+        
         domain = move_data.get('domain')
         
         if domain not in [False, None]:
             credit_move_ids = self.env[ res_model ].search( domain )
         elif res_id_int not in [False, None]:
             credit_move_ids = self.env[ res_model ].browse( res_id_int )
-        
+        else:
+            raise ValidationError("Error: Domain or res_id not found")
+            
         for credit_move_id in credit_move_ids:
             
             if credit_move_id.state == "posted" \
@@ -36,4 +40,6 @@ class wizardReversal(models.TransientModel):
                 fe_fecha_emision_utc = datetime.datetime.fromisoformat( fe_fecha_emision_str + '-06:00').astimezone( pytz.timezone('UTC') )
                 
                 credit_move_id.fe_informacion_referencia_fecha = fe_fecha_emision_utc.strftime('%Y-%m-%d %H:%M:%S')
+        
         return move_data
+ 

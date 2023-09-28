@@ -574,14 +574,12 @@ class AccountMoveFunctions(models.Model):
                             headers = header,
                             data = json.dumps(data, default=str),
                             timeout=15)
-            #_logger.info(f"DEF565a response: {response}\n{response.json()}")
+
             try:
                 msg_errors = response.json().get('result').get('is_valid')
             except:
                 raise ValidationError(f"Error Server-Side: \n{response.text}")
             
-            #_logger.info(f"DEF565b msg_errors: {msg_errors}")
-            #raise ValidationError(f"DEF584 msg_errros\n {msg_errors}")
             if len(msg_errors) > 0:
                 for msg_error in msg_errors:
                     msg += (msg_error + "\n")
@@ -758,10 +756,8 @@ class AccountMoveFunctions(models.Model):
                 + str(vat_complete) + str(self.name) + str(self.fe_receipt_status or '1') \
                 + str(epoch)
         self.fe_clave = clave
-
-
+    
     def action_post(self,validate = True):
-        
         _logger.info(f"DEF743a ===== action_post self: {self} fe_invoice_type: {self.fe_doc_type} validate: {validate}\n")
         _logger.info(f"DEF743b ===== move_type: {self.move_type}")
         for s in self:
