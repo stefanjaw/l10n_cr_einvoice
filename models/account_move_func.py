@@ -907,8 +907,12 @@ class AccountMoveFunctions(models.Model):
                 
                 s._validate_company()
                 if s.name[8:10] != '05':
-                    s._generar_clave()
+                    if s.fe_clave in [False, None, ""]:
+                        _logger.info(f"DEF912 Generating fe_clave")
+                        s._generar_clave()
+                    
                 log.info('--->Clave %s',s.fe_clave)
+                
                 s.validar_datos_factura()
                 #s.validacion()
                 s._validate_invoice_line()
@@ -958,6 +962,7 @@ class AccountMoveFunctions(models.Model):
 
             data = r.json()
             log.info('-->1569447795 result')
+            
             #alamacena la informacion suministrada por el servidor
             if data.get('result'):
 
