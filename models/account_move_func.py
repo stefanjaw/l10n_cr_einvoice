@@ -792,10 +792,11 @@ class AccountMoveFunctions(models.Model):
                 if validate:
                     if s.fe_msg_type != '3':
                         log.info('--> 1570130084')
-                        
+                        '''
                         for item in s.invoice_line_ids:
                             
                             if item.price_subtotal == False:
+                                _logger.info(f"DEF799 {item} {item.price_subtotal}")
                                 return {
                                         'type': 'ir.actions.act_window',
                                         'name': '¡Alerta!',
@@ -806,6 +807,7 @@ class AccountMoveFunctions(models.Model):
                                         'target': 'new',
                                         'context': {'invoice': s.id}
                                 }
+                        '''
                         #es mensaje de aceptacion??
                         #_logger.info(f"DEF771 sequence: {s.journal_id.sequence}")
                         
