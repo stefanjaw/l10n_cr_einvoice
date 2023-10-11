@@ -54,7 +54,7 @@
       
       <xpath expr="//group[@id='header_right_group']" position="after">
             <group string="Factura Electrónica CR"
-                attrs="{'invisible': [ '|', ('fe_current_country_company_code', '!=', 'CR'), ('fe_doc_type','=',False) ]}">
+                attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}">
                 
                 <field name="fe_server_state"
                        readonly="1"
