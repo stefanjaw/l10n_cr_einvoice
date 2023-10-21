@@ -908,8 +908,6 @@ class ElectronicDoc(models.Model):
             log.info('--> get_invoice')
             if not 'http://' in s.company_id.fe_url_server and  not 'https://' in s.company_id.fe_url_server:
                raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
-            if s.fe_xml_hacienda:
-                 raise ValidationError("Ya se tiene la RESPUESTA de Hacienda")
  
             if s.consecutivo[8:10] == "05"or s.consecutivo[8:10] == "06" or  s.consecutivo[8:10] == "07": 
                 url = s.company_id.fe_url_server+'{0}'.format(s.key+'-'+s.consecutivo)
@@ -924,7 +922,7 @@ class ElectronicDoc(models.Model):
                         raise ValidationError(ex) 
 
                 data = r.json()
-                log.info('---> %s',data)
+
                 log.info('-->1569447795')
                 #alamacena la informacion suministrada por el servidor
                 if data.get('result'):
@@ -932,15 +930,25 @@ class ElectronicDoc(models.Model):
                     if data.get('result').get('error'):
                        s.write_chatter(data['result']['error'])
                     else:
-                       params = {
-                          'fe_server_state':data['result']['ind-estado'],
-                          'fe_name_xml_sign':data['result']['nombre_xml_firmado'],
-                          'fe_xml_sign':data['result']['xml_firmado'],
-                          'fe_name_xml_hacienda':data['result']['nombre_xml_hacienda'],
-                          'fe_xml_hacienda':data['result']['xml_hacienda'],
-                       }
-                       s.update(params)
-                    
+                       params = {}
+
+                       if s.fe_server_state != data['result']['ind-estado']:
+                           params['fe_server_state'] = data['result']['ind-estado']
+
+                       if s.fe_name_xml_sign in [None, False, ""]:
+                           params['fe_name_xml_sign'] = data['result']['nombre_xml_firmado']
+                           params['fe_xml_sign'] = data['result']['xml_firmado']
+
+                       if s.fe_name_xml_hacienda in [None, False, ""]:
+                           params['fe_name_xml_hacienda'] = data['result']['nombre_xml_hacienda']
+                           params['fe_xml_hacienda'] = data['result']['xml_hacienda'] 
+
+                       if len(params) == 0:
+                          msg = f"  Nothing FE value to Update in Record: {s.consecutivo}"
+                          _logger.info( msg )
+                          raise ValidationError( msg )
+                       else:
+                          s.update(params)
                 
     def _cr_post_server_side(self):
         if not self.company_id.fe_certificate:
