@@ -15,7 +15,7 @@
     # Check https://github.com/odoo/odoo/blob/13.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Accounting',
-    'version': '16.0.0.8',
+    'version': '0.0.8',
 
     # any module necessary for this one to work correctly
     'depends': ['base','contacts','l10n_cr_zones','account_accountant','l10n_cr','sale_management'],
