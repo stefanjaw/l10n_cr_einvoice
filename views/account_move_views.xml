@@ -138,21 +138,25 @@
           <!--Vendor bill-->
           
           <field name="narration" nolabel="1" height="50" position="after">
-             <field name="fe_xml_supplier_xslt" readonly="1" attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+             <field name="fe_xml_supplier_xslt" readonly="1"
+                 invisible="fe_current_country_company_code != 'CR' or fe_in_invoice_type == 'OTRO' or fe_doc_ref == False" />
+              <!--
+                 attrs="{'invisible': ['|',('fe_current_country_company_code', '!=', 'CR'),('fe_in_invoice_type','=','OTRO')]}"/>
+                 -->
              <field name="fe_xml_supplier_xslt" invisible="1"/>
           </field>
-            <!--
+            
           <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
            <field name="product_type" optional="show"/>
            <field name="cabys_code" string="Cabys" optional="show"/>
          </xpath>
-          -->
+          
       </field>
     </record>
 
     
      <!-- Inherit Form view  credit note -->
-    <!--
+    
     <record id="l10n_cr_einvoice.account_move_form_credit_note" model="ir.ui.view">
         <field name="name">l10n_cr_einvoice.account.move.form.credit.note</field>
         <field name="model">account.move</field>
@@ -163,12 +167,12 @@
             <field name ="fe_current_country_company_code" invisible="1"/>
          </field>
         </field>
-      </record>
+    </record>
     
     <record id="account.action_move_out_invoice_type" model="ir.actions.act_window">
       <field name="domain">[('move_type', '=', 'out_invoice'),('debit_note', '=', False)]</field>
     </record>
-
+    
     <record id="action_for_debit_notes" model="ir.actions.act_window">
       <field name="name">Debit Notes</field>
       <field name="res_model">account.move</field>
@@ -176,14 +180,13 @@
       <field name="view_id" ref="account.view_invoice_tree"/>
       <field name="domain">[('debit_note', '=', True)]</field>
       <field name="context">{'default_type':'out_invoice','default_debit_note': True}</field>
-  </record>
-
+    </record>
+    
     <menuitem
         id="menu_for_debit_note_invoices"
         parent="account.menu_finance_receivables"
         action="action_for_debit_notes"
         sequence="5"
     /> 
-    -->
     
 </odoo>
