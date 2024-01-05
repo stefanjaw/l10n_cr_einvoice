@@ -8,9 +8,15 @@
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
             <field name="default_code" position="after">
-                <field name="fe_codigo_comercial_tipo" attrs="{'invisible':[('product_variant_count','>',1)]}"/>
-                <field name="fe_codigo_comercial_codigo" attrs="{'invisible':[('product_variant_count','>',1)]}"/>
-                <field name="fe_unidad_medida_comercial" attrs="{'invisible':[('product_variant_count','>',1)]}"/>
+                <field name="fe_codigo_comercial_tipo"
+                    invisible="product_variant_count > 1" />
+                    <!-- attrs="{'invisible':[('product_variant_count','>',1)]}"/> -->
+                <field name="fe_codigo_comercial_codigo"
+                    invisible="product_variant_count > 1" />
+                    <!-- attrs="{'invisible':[('product_variant_count','>',1)]}"/> -->
+                <field name="fe_unidad_medida_comercial"
+                    invisible="product_variant_count > 1" />
+                    <!-- attrs="{'invisible':[('product_variant_count','>',1)]}"/> -->
                 <field name="cabys_code_id" options="{'no_create': True, 'no_create_edit': True,'no_open': True,}" required="True"/>
             </field>
         </field>

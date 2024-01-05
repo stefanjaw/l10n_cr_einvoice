@@ -11,11 +11,21 @@
         <xpath expr="//field[@name='date']" position="after">
           <p>Factura Electronica</p><br/>
           <field name="fe_current_country_company_code" invisible="1"/>
-          <field name="fe_payment_type" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/>
-          <field name="payment_term_id" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/>
-          <field name="fe_receipt_status" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/>
-          <field name="fe_tipo_documento_referencia" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/>
-          <field name="fe_informacion_referencia_codigo" attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/>
+          <field name="fe_payment_type"
+              invisible="fe_current_country_company_code != 'CR'" />
+              <!-- attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/> -->
+          <field name="payment_term_id"
+              invisible="fe_current_country_company_code != 'CR'" />
+              <!-- attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/> -->
+          <field name="fe_receipt_status"
+              invisible="fe_current_country_company_code != 'CR'" />
+              <!-- attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/> -->
+          <field name="fe_tipo_documento_referencia"
+              invisible="fe_current_country_company_code != 'CR'" />
+              <!-- attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/> -->
+          <field name="fe_informacion_referencia_codigo"
+              invisible="fe_current_country_company_code != 'CR'" />
+              <!-- attrs="{'invisible': [('fe_current_country_company_code', '!=', 'CR')] }"/> -->
         </xpath>
      
    </field>

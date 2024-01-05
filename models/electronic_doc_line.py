@@ -14,15 +14,16 @@ class ElectronicDocLine(models.Model):
     domain=lambda self: self.tax_domain())
     tax_amount = fields.Float('Monto Impuesto',compute="_compute_monto_impuesto")
     account_id = fields.Many2one('account.account', string='Account',
-        index=True, ondelete="restrict", check_company=True,
-        domain=[('deprecated', '=', False)])
+        index=True, ondelete="restrict",
+        #check_company=True,
+        #domain=[('deprecated', '=', False)]
+        )
     price_subtotal = fields.Float(string='Subtotal',compute="_compute_subtotal_linea")
     price_total = fields.Float(string='Total',compute="_compute_total_linea")
     is_selected = fields.Boolean(string = 'seleccionar',default=True)
     state = fields.Char(compute='_compute_state', string='Line state')
     discount = fields.Float(string='Descuento', digits=(15,2))
     discount_percent = fields.Float(compute='_compute_discount_percent', string='',digits=(15,2))
-    
     
     @api.depends('discount','price_subtotal')
     def _compute_discount_percent(self):

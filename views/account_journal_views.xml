@@ -9,8 +9,13 @@
   <field name="arch" type="xml">
     
     <xpath expr="//notebook" position="inside">
-      <page name="l10n_cr_einvoice" string="Factura Electronica" attrs="{'invisible': [('type', '!=', 'sale'),('type', '!=', 'purchase')]}">
-        <group attrs="{'invisible': [('type', '!=', 'sale')]}">
+      <page name="l10n_cr_einvoice" string="Factura Electronica"
+          invisible="type != 'sale' or type != 'purchase'" >
+          <!-- attrs="{'invisible': [('type', '!=', 'sale'),('type', '!=', 'purchase')]}"> -->
+          
+        <group 
+            invisible="type != 'sale'" >
+            <!-- attrs="{'invisible': [('type', '!=', 'sale')]}"> -->
           <group>
             <h3>Secuencias</h3><br/>
             <field name="sequence_fe" string="Factura Electrónica"/>
@@ -20,7 +25,9 @@
             <field name="sequence_fee" string="Factura Electrónica Exportación"/>
           </group>
         </group>
-        <group attrs="{'invisible': [('type', '!=', 'purchase')]}">
+        <group 
+            invisible="type != 'purchase'" >
+            <!-- attrs="{'invisible': [('type', '!=', 'purchase')]}"> -->
           <group>
             <h3>Secuencias</h3>
             <field name="sequence" string="Sequencia"/>
