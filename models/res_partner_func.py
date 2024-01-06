@@ -35,7 +35,7 @@ class ResPartnerFunctions(models.Model):
             log.info(url)
 
             try:
-                response = requests.get(url, headers = header)
+                response = requests.get(url, headers = header, timeout=5)
             except:
                 response = False
                 log.info("  ==> SIN RESPUESTA DE API DE HACIENDA")

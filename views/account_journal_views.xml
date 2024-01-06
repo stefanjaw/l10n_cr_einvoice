@@ -10,7 +10,7 @@
     
     <xpath expr="//notebook" position="inside">
       <page name="l10n_cr_einvoice" string="Factura Electronica"
-          invisible="type != 'sale' or type != 'purchase'" >
+          invisible="type != 'sale' and type != 'purchase'" >
           <!-- attrs="{'invisible': [('type', '!=', 'sale'),('type', '!=', 'purchase')]}"> -->
           
         <group 
