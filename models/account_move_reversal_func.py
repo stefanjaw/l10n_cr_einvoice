@@ -25,11 +25,13 @@ class AccountMoveReversal(models.TransientModel):
         
         data['fe_informacion_referencia_codigo'] = self.fe_informacion_referencia_codigo
 
-        if self.refund_method in ["cancel", "modify"]:
-            raise ValidationError("Error: Temporarily Unavailable, select Partial")
+        # Moved to reverse_moves()
+        # if self.refund_method == True:
+        #     raise ValidationError("Error: Temporarily Unavailable, select Partial")
+
         
-        if self.refund_method in ["refund", "cancel"]:
-            data['fe_doc_type'] = "NotaCreditoElectronica"
+        #if self.refund_method == False:
+        data['fe_doc_type'] = "NotaCreditoElectronica"
         
         if move_id.name[8:10] == '01':
             fe_tipo_documento_referencia = '01'
@@ -63,14 +65,21 @@ class AccountMoveReversal(models.TransientModel):
         
         return data
 
-    def reverse_moves(self):
+    #def reverse_moves(self):
+    def reverse_moves(self, is_modify=False):
         _logger.info(f"DEF64 self: {self} self._context: {self._context}\n")
+
+        if is_modify == True:
+            raise ValidationError("\nError: Temporarily Unavailable\nSelect 'Reverse'\n\t\tNot 'Reverse and Create Invoice'")
         
         url = f'{self.company_id.fe_url_server}'.replace('/api/v1/billing/','')
         url += '/api/v1/reverse_moves'
         
         doc_fields = [  'id', 'move_ids',
-                        'refund_method', 'reason', 'date_mode', 'date',
+                        #'is_modify',
+                        'reason',
+                        #'date_mode',
+                        'date',
                         'fe_payment_type', 'payment_term_id', 'fe_receipt_status',
                         'fe_tipo_documento_referencia', 'fe_informacion_referencia_codigo'
                      ]
@@ -116,7 +125,7 @@ class AccountMoveReversal(models.TransientModel):
                 msg += msg_error + "\n"
             raise UserError(f"Errores:\n{msg}")
         
-        action = super(AccountMoveReversal, self).reverse_moves()
+        action = super(AccountMoveReversal, self).reverse_moves(is_modify)
         
         return action
         

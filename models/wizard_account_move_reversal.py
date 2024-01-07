@@ -11,9 +11,9 @@ _logging = _logger = logging.getLogger(__name__)
 class wizardReversal(models.TransientModel):
     _inherit = 'account.move.reversal'
     
-    def reverse_moves(self):
+    def reverse_moves(self, is_modify=False):
         _logger.info(f"  Reversing Moves\n")
-        move_data = super(wizardReversal,self).reverse_moves()
+        move_data = super(wizardReversal,self).reverse_moves(is_modify)
         
         res_model = move_data.get('res_model')
         res_id_int = move_data.get('res_id')
