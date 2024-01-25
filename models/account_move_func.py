@@ -1320,7 +1320,7 @@ class AccountMoveFunctions(models.Model):
                 {'ResumenFactura':{
                     'CodigoTipoMoneda':{
                         'CodigoMoneda':s.currency_id.name,
-                        'TipoCambio':'{0:.2f}'.format((1/s.currency_id.rate) or None),
+                        'TipoCambio':'{0:.2f}'.format((s.currency_id.rate) or None),
                     }
                 }})
 
