@@ -8,6 +8,15 @@ _logger = log = logging.getLogger(__name__)
 class AccountMoveFunctions(models.Model):
     _inherit = "account.move"
 
+    @api.depends("invoice_line_ids")
+    def _compute_currency_rate(self):
+        for record in self:
+            currency_rate = record.invoice_line_ids.currency_rate
+            if currency_rate > 0.0000:
+                record.write({"fe_currency_rate": round(1/currency_rate, 2 )})
+            else:
+                record.write({"fe_currency_rate": 1})
+    
     def _compute_total_serv_merc(self):
         _logger.info(f"  Computing Services and Products in: {self}\n")
         for record in self:
