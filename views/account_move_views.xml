@@ -90,6 +90,7 @@
                            <!-- attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/> -->
                     <field name="fe_activity_code_id"
                         domain="[('company_id', '=', company_id)]"
+                        readonly="state != 'draft'"
                         options="{'no_create': True, 'no_create_edit': True,'no_open': True,}"
                         invisible="fe_current_country_company_code != 'CR'"/>
                            <!-- attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/> -->
