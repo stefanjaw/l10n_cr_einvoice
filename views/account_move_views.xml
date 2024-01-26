@@ -96,7 +96,7 @@
                            <!-- attrs="{'invisible': [ ('fe_current_country_company_code', '!=', 'CR') ]}"/> -->
                     
                     <field name="fe_currency_rate"
-                        readonly="0"
+                        readonly="1"
                         invisible="fe_current_country_company_code != 'CR' or fe_doc_type == False or move_type not in ['out_invoice']" />
                            <!-- attrs="{'invisible': ['|', '|', ('fe_current_country_company_code', '!=', 'CR'),('fe_doc_type','=',False), ('move_type','not in',['out_invoice'])]}"/> -->
                 </group>
