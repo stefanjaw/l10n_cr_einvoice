@@ -11,11 +11,18 @@ class AccountMoveFunctions(models.Model):
     @api.depends("invoice_line_ids")
     def _compute_currency_rate(self):
         for record in self:
-            currency_rate = record.invoice_line_ids.currency_rate
+            currency_rate = 0
+            for invoice_line_id in record.invoice_line_ids:
+                if invoice_line_id.currency_rate != currency_rate \
+                and invoice_line_id.currency_rate > 0.00:
+                    currency_rate = invoice_line_id.currency_rate
+                else:
+                    pass
+            
             if currency_rate > 0.0000:
                 record.write({"fe_currency_rate": round(1/currency_rate, 2 )})
             else:
-                record.write({"fe_currency_rate": 1})
+                record.write({"fe_currency_rate": currency_rate})
     
     def _compute_total_serv_merc(self):
         _logger.info(f"  Computing Services and Products in: {self}\n")
