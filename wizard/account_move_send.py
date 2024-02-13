@@ -5,7 +5,7 @@ import logging
 
 _logger = _logging = logging.getLogger(__name__)
 
-class AccountMoveSendInherit(models.TransientModel):
+class AccountMoveSendInherit(models.TransientModel): # 1707799931
     _inherit = 'account.move.send'
     
     def _compute_mail_attachments_widget(self):
