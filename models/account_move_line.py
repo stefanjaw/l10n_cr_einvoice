@@ -30,3 +30,12 @@ class AccountMoveLineEinvoice(models.Model):
             pass
         
         return
+
+    def create(self, params):
+        lines = super().create(params)
+
+        for line in lines:
+            if line.product_type in [False, None] or \
+            line.cabys_code   in [False, None]:
+                line._compute_cabys_code()
+        return lines
