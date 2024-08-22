@@ -1456,6 +1456,7 @@ class AccountMoveFunctions(models.Model):
             #En caso de que el server-side envie el mail
 
             invoice_data[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
+            raise ValidationError( invoice_data )
             return invoice_data#s.invoice
 
     @api.model
