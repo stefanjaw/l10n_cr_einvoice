@@ -1270,9 +1270,9 @@ class AccountMoveFunctions(models.Model):
                                     raise ValidationError("Error: Revisar Impuestos vrs Posicion Fiscal")
                                 
                                 if i.product_id.type == 'service':
-                                    TotalServExonerado = TotalServExonerado + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                    TotalServExonerado = TotalServExonerado + LineaMontoTotal # LineaSubTotal * ( percent / LineaImpuestoTarifa )
                                 else:
-                                    TotalMercExonerada = TotalMercExonerada + LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                    TotalMercExonerada = TotalMercExonerada + LineaMontoTotal # LineaSubTotal * ( percent / LineaImpuestoTarifa )
 
                                 
 
