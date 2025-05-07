@@ -53,7 +53,8 @@ class ResPartner(models.Model):
         for record in self:
             if record.vat:
                 if not re.search('^\d+$',record.vat):
-                        raise ValidationError('La identificación solo debe de contener números')
+                    log.info("Skipped letter and numbers TBD development =====")
+                    # raise ValidationError('La identificación solo debe de contener números')
                 else:
                     if record.fe_identification_type == '01':
                         if len(record.vat) != 9:
