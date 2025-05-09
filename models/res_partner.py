@@ -9,12 +9,9 @@ log = logging.getLogger(__name__)
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
-
+    
     log.info('--> Class Receptor')
-    vat = fields.Char(size = 12, )
-    name = fields.Char(size = 100, )
-
-
+    
     fe_comercial_name = fields.Char(string="Nombre Comercial",size = 80 )
 
     fe_identification_type = fields.Selection(
@@ -28,11 +25,7 @@ class ResPartner(models.Model):
     )
     #IdentificacionExtranjero
     fe_receptor_identificacion_extranjero = fields.Char(string="Identificacion Extranjero", size = 20)
-
-    #fe_canton_id = fields.Many2one("client.canton", )
-    #fe_district_id = fields.Many2one("client.district", )
-    #fe_neighborhood_id = fields.Many2one("client.neighborhood",)
-
+    
     fe_other_signs = fields.Text(string="Otras Señas", size = 250 )
 
     fe_receptor_otras_senas_extranjero = fields.Text(string="Otras Señas Extranjero", size = 300 )
@@ -45,16 +38,14 @@ class ResPartner(models.Model):
         if self.email:
              if not re.match(r'^(\s?[^\s,]+@[^\s,]+\.[^\s,]+\s?,)*(\s?[^\s,]+@[^\s,]+\.[^\s,]+)$', self.email.lower()):
                  raise ValidationError('El email no tiene un formato valido.')
-        #else:
-        #     raise ValidationError('El email es requerido')
-            
+    
     @api.constrains('vat')
     def _constrains_vat(self):
         for record in self:
             if record.vat:
                 if not re.search('^\d+$',record.vat):
                     log.info("Skipped letter and numbers TBD development =====")
-                    # raise ValidationError('La identificación solo debe de contener números')
+                    # raise ValidationError('La identificación solo debe de contener números1')
                 else:
                     if record.fe_identification_type == '01':
                         if len(record.vat) != 9:
