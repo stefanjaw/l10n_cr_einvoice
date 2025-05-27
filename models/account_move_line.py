@@ -11,6 +11,7 @@ class AccountMoveLineEinvoice(models.Model):
     ])
     
     cabys_code = fields.Char( )
+    partida_arancelaria = fields.Char( )
 
     @api.onchange('product_id')
     def _compute_cabys_code(self):
@@ -25,6 +26,8 @@ class AccountMoveLineEinvoice(models.Model):
                 product_type = "other"
             
             self.cabys_code = self.product_id.cabys_code_id.code
+            self.partida_arancelaria = self.product_id.cabys_code_id.partida_arancelaria
+            
             self.product_type = product_type
         except:
             pass

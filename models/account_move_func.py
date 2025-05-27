@@ -321,7 +321,7 @@ class AccountMoveFunctions(models.Model):
                       }
         json_to_send = json.dumps(json_string)
         _logger.info(f"========== json to send : \n {json_to_send[:2000]} \n")
-
+        
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
         try:
@@ -564,7 +564,7 @@ class AccountMoveFunctions(models.Model):
             data['partner_distrito_fe_code'] = self.partner_id.distrito_id.code
             data['partner_barrio_fe_code'] = self.partner_id.barrio_id.code
         
-            _logger.info(f"DEF561 ===== {data}")
+            _logger.info(f"DEF561 ===== \n{data}")
             
             url = f'{self.company_id.fe_url_server}'.replace('/api/v1/billing/','')
             url += '/api/v1/validate'
@@ -1170,7 +1170,9 @@ class AccountMoveFunctions(models.Model):
                 #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
 
                 #if i.product_id.default_code:
+                inv_lines[arrayCount]['PartidaArancelaria'] = i.product_id.cabys_code_id.partida_arancelaria
                 inv_lines[arrayCount]['Codigo'] = i.product_id.cabys_code_id.code
+                
 
                 if i.product_id.fe_codigo_comercial_codigo:
                     inv_lines[arrayCount]['CodigoComercial'] = {
