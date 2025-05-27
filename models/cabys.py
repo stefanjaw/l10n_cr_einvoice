@@ -19,6 +19,7 @@ class cabys(models.Model):
     cabys_category_7 = fields.Char(string='Categoría 7')
     cabys_category_8 = fields.Char(string='Categoría 8')
     display_name = fields.Char(compute='_compute_display_name',store=True)
+    partida_arancelaria = fields.Char(string='Partida Arancelaria')
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):

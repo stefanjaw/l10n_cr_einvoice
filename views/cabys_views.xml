@@ -12,6 +12,7 @@
                        <field name="code" required="True" />
                        <field name="name" required="True" />
                        <field name="tax"/>
+                       <field name="partida_arancelaria"/>
                    </group>
                    <group>
                      <field name="cabys_category_1"/>
