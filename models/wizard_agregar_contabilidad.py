@@ -40,24 +40,24 @@ class wizardAgregarContabilidad(models.TransientModel):
                 contacto =  self.env['res.partner'].search([('vat','=',identificacion)])
                 if len(contacto)>1:
                     contacto = contacto[0]
-
+                
                 if not contacto:
                     nombre = self.env['electronic.doc'].get_provider(bill_dict,bill_type)
                     contacto = self.env['res.partner'].create({
                         'vat':identificacion,
                         'name': nombre,
                     })
-
+                
                 root_xml = fromstring(base64.b64decode(xml))
                 ds = "http://www.w3.org/2000/09/xmldsig#"
                 xades = "http://uri.etsi.org/01903/v1.3.2#"
                 ns2 = {"ds": ds, "xades": xades}
                 signature = root_xml.xpath("//ds:Signature", namespaces=ns2)[0]
                 namespace = self.env['electronic.doc']._get_namespace(root_xml)
-
+                
                 lineasDetalle = root_xml.xpath(
                     "xmlns:DetalleServicio/xmlns:LineaDetalle", namespaces=namespace)
-
+                
                 
                 invoice_lines = []   
                 
@@ -66,7 +66,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                         taxes = []
                         for tax in linea.tax_ids:
                             taxes.append(tax.id)
-
+                    
                         tax_ids = [(6,0,taxes)]        
                         new_line =  [0, 0, {'name': linea.name,
                                             'tax_ids': tax_ids,
@@ -79,6 +79,11 @@ class wizardAgregarContabilidad(models.TransientModel):
                             raise ValidationError(f"Error: Linea sin Cuenta Contable\n {linea.name}")
                         invoice_lines.append(new_line)
                     
+                    line_account_type = linea.account_id.account_type
+                    if line_account_type not in ['expense']:
+                        msg = f"Not an account of type Expense ==> {linea.account_id.code}"
+                        raise ValidationError( msg )
+                
                 if doc.doc_type == 'FE' or doc.doc_type == 'TE':
                      doc_type = 'in_invoice'
                 elif doc.doc_type == 'NC':
@@ -98,9 +103,12 @@ class wizardAgregarContabilidad(models.TransientModel):
                     'company_id':doc.company_id.id,
                     'fe_doc_type': "MensajeReceptor"
                 }
-                _logger.info(f"DEF98 record: {record_data}")
+                _logger.info(f"DEF101 record data: \n{record_data}\n")
                 
                 record = self.env['account.move'].create(record_data)
+                _logger.info(f"DEF104 record.invoice_line_ids: {record}\n{record.invoice_line_ids}")
+                _logger.info(f"DEF105 record.line_ids: {record}\n{record.line_ids}")
+                # STOP105
                 
                 doc.update({'invoice_id':record.id})
                 
@@ -115,6 +123,5 @@ class wizardAgregarContabilidad(models.TransientModel):
         doc.update({
             'state':'accounting',
         })
-        
-        
-        
+
+        # raise ValidationError(f"==> \n{record_data}\n")
