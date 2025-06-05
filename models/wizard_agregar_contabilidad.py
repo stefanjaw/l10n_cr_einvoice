@@ -83,7 +83,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                     if line_account_type not in ['expense']:
                         msg =  f"Error Line: {linea.name}"
                         msg += f"\nwith not an account of type Expense ==> {linea.account_id.code}"
-                        msg += f"\n\nExample:\n    0.511301 0-Product cost"
+                        msg += f"\n\nExample Account:\n    0.511301 0-Product cost"
                         raise ValidationError( msg )
                 
                 if doc.doc_type == 'FE' or doc.doc_type == 'TE':
