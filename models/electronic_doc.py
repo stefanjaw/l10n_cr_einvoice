@@ -300,7 +300,9 @@ class ElectronicDoc(models.Model):
             raise ValidationError("Este documento ya fue agregado en contabilidad")
         if self.sequence_id.prefix[8:10] == '07':
             raise ValidationError("Este documento no se puede agregar a contabilidad por que se rechazó previamente")
-            
+        if not self.fe_server_state:
+            raise ValidationError("Este documento no se ha enviado a Hacienda")
+        
         if self.state != 'draft' and self.state != 'accounting' and self.sequence_id.prefix[8:10] != '07':
             return {
                     'type': 'ir.actions.act_window',
