@@ -36,7 +36,8 @@ class AccountMoveFunctions(models.Model):
         if self.name[8:10] == '03' or self.name[8:10] == '02':
             doc = self.search([('name', '=', self.fe_doc_ref)])
             if not doc:
-                raise ValidationError('El documento de referencia no existe')
+                msg = f"El documento de referencia no existe: {self.fe_doc_ref}"
+                # raise ValidationError( msg )
                 
     def _rate(self,date):
         _logger.info(f"DEF101 =====")
@@ -1155,7 +1156,7 @@ class AccountMoveFunctions(models.Model):
             TotalImpuesto = 0
             TotalOtrosCargos = 0
             OtrosCargos_array = []
-
+            
             for i in s.invoice_line_ids:
                 LineaCantidad = 0
                 LineaImpuestoTarifa = 0
@@ -1382,9 +1383,7 @@ class AccountMoveFunctions(models.Model):
                 invoice_data[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '{0:.5f}'.format(TotalImpuesto)
             else:
                 invoice_data[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '0'
-
-
-
+            
             ##PENDINETE TOTALIVADEVUELTO
             #self.invoice[self.fe_doc_type]['ResumenFactura']['TotalIVADevuelto'] = 'PENDIENTE_TOTAL_IVA_DEVUELTO'     # CONDICIONAL
                 #Este campo será de condición obligatoria cuando se facturen servicios de salud y cuyo método de pago sea “Tarjeta”.
@@ -1405,37 +1404,43 @@ class AccountMoveFunctions(models.Model):
                 if not s.fe_doc_ref:
                     error = True
                     msg = 'Indique el NUMERO CONSECUTIVO de REFERENCIA\n'
+                    raise ValidationError( msg )
                 else:
+                    
                     if len(s.fe_doc_ref) == 20:
-                        origin_doc = s.search([('name', '=', s.fe_doc_ref)])
-                        if origin_doc:
-                            origin_doc_fe_fecha_emision = s.fe_informacion_referencia_fecha.astimezone( pytz.timezone('America/Costa_Rica') ).isoformat('T')
-                            
-                            invoice_data[s.fe_doc_type].update({
-                                'InformacionReferencia':{
-                                'TipoDoc':s.fe_tipo_documento_referencia,
-                                'Numero':origin_doc.name,
-                                'FechaEmision': origin_doc_fe_fecha_emision,
-                                'Codigo':s.fe_informacion_referencia_codigo or None,
-                                'Razon':s.ref,
-                                }
-                            })
-                        else:
-                            error = True
-                            msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
+                        # origin_doc = s.search([('name', '=', s.fe_doc_ref)])
+                        # if origin_doc:
+                        origin_doc_fe_fecha_emision = s.fe_informacion_referencia_fecha.astimezone( pytz.timezone('America/Costa_Rica') ).isoformat('T')
+                        invoice_data[s.fe_doc_type].update({
+                            'InformacionReferencia':{
+                            'TipoDoc':s.fe_tipo_documento_referencia,
+                            # 'Numero':origin_doc.name,
+                            'Numero':s.fe_doc_ref,
+                            'FechaEmision': origin_doc_fe_fecha_emision,
+                            'Codigo':s.fe_informacion_referencia_codigo or None,
+                            'Razon':s.ref,
+                            }
+                        })
+                        # else:
+                        #     error = True
+                        #     msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
                     else:
-                        if s.fe_doc_ref:
-                            invoice_data[s.fe_doc_type].update({
-                                    'InformacionReferencia':{
-                                    'TipoDoc':s.fe_tipo_documento_referencia,
-                                    'Numero':s.fe_doc_ref,
-                                    'FechaEmision':s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
-                                    'Codigo':s.fe_informacion_referencia_codigo or None,
-                                    'Razon':s.ref,
-                                    }
-                                })
+                        msg = f'El # de referencia debe tener 20 digitos\nTexto:\n{s.fe_doc_ref}'
+                        raise ValidationError( msg )
+                        # if s.fe_doc_ref:
+                        #     _logger.info(f"DEF1430 =================== ")
+                        #     invoice_data[s.fe_doc_type].update({
+                        #             'InformacionReferencia':{
+                        #             'TipoDoc':s.fe_tipo_documento_referencia,
+                        #             'Numero':s.fe_doc_ref,
+                        #             'FechaEmision':s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
+                        #             'Codigo':s.fe_informacion_referencia_codigo or None,
+                        #             'Razon':s.ref,
+                        #             }
+                        #         })
             else:
                 if s.fe_doc_ref:
+                    _logger.info(f"DEF1442 ===================\n")
                     invoice_data[s.fe_doc_type].update({
                         'InformacionReferencia':{
                             'TipoDoc':s.fe_tipo_documento_referencia,
