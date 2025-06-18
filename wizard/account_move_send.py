@@ -37,6 +37,7 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
             )
         
         if len(attachment_id) > 0:
+            attachment_id = attachment_id[0]
             attachment_ids.extend([{
                'id': attachment_id.id,
                'name': attachment_id.name,
@@ -55,6 +56,7 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
                 "application/xml", move_id.fe_xml_hacienda
             )
         if len(attachment_id) > 0:
+            attachment_id = attachment_id[0]
             attachment_ids.extend([{
                 'id': attachment_id.id,
                 'name': attachment_id.name,
