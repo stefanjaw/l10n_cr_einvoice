@@ -22,13 +22,13 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
             
             return original
         
-        
         attachment_ids = self.mail_attachments_widget.copy()
         
         fe_xml_name = move_id.fe_name_xml_sign
-        attachment_id = self.env['ir.attachment'].search([(
-            "name", "=", fe_xml_name
-        )])
+        attachment_id = self.env['ir.attachment'].search([
+            ("name", "=", fe_xml_name),
+            ("create_uid", "=", self.env.user.id),
+        ])
         
         if len(attachment_id) == 0 and move_id.fe_xml_sign not in [None, False, ""]:
             attachment_id = self.create_attachment(
@@ -47,9 +47,11 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
             }])
         
         fe_xml_name = move_id.fe_name_xml_hacienda
-        attachment_id = self.env['ir.attachment'].search([(
-            "name", "=", fe_xml_name
-        )])
+        attachment_id = self.env['ir.attachment'].search([
+            ("name", "=", fe_xml_name),
+            ("create_uid", "=", self.env.user.id)
+        ])
+        
         if len(attachment_id) == 0 and move_id.fe_xml_hacienda not in [None, False, ""]:
             attachment_id = self.create_attachment(
                 move_id, fe_xml_name, "binary",
@@ -64,7 +66,7 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
                 'placeholder': False,
                 'protect_from_deletion': True
             }])
-
+        
         self.write({
             "mail_attachments_widget": attachment_ids
         })
