@@ -70,23 +70,28 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
         self.write({
             "mail_attachments_widget": attachment_ids
         })
+        
         return
 
     def create_attachment(self, record_id, filename, type, mimetype, datas):
+        _logger.info(f"==== Create Attachment")
+        
         attachment_id = self.env['ir.attachment'].search([(
             "name", "=", filename
         )])
-        
         if len(attachment_id) == 1:
             pass
         else:
-            attachment_id = attachment_id.sudo().create({
+            data_json = {
                 "res_model": record_id._name,
-                "res_id": record_id.id,
+                "res_id": record_id._origin.id,
                 "res_name": record_id.name,
                 "name": filename,
                 "type": type,
                 "mimetype": mimetype,
                 "datas": datas
-            })
+            }
+
+            attachment_id = attachment_id.sudo().create(data_json)
+        
         return attachment_id
