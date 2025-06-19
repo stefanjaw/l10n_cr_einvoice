@@ -10,24 +10,27 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
     
     def _compute_mail_attachments_widget(self):
         original = super()._compute_mail_attachments_widget()
-        _logger.info(f"l10n_cr_einvoice_attachments")        
+        _logger.info(f"l10n_cr_einvoice_attachments")
+
         if len(self.move_ids) > 1:
             msg = f"Many Records Detected: {self.move_ids}"
             raise ValidationError(msg)
         else:
-            move_id = self.move_ids
+            move_id = self.move_ids._origin
 
         if move_id.fe_xml_sign in [None, False, ""]     \
         and move_id.fe_xml_hacienda in [None, False, ""]:
             
             return original
-        
+
         attachment_ids = self.mail_attachments_widget.copy()
         
         fe_xml_name = move_id.fe_name_xml_sign
         attachment_id = self.env['ir.attachment'].search([
             ("name", "=", fe_xml_name),
-            ("create_uid", "=", self.env.user.id),
+            ("res_model", "=", "account.move"),
+            ("res_id", "=", move_id.id),
+            
         ])
         
         if len(attachment_id) == 0 and move_id.fe_xml_sign not in [None, False, ""]:
@@ -49,7 +52,8 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
         fe_xml_name = move_id.fe_name_xml_hacienda
         attachment_id = self.env['ir.attachment'].search([
             ("name", "=", fe_xml_name),
-            ("create_uid", "=", self.env.user.id)
+            ("res_model", "=", "account.move"),
+            ("res_id", "=", move_id.id),
         ])
         
         if len(attachment_id) == 0 and move_id.fe_xml_hacienda not in [None, False, ""]:
@@ -72,7 +76,7 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
         })
         
         return
-
+    
     def create_attachment(self, record_id, filename, type, mimetype, datas):
         _logger.info(f"==== Create Attachment")
         
@@ -91,7 +95,7 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
                 "mimetype": mimetype,
                 "datas": datas
             }
-
+            _logger.info(f"DEF98 data_json: \n{data_json}")
             attachment_id = attachment_id.sudo().create(data_json)
         
         return attachment_id
