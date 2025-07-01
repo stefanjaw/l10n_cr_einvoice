@@ -1267,19 +1267,24 @@ class AccountMoveFunctions(models.Model):
                                 exoneration['PorcentajeExoneracion'] =  int(percent) or '0'
                                 MontoExoneracion = round(LineaSubTotal * ( percent / 100),5)
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
+
+                                tax_origen =  fiscal.tax_src_id.amount/100
+                                tax_nuevo = fiscal.tax_dest_id.amount/100
+                                tax_exonerado = tax_origen - tax_nuevo
+
+                                producto_monto_a_gravar = round( (LineaSubTotal * tax_nuevo) / tax_origen, 5)
+                                producto_monto_a_exonerar = round( LineaSubTotal - producto_monto_a_gravar, 5)
+                                
                                 inv_lines[arrayCount]['Impuesto'].update( dict({'Exoneracion': exoneration }) )
                                 
                                 if percent == 0 and LineaImpuestoTarifa == 0:
                                     raise ValidationError("Error: Revisar Impuestos vrs Posicion Fiscal")
                                 
                                 if i.product_id.type == 'service':
-                                    TotalServExonerado = TotalServExonerado + LineaMontoTotal # LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                    TotalServExonerado = TotalServExonerado + LineaMontoTotal - producto_monto_a_gravar # LineaSubTotal * ( percent / LineaImpuestoTarifa )
                                 else:
-                                    TotalMercExonerada = TotalMercExonerada + LineaMontoTotal # LineaSubTotal * ( percent / LineaImpuestoTarifa )
+                                    TotalMercExonerada = TotalMercExonerada + LineaMontoTotal - producto_monto_a_gravar # LineaSubTotal * ( percent / LineaImpuestoTarifa )
 
-                                
-
-   
                             LineaImpuestoNeto = round(LineaImpuestoMonto - MontoExoneracion,5) # - LineaImpuestoExoneracion
                             inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
                         #Si esta exonerado al 100% se debe colocar 0-Zero
