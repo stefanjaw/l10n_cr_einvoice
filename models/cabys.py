@@ -9,6 +9,7 @@ class cabys(models.Model):
     _rec_name = 'display_name'
     name = fields.Char(string='Nombre')
     code = fields.Char(string='Código')
+    active = fields.Boolean()
     tax = fields.Char(string='Impuesto')
     cabys_category_1 = fields.Char(string='Categoría 1')
     cabys_category_2 = fields.Char(string='Categoría 2')
@@ -18,6 +19,7 @@ class cabys(models.Model):
     cabys_category_6 = fields.Char(string='Categoría 6')
     cabys_category_7 = fields.Char(string='Categoría 7')
     cabys_category_8 = fields.Char(string='Categoría 8')
+    cabys_category_9 = fields.Char(string='Categoría 9')
     display_name = fields.Char(compute='_compute_display_name',store=True)
     partida_arancelaria = fields.Char(string='Partida Arancelaria')
 
