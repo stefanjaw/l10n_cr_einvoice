@@ -168,6 +168,7 @@ class ElectronicDoc(models.Model):
 
     @api.onchange("xml_bill")
     def _onchange_load_xml(self):
+        _logger.info(f"==== _onchange_load_xml")
         if self.xml_bill:
             if '.xml' in self.xml_bill_name.lower():
                 dic = self.convert_xml_to_dic(self.xml_bill)
@@ -543,36 +544,55 @@ class ElectronicDoc(models.Model):
             })
 
     def transform_to_xslt(self, root_xml, doc_type):
+        fe_hacienda_version = self.env.company.fe_hacienda_version
         dom = ET.fromstring(base64.b64decode(root_xml))
         if (doc_type == 'FE'):
             ruta = path._path[0]+"/fe.xslt"
+            if fe_hacienda_version == "4.4":
+                ruta = path._path[0]+"/fe44.xslt"
+            
             transform = ET.XSLT(
                 ET.parse(
                     ruta
                 ))
         elif (doc_type == 'TE'):
             ruta = path._path[0]+"/te.xslt"
+            if fe_hacienda_version == "4.4":
+                ruta = path._path[0]+"/te44.xslt"
+            
             transform = ET.XSLT(
                 ET.parse(
                     ruta
                 ))
         elif (doc_type == 'NC'):
             ruta = path._path[0]+"/nc.xslt"
+            if fe_hacienda_version == "4.4":
+                ruta = path._path[0]+"/nc44.xslt"
+            
             transform = ET.XSLT(
                 ET.parse(
                     ruta
                 ))
         nuevodom = transform(dom)
+        
         return ET.tostring(nuevodom, pretty_print=True)
 
     "UC03"
 
     def get_doc_type(self, dic):
-                 
+
         tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
         tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
         tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
         tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
+        
+        fe_hacienda_version = self.env.company.fe_hacienda_version
+        if fe_hacienda_version == "4.4":
+            tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica'
+            tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/tiqueteElectronico'
+            tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/mensajeHacienda'
+            tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/notaCreditoElectronica'
+        
         try:
             if 'TiqueteElectronico' in dic.keys():
                 if dic['TiqueteElectronico']['@xmlns'] == tag_TE:

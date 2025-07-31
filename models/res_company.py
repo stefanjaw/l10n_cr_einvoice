@@ -15,6 +15,7 @@ class ResCompany(models.Model):
     fe_user_name = fields.Char(string="Nombre usuario hacienda")
     fe_user_password = fields.Char(string="Contraseña hacienda", )
     fe_hacienda_token = fields.Text(string="Token de Hacienda")
+    fe_hacienda_version = fields.Char(string="Version de Hacienda")
     
     vat = fields.Char(size = 12, required=False)
     name = fields.Char(size = 100, )
