@@ -546,9 +546,15 @@ class ElectronicDoc(models.Model):
     def transform_to_xslt(self, root_xml, doc_type):
         fe_hacienda_version = self.env.company.fe_hacienda_version
         dom = ET.fromstring(base64.b64decode(root_xml))
+        dom_tag = dom.tag
+        
+        dom_version = "4.3"
+        if "v4.4" in dom_tag:
+            dom_version = "4.4"
+        
         if (doc_type == 'FE'):
             ruta = path._path[0]+"/fe.xslt"
-            if fe_hacienda_version == "4.4":
+            if dom_version == "4.4":
                 ruta = path._path[0]+"/fe44.xslt"
             
             transform = ET.XSLT(
@@ -557,7 +563,7 @@ class ElectronicDoc(models.Model):
                 ))
         elif (doc_type == 'TE'):
             ruta = path._path[0]+"/te.xslt"
-            if fe_hacienda_version == "4.4":
+            if dom_version == "4.4":
                 ruta = path._path[0]+"/te44.xslt"
             
             transform = ET.XSLT(
@@ -566,7 +572,7 @@ class ElectronicDoc(models.Model):
                 ))
         elif (doc_type == 'NC'):
             ruta = path._path[0]+"/nc.xslt"
-            if fe_hacienda_version == "4.4":
+            if dom_version == "4.4":
                 ruta = path._path[0]+"/nc44.xslt"
             
             transform = ET.XSLT(
@@ -580,31 +586,31 @@ class ElectronicDoc(models.Model):
     "UC03"
 
     def get_doc_type(self, dic):
-
-        tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
-        tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
-        tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
-        tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
         
-        fe_hacienda_version = self.env.company.fe_hacienda_version
-        if fe_hacienda_version == "4.4":
-            tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica'
-            tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/tiqueteElectronico'
-            tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/mensajeHacienda'
-            tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/notaCreditoElectronica'
+        tag_FE   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
+        tag_FE44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica'
+        
+        tag_TE   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
+        tag_TE44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/tiqueteElectronico'
+        
+        tag_MH   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
+        tag_MH44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/mensajeHacienda'
+        
+        tag_NC   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
+        tag_NC44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/notaCreditoElectronica'
         
         try:
             if 'TiqueteElectronico' in dic.keys():
-                if dic['TiqueteElectronico']['@xmlns'] == tag_TE:
+                if dic['TiqueteElectronico']['@xmlns'] in [tag_TE, tag_TE44]:
                     return 'TE'
             elif 'FacturaElectronica' in dic.keys():
-                if dic['FacturaElectronica']['@xmlns'] == tag_FE:
+                if dic['FacturaElectronica']['@xmlns'] in [tag_FE, tag_FE44]:
                     return 'FE'
             elif 'MensajeHacienda' in dic.keys():
-                if dic['MensajeHacienda']['@xmlns'] == tag_MH:
+                if dic['MensajeHacienda']['@xmlns'] in [tag_MH, tag_MH44]:
                     return 'MH'
             elif 'NotaCreditoElectronica' in dic.keys():
-                if dic['NotaCreditoElectronica']['@xmlns'] == tag_NC:
+                if dic['NotaCreditoElectronica']['@xmlns'] in [tag_NC, tag_NC44]:
                     return 'NC'
         except Exception as e:
             log.info('\n "erro al obtener tipo de archivo xml %s"\n', e)
