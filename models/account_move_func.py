@@ -541,6 +541,7 @@ class AccountMoveFunctions(models.Model):
            
     def validar_datos_factura(self):
             _logger.info(f"DEF541 ===== validar_datos_factura: {self.name}")
+            
             if len( self.name ) != 20:
                 return
             msg = ''
@@ -564,7 +565,8 @@ class AccountMoveFunctions(models.Model):
             data['partner_canton_fe_code'] = self.partner_id.canton_id.code
             data['partner_distrito_fe_code'] = self.partner_id.distrito_id.code
             data['partner_barrio_fe_code'] = self.partner_id.barrio_id.code
-        
+            data['fe_proveedor_sistemas'] = self.company_id.fe_proveedor_sistemas
+            
             _logger.info(f"DEF561 ===== \n{data}")
             
             url = f'{self.company_id.fe_url_server}'.replace('/api/v1/billing/','')
