@@ -29,6 +29,7 @@ class ResCompany(models.Model):
     canton_id = fields.Many2one(related="partner_id.canton_id",store=True)
     distrito_id = fields.Many2one(related="partner_id.distrito_id",store=True)
     barrio_id = fields.Many2one(related="partner_id.barrio_id",store=True)
+    barrio_str = fields.Char(related="partner_id.barrio_str",store=True)
 
     fe_activity_code_ids = fields.One2many(
         string="Codigo de actividades economicas",

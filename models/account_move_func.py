@@ -540,7 +540,8 @@ class AccountMoveFunctions(models.Model):
 
            
     def validar_datos_factura(self):
-            _logger.info(f"DEF541 ===== validar_datos_factura: {self.name}")
+            _logger.info(f"DEF541 ===== validar_datos_factura: {self} {self.name}")
+            fe_version = self.company_id.fe_version
             
             if len( self.name ) != 20:
                 return
@@ -559,14 +560,23 @@ class AccountMoveFunctions(models.Model):
                 raise ValidationError("Error: Multiple Records Found: {data}")
             else:
                 data = data[0]
-            
+
+            data['fe_version'] = self.company_id.fe_version
             data['partner_country_code'] = self.partner_id.country_id.code
             data['partner_state_fe_code'] = self.partner_id.state_id.fe_code
             data['partner_canton_fe_code'] = self.partner_id.canton_id.code
             data['partner_distrito_fe_code'] = self.partner_id.distrito_id.code
-            data['partner_barrio_fe_code'] = self.partner_id.barrio_id.code
+
+            if fe_version == "4.3":
+                data['partner_barrio_fe_code'] = self.partner_id.barrio_id.code
+            elif fe_version == "4.4":
+                data['partner_barrio_fe_str'] = self.partner_id.barrio_str
+            else:
+                msg = f"Unknown fe_version: {fe_version}"
+                raise ValidationError( msg )
+            
             data['fe_proveedor_sistemas'] = self.company_id.fe_proveedor_sistemas
-            data['fe_version'] = self.company_id.fe_version
+            
             
             _logger.info(f"DEF561 ===== \n{data}")
             
@@ -1041,11 +1051,19 @@ class AccountMoveFunctions(models.Model):
         log.info('--> factelec-Invoice-_cr_xml_factura_electronica')
         for s in self:
             #changed s.invoice to invoice_data
+            fe_version = s.company_id.fe_version
+            if fe_version not in ["4.3", "4.4"]:
+                msg = f"Unknown fe_version: {fe_version}"
+                raise ValidationError( msg )
+            
             invoice_data = {}
             invoice_data.update({'fe_version':s.company_id.fe_version})
             invoice_data[s.fe_doc_type] = {}
             invoice_data[s.fe_doc_type].update({'Clave':s.fe_clave})
-            invoice_data[s.fe_doc_type].update({'ProveedorSistemas':s.company_id.fe_proveedor_sistemas})
+            
+            if fe_version == "4.4":
+                invoice_data[s.fe_doc_type].update({'ProveedorSistemas':s.company_id.fe_proveedor_sistemas})
+            
             invoice_data[s.fe_doc_type].update({'CodigoActividad':s.fe_activity_code_id.code})
             invoice_data[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
             invoice_data[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
@@ -1068,9 +1086,16 @@ class AccountMoveFunctions(models.Model):
             'Distrito':s.company_id.distrito_id.code,
             }})
 
-            if s.company_id.barrio_id.code:
-                invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':s.company_id.barrio_id.code})
-
+            if fe_version == "4.3":
+                if s.company_id.barrio_id.code:
+                    invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':s.company_id.barrio_id.code})
+            elif fe_version == "4.4":
+                if s.company_id.barrio_str:
+                    invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'Barrio':s.company_id.barrio_str})
+            else:
+                msg = f"Unknown fe_version: {fe_version}"
+                raise ValidationError( msg )
+            
             invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'OtrasSenas':s.company_id.street})
 
             if s.company_id.phone:
@@ -1110,9 +1135,16 @@ class AccountMoveFunctions(models.Model):
                     'OtrasSenas':s.partner_id.street or '',
                 }})
 
-            if  s.partner_id.state_id.fe_code and s.partner_id.barrio_id.code:
-                invoice_data[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_id.code})
-
+            if fe_version == "4.3":
+                if  s.partner_id.state_id.fe_code and s.partner_id.barrio_id.code:
+                    invoice_data[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_id.code})
+            elif fe_version == "4.4":
+                if  s.partner_id.state_id.fe_code and s.partner_id.barrio_str:
+                    invoice_data[s.fe_doc_type]['Receptor']['Ubicacion'].update({'Barrio':s.partner_id.barrio_str})
+            else:
+                msg = f"Unknown fe_version: {fe_version}"
+                raise ValidationError( msg )
+            
             #if s.partner_id.fe_receptor_otras_senas_extranjero:
             #   invoice_data[s.fe_doc_type]['Receptor'].update({'OtrasSenasExtranjero':s.partner_id.fe_receptor_otras_senas_extranjero})
 

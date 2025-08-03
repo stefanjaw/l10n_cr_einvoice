@@ -73,6 +73,8 @@
                     <field name="barrio_id" string="Barrio" placeholder="Seleccionar Barrio" readonly="0"
                         domain="[('distrito_id', '=',distrito_id)]"
                         options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+
+                    <field name="barrio_str" string="Barrio Nombre" placeholder="Ingrese el nombre del barrio" readonly="0"/>
                     
                     <field name="street" string="Otras Señas" placeholder="Otras Señas" readonly="0"
                         options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
