@@ -17,6 +17,7 @@ class AccountMove(models.Model):
         states={'draft': [('readonly', False)]},
         default=datetime.now(tz=pytz.timezone('America/Costa_Rica')).strftime("%Y-%m-%d %H:%M:%S"))
     '''
+    
     fe_clave = fields.Char(string="Clave", size=50, copy=False)
     source_date = fields.Datetime(string="Fecha Emision_S")
     fe_fecha_emision = fields.Char(string="Fecha Emision")

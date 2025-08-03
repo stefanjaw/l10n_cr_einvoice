@@ -566,6 +566,7 @@ class AccountMoveFunctions(models.Model):
             data['partner_distrito_fe_code'] = self.partner_id.distrito_id.code
             data['partner_barrio_fe_code'] = self.partner_id.barrio_id.code
             data['fe_proveedor_sistemas'] = self.company_id.fe_proveedor_sistemas
+            data['fe_version'] = self.company_id.fe_version
             
             _logger.info(f"DEF561 ===== \n{data}")
             
@@ -1041,6 +1042,7 @@ class AccountMoveFunctions(models.Model):
         for s in self:
             #changed s.invoice to invoice_data
             invoice_data = {}
+            invoice_data.update({'fe_version':s.company_id.fe_version})
             invoice_data[s.fe_doc_type] = {}
             invoice_data[s.fe_doc_type].update({'Clave':s.fe_clave})
             invoice_data[s.fe_doc_type].update({'ProveedorSistemas':s.company_id.fe_proveedor_sistemas})

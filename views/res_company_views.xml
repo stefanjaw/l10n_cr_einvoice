@@ -82,6 +82,8 @@
                   </group>
                          
                   <group string="Configuracion Credenciales">
+                    <field name="fe_proveedor_sistemas"/>
+                    <field name="fe_version"/>
                     <field name="fe_user_name"/>
                     <field name="fe_user_password" password="1"
                         required="fe_current_country_company_code == 'CR'" />
