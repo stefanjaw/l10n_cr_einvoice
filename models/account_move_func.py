@@ -1212,9 +1212,7 @@ class AccountMoveFunctions(models.Model):
                 inv_lines[arrayCount]['SubTotal'] = '{0:.5f}'.format(LineaSubTotal)
 
                 if i.tax_ids:
-
                     ## COMIENZA TAXES y OTROS CARGOS
-
                     for tax_id in i.tax_ids :
                         MontoCargo = 0
                         LineaImpuestoMonto = 0
@@ -1238,7 +1236,10 @@ class AccountMoveFunctions(models.Model):
                         else:
                             
                             if self.fiscal_position_id:
-                                old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)]).tax_src_id
+                                old_tax = self.fiscal_position_id.tax_ids.search([
+                                    ('position_id', '=',self.fiscal_position_id.id ),
+                                    ('tax_dest_id','=',tax_id.id)
+                                ]).tax_src_id
                                 LineaImpuestoTarifa = round(old_tax.amount,2)
                                 inv_lines[arrayCount]['Impuesto'] = {
                                     'Codigo':old_tax.codigo_impuesto,
@@ -1257,7 +1258,11 @@ class AccountMoveFunctions(models.Model):
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
                             if self.fiscal_position_id:
-                                fiscal = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
+                                fiscal = self.fiscal_position_id.tax_ids.search([
+                                    ('position_id', '=',self.fiscal_position_id.id ),
+                                    ('tax_dest_id','=',tax_id.id)
+                                ])
+                                _logger.info(f"DEF1272 fiscal: {fiscal}")
                                 percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                                 exoneration = {}
                                 exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
