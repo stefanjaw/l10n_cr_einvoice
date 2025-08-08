@@ -1246,8 +1246,15 @@ class AccountMoveFunctions(models.Model):
                     TotalDescuentos = round((TotalDescuentos + LineaMontoDescuento),5)
 
                 LineaSubTotal = round((LineaMontoTotal - LineaMontoDescuento),5)
+                
                 inv_lines[arrayCount]['SubTotal'] = '{0:.5f}'.format(LineaSubTotal)
 
+                if fe_version == "4.4":
+                    # Pendiente IVACobradoFabrica =================
+                    inv_lines[arrayCount]['BaseImponible'] = '{0:.5f}'.format(LineaSubTotal)
+                
+                _logger.info(f"DEF1251 inv_lines: \n{inv_lines}")
+                
                 if i.tax_ids:
 
                     ## COMIENZA TAXES y OTROS CARGOS
@@ -1275,26 +1282,45 @@ class AccountMoveFunctions(models.Model):
                         else:
                             
                             if self.fiscal_position_id:
-                                old_tax = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)]).tax_src_id
+                                old_tax = self.fiscal_position_id.tax_ids.search([
+                                    ('position_id', '=',self.fiscal_position_id.id ),
+                                    ('tax_dest_id','=',tax_id.id)
+                                ]).tax_src_id
                                 LineaImpuestoTarifa = round(old_tax.amount,2)
-                                inv_lines[arrayCount]['Impuesto'] = {
+                                impuesto_data = {
                                     'Codigo':old_tax.codigo_impuesto,
                                     'CodigoTarifa':old_tax.tarifa_impuesto,
                                     'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
                                     }
+                                if fe_version == "4.4":
+                                    impuesto_data['CodigoTarifaIVA'] = impuesto_data.get('CodigoTarifa')
+                                    impuesto_data.pop('CodigoTarifa')
+                                    
+                                inv_lines[arrayCount]['Impuesto'] = impuesto_data
+                                
+                                    
                             else:
                                 LineaImpuestoTarifa = round(tax_id.amount,2)
-                                inv_lines[arrayCount]['Impuesto'] = {
+                                
+                                impuesto_data = {
                                     'Codigo':tax_id.codigo_impuesto,
                                     'CodigoTarifa':tax_id.tarifa_impuesto,
                                     'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
                                     }
+                                if fe_version == "4.4":
+                                    impuesto_data['CodigoTarifaIVA'] = impuesto_data.get('CodigoTarifa')
+                                    impuesto_data.pop('CodigoTarifa')
+                                
+                                inv_lines[arrayCount]['Impuesto'] = impuesto_data
 
                             LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
                             if self.fiscal_position_id:
-                                fiscal = self.fiscal_position_id.tax_ids.search([('tax_dest_id','=',tax_id.id)])
+                                fiscal = self.fiscal_position_id.tax_ids.search([
+                                    ('position_id', '=',self.fiscal_position_id.id ),
+                                    ('tax_dest_id','=',tax_id.id)
+                                ])
                                 percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                                 exoneration = {}
                                 exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
@@ -1323,7 +1349,10 @@ class AccountMoveFunctions(models.Model):
                                     TotalMercExonerada = TotalMercExonerada + LineaMontoTotal - producto_monto_a_gravar # LineaSubTotal * ( percent / LineaImpuestoTarifa )
 
                             LineaImpuestoNeto = round(LineaImpuestoMonto - MontoExoneracion,5) # - LineaImpuestoExoneracion
+
                             inv_lines[arrayCount]['ImpuestoNeto'] = '{0:.5f}'.format(round(LineaImpuestoNeto,5))
+
+                            
                         #Si esta exonerado al 100% se debe colocar 0-Zero
 
                     #XXXXXX FALTA TOTAL IVA DEVUELTO
@@ -1449,7 +1478,7 @@ class AccountMoveFunctions(models.Model):
                     raise ValidationError( msg )
                 else:
                     
-                    if len(s.fe_doc_ref) == 20:
+                    if len(s.fe_doc_ref) in [20, 50]:
                         # origin_doc = s.search([('name', '=', s.fe_doc_ref)])
                         # if origin_doc:
                         origin_doc_fe_fecha_emision = s.fe_informacion_referencia_fecha.astimezone( pytz.timezone('America/Costa_Rica') ).isoformat('T')
@@ -1467,7 +1496,7 @@ class AccountMoveFunctions(models.Model):
                         #     error = True
                         #     msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
                     else:
-                        msg = f'El # de referencia debe tener 20 digitos\nTexto:\n{s.fe_doc_ref}'
+                        msg = f'El # de referencia debe tener 20 o 50 digitos\nTexto:\n{s.fe_doc_ref}'
                         raise ValidationError( msg )
                         # if s.fe_doc_ref:
                         #     _logger.info(f"DEF1430 =================== ")
