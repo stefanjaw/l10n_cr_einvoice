@@ -1478,7 +1478,8 @@ class AccountMoveFunctions(models.Model):
                     raise ValidationError( msg )
                 else:
                     
-                    if len(s.fe_doc_ref) in [20, 50]:
+                    # if len(s.fe_doc_ref) in [20, 50]:
+                    if len(s.fe_doc_ref) > 1:
                         # origin_doc = s.search([('name', '=', s.fe_doc_ref)])
                         # if origin_doc:
                         origin_doc_fe_fecha_emision = s.fe_informacion_referencia_fecha.astimezone( pytz.timezone('America/Costa_Rica') ).isoformat('T')
