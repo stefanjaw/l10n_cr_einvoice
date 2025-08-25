@@ -8,6 +8,7 @@ import xmltodict
 import re
 import logging
 import base64
+import chardet
 import pytz
 import json
 import requests
@@ -165,11 +166,27 @@ class ElectronicDoc(models.Model):
             else:
                 record.has_acceptance = False
 
+    def xml_validate_encoding(self):
+        
+        xml_bill = self.xml_bill
+        xml_raw_bytes = base64.b64decode(xml_bill)
+
+        chardet_obj = chardet.detect(xml_raw_bytes)
+        encoding = chardet_obj['encoding']
+
+        if encoding.lower() not in ["utf-8", "ascii"]:
+            _logger.info(f"==== Changing Encode from: {encoding} to UTF-8")
+            xml_str = xml_raw_bytes.decode(encoding)
+            xml_utf_8 = xml_str.encode('utf-8')
+            self.xml_bill = base64.b64encode(xml_utf_8)
+        return
 
     @api.onchange("xml_bill")
     def _onchange_load_xml(self):
         _logger.info(f"==== _onchange_load_xml")
         if self.xml_bill:
+            self.xml_validate_encoding()
+           
             if '.xml' in self.xml_bill_name.lower():
                 dic = self.convert_xml_to_dic(self.xml_bill)
                 doc_type = self.get_doc_type(dic)
