@@ -17,10 +17,12 @@ class ResPartner(models.Model):
     fe_identification_type = fields.Selection(
          string="Tipo Identificacion",
          selection=[
-                 ('01', 'Cédula Física'),
-                 ('02', 'Cédula Jurídica'),
+                 ('01','Cédula Física'),
+                 ('02','Cédula Jurídica'),
                  ('03','DIMEX'),
-                 ('04','NITE')
+                 ('04','NITE'),
+                 ('05','Extranjero No Domiciliado'),
+                 ('06','No Contribuyente')
          ],
     )
     #IdentificacionExtranjero

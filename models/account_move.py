@@ -45,6 +45,7 @@ class AccountMove(models.Model):
             ('MensajeReceptor', 'Mensaje Receptor'),
             ('FacturaElectronicaCompra', 'Factura Electronica de Compra'),
             ('FacturaElectronicaExportacion', 'Factura Electronica de Exportacion'),
+            ('ReciboElectronicoPago', 'Recibo Electronico de pago')
         ],
         default=lambda self: self.fields_get().get('fe_doc_type').get('selection')[0][0],
         string="Tipo Documento"
