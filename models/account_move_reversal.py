@@ -14,8 +14,10 @@ class AccountMoveReversal(models.TransientModel):
             ('02', 'Tarjeta'),
             ('03', 'Cheque'),
             ('04', 'Transferencia - depósito bancario'),
-            ('05', 'Recaudado por tercero'),
-            ('99', ' Otros'),
+            ('05', 'Recaudado por terceros'),
+            ('06', 'SINPE MOVIL'),
+            ('07', 'Plataforma digital'),
+            ('99', 'Otros'),
     ], string="Tipo de pago", track_visibility='onchange',required=False,) 
     
     payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms',)
@@ -38,17 +40,22 @@ class AccountMoveReversal(models.TransientModel):
                 ('01','Factura electrónica'),
                 ('02','Nota de débito electrónica'),
                 ('03','Nota de crédito electrónica'),
-	            ('04','Tiquete electrónico'),
+                ('04','Tiquete electrónico'),
                 ('05','Nota de despacho'),
-	            ('06','Contrato'),
+                ('06','Contrato'),
                 ('07','Procedimiento'),
                 ('08','Comprobante emitido en contingencia'),
                 ('09','Devolución mercadería'),
-                ('10','Sustituye factura rechazada por el Ministerio de Hacienda'),
-	            ('11','Sustituye factura rechazada por el Receptor del comprobante'),
+                ('10','Comprobante electrónico rechazado por el Ministerio de Hacienda'),
+                ('11','Sustituye factura rechazada por el Receptor del comprobante'),
                 ('12','Sustituye Factura de exportación'),
                 ('13','Facturación mes vencido'),
-                ('99','Otros'),
+                ('14','Comprobante aportado por contribuyente de Régimen Especial.'),
+                ('15','Sustituye una Factura electrónica de Compra'),
+                ('16','Comprobante de Proveedor No Domiciliado'),
+                ('17','Nota de Crédito a Factura Electrónica de Compra'),
+                ('18','Nota de Debito a Factura Electrónica de Compra'),
+                ('99','Otros')
         ],
     )
     
@@ -56,12 +63,12 @@ class AccountMoveReversal(models.TransientModel):
             ('01', 'Anula Documento de Referencia'),
             ('02', 'Corrige monto'),
             ('04', 'Referencia a otro documento'),
-            ('05', 'Sustituye comprobante provisional por contingencia.'),
+            ('05', 'Sustituye comprobante provisional por contingencia.'),   
             ('99', 'Otros'),
     ], string="Codigo de Referencia", track_visibility='onchange')
     
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
-
+    
     company_id = fields.Many2one(
         'res.company',
         'Company',
