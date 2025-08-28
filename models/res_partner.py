@@ -34,6 +34,12 @@ class ResPartner(models.Model):
     #debajo movil
     fe_fax_number = fields.Char(string="Fax",size = 20 )
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
+
+    fe_activity_code_ids = fields.One2many(
+        string="Codigo de actividades economicas",
+        comodel_name="res.partner.activity.codes",
+        inverse_name="partner_id",
+    )
     
     @api.constrains('email')
     def _constrains_email(self):

@@ -4,7 +4,7 @@ from odoo import models, fields, api
 
 class ActivityCode(models.Model):
     _name = "activity.code"
-    _description = "Activity Code"
+    _description = "Res Company Activity Code"
     
     name = fields.Char(string="descripcion", compute = 'compute_name' )
     code = fields.Char(string="Codigo", )

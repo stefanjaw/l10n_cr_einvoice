@@ -7,6 +7,7 @@ from . import confirm_alert_func
 from . import confirm_message_func
 from . import res_partner
 from . import res_partner_func
+from . import res_partner_activity_codes
 from . import res_company
 from . import res_company_func
 from . import activity_code

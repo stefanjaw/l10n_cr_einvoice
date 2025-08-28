@@ -8,3 +8,4 @@ access_email_attach,email_attach,model_email_attach,base.group_user,1,1,1,1
 access_cabys_code,cabys_code,model_cabys_code,base.group_user,1,1,1,1
 access_wizard_agregar_contabilidad,wizard_agregar_contabilidad,model_wizard_agregar_contabilidad,base.group_user,1,1,1,1
 access_wizard_account_move_debit,wizard_account_move_debit,model_account_move_debit,base.group_user,1,1,1,1
+access_res_partner_activity_codes,res_partner_activity_codes,model_res_partner_activity_codes,base.group_user,1,1,1,1
