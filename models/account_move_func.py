@@ -330,6 +330,7 @@ class AccountMoveFunctions(models.Model):
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
+        
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
@@ -1068,8 +1069,11 @@ class AccountMoveFunctions(models.Model):
             
             if fe_version == "4.4":
                 invoice_data[s.fe_doc_type].update({'ProveedorSistemas':s.company_id.fe_proveedor_sistemas})
+                invoice_data[s.fe_doc_type].update({'CodigoActividadEmisor':s.fe_activity_code_id.code})
+                invoice_data[s.fe_doc_type].update({'CodigoActividadReceptor':s.fe_partner_activity_code_id.code})
+            if fe_version == "4.3":
+                invoice_data[s.fe_doc_type].update({'CodigoActividad':s.fe_activity_code_id.code})
             
-            invoice_data[s.fe_doc_type].update({'CodigoActividad':s.fe_activity_code_id.code})
             invoice_data[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
             invoice_data[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
             invoice_data[s.fe_doc_type].update({'Emisor':{

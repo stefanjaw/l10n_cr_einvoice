@@ -132,7 +132,8 @@ class AccountMove(models.Model):
     
     fe_partner_activity_code_id = fields.Many2one(
         "res.partner.activity.codes",
-        domain="[('partner_id', '=', partner_id)]"
+        domain="[('partner_id', '=', partner_id)]",
+        string="Actividad Economica Contacto"
     )
     
     fe_in_invoice_type = fields.Selection(#1569867120
