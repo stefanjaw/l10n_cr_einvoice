@@ -1111,6 +1111,11 @@ class AccountMoveFunctions(models.Model):
             
             invoice_data[s.fe_doc_type]['Emisor']['Ubicacion'].update({'OtrasSenas':s.company_id.street})
 
+            if fe_version == "4.4":
+                OtrasSenasExtranjero = s.company_id.fe_otras_senas_extranjero    
+                if OtrasSenasExtranjero:
+                    invoice_data[s.fe_doc_type]['Emisor'].update({'OtrasSenasExtranjero':OtrasSenasExtranjero})
+            
             if s.company_id.phone:
                 invoice_data[s.fe_doc_type]['Emisor'].update({'Telefono':{
                     'CodigoPais':str(s.company_id.country_id.phone_code),
@@ -1134,9 +1139,14 @@ class AccountMoveFunctions(models.Model):
                     'Numero':s.partner_id.vat.replace('-','').replace(' ','') or None,
                 }})
 
-            if s.partner_id.fe_receptor_identificacion_extranjero:
-                invoice_data[s.fe_doc_type]['Receptor'].update({'IdentificacionExtranjero':s.partner_id.fe_receptor_identificacion_extranjero})
+            if s.partner_id.fe_identificacion_extranjero:
+                invoice_data[s.fe_doc_type]['Receptor'].update({'IdentificacionExtranjero':s.partner_id.fe_identificacion_extranjero})
 
+            if fe_version == "4.4":
+                OtrasSenasExtranjero = s.partner_id.fe_otras_senas_extranjero    
+                if OtrasSenasExtranjero:
+                    invoice_data[s.fe_doc_type]['Receptor'].update({'OtrasSenasExtranjero':OtrasSenasExtranjero})
+        
             if s.partner_id.fe_comercial_name:
                 invoice_data[s.fe_doc_type]['Receptor'].update({'NombreComercial':s.partner_id.fe_comercial_name})
 

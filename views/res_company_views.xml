@@ -83,6 +83,9 @@
                     
                     <field name="street2" string="Otras Señas2" placeholder="Otras Señas2" readonly="0"
                         options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+                      
+                    <!-- <field name="fe_otras_senas_extranjero" string="Otras Señas Extranjero" placeholder="Otras Señas Extranjero" readonly="0"
+                        options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/> -->
                   </group>
                          
                   <group string="Configuracion Credenciales">

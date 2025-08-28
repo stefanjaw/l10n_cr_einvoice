@@ -11,8 +11,9 @@
     </xpath>
     
     <xpath expr="//field[@name='vat']" position="after">
-       <field name="fe_receptor_identificacion_extranjero"/>
-       <field name="fe_fax_number"/>
+       <!-- <field name="fe_identificacion_extranjero"/> -->
+        <field name="fe_otras_senas_extranjero"/>
+       <!-- <field name="fe_fax_number"/> -->
     </xpath>
     
     <xpath expr="//page[@name='internal_notes']" position="after">

@@ -26,11 +26,11 @@ class ResPartner(models.Model):
          ],
     )
     #IdentificacionExtranjero
-    fe_receptor_identificacion_extranjero = fields.Char(string="Identificacion Extranjero", size = 20)
+    fe_identificacion_extranjero = fields.Char(string="Identificacion Extranjero", size = 20)
     
     fe_other_signs = fields.Text(string="Otras Señas", size = 250 )
 
-    fe_receptor_otras_senas_extranjero = fields.Text(string="Otras Señas Extranjero", size = 300 )
+    fe_otras_senas_extranjero = fields.Text(string="Otras Señas Extranjero", size = 300 )
     #debajo movil
     fe_fax_number = fields.Char(string="Fax",size = 20 )
     fe_current_country_company_code = fields.Char(string="Codigo pais de la compañia actual",compute="_get_country_code")
