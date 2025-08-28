@@ -45,6 +45,8 @@ class ResCompany(models.Model):
     help="Esta cuenta sera asignada por default a las lineas de las facturas creadas automaticamente por email")
 
     invoice_is_electronic = fields.Boolean('Habilitar Factura Electronica')
+
+    fe_registro_fiscal_8707 = fields.Char(string="Registro Fiscal 8707")
     
     @api.constrains('fecth_server')
     def _constrains_fecth_server(self):

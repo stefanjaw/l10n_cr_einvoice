@@ -1086,6 +1086,10 @@ class AccountMoveFunctions(models.Model):
             },
             })
             
+            Registrofiscal8707 = s.company_id.fe_registro_fiscal_8707
+            if Registrofiscal8707:
+                invoice_data[s.fe_doc_type]['Emisor'].update({'Registrofiscal8707':Registrofiscal8707})
+    
             if s.company_id.fe_comercial_name:
                 invoice_data[s.fe_doc_type]['Emisor'].update({'NombreComercial':s.company_id.fe_comercial_name})
             
