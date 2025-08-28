@@ -32,6 +32,8 @@ class AccountMoveLineEinvoice(models.Model):
         string="Tipo Transaccion"
     )
 
+    fe_numero_vin_o_serie = fields.Text("Numero Vin o Serie" )
+    
     @api.onchange('product_id')
     def _compute_cabys_code(self):
         try:

@@ -510,6 +510,13 @@ class AccountMoveFunctions(models.Model):
         service_units = ['Os','Sp','Spe','St','h']
         log.info('--> _validate_invoice_line')
         for line in self.invoice_line_ids:
+            if line.display_type in ["line_section", "line_note"]:
+                _logger.info(f"    ==== Skipping {line.display_type}: {line.name}")
+                continue
+            if line.name in [None, False, ""]:
+                msg1 = f"La línea {line.sequence - 99} o {line.sequence - 98} no tiene descripción "
+                raise exceptions.UserError( msg1 )
+
             if len(line.name) > 200:
                 raise exceptions.UserError(("La descripción del producto {0} no puede ser mayor a 200 caracteres".format(line.name)))
             if line.product_id:
