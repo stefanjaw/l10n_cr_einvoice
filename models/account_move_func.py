@@ -330,7 +330,7 @@ class AccountMoveFunctions(models.Model):
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
-        
+        # STOP333
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
@@ -1186,8 +1186,13 @@ class AccountMoveFunctions(models.Model):
             if s.partner_id.email:
                 invoice_data[s.fe_doc_type]['Receptor'].update({'CorreoElectronico':s.partner_id.email})
 
-            invoice_data[s.fe_doc_type].update({'CondicionVenta':s.invoice_payment_term_id.fe_condition_sale})
+            CondicionVenta = s.invoice_payment_term_id.fe_condition_sale
+            invoice_data[s.fe_doc_type].update({'CondicionVenta':CondicionVenta})
 
+            if fe_version == "4.4":
+                if CondicionVenta in [99, "99"]:
+                    invoice_data[s.fe_doc_type].update({'CondicionVentaOtros':s.fe_condicion_venta_otros})
+            
             if s.invoice_payment_term_id.payment_term_hacienda:
                 invoice_data[s.fe_doc_type].update({'PlazoCredito':s.invoice_payment_term_id.payment_term_hacienda})
             if s.fe_condicion_impuesto:

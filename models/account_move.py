@@ -198,4 +198,4 @@ class AccountMove(models.Model):
 
     fecha_factura_simplificada = fields.Datetime(string='Fecha Emisión')
 
-
+    fe_condicion_venta_otros = fields.Text(string='Condicion Venta Otros')

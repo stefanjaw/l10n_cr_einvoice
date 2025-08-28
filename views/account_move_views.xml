@@ -156,6 +156,10 @@
          <xpath expr="//group[@id='header_left_group']" position="inside">
              <field name="fe_partner_activity_code_id" invisible="partner_id == False"/>
          </xpath>
+
+         <xpath expr="//field[@name='delivery_date']" position="before">
+             <field name="fe_condicion_venta_otros" invisible="fe_current_country_company_code != 'CR' or invoice_payment_term_id == False"/>
+         </xpath>
           
       </field>
     </record>
