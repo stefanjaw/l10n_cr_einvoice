@@ -1230,6 +1230,9 @@ class AccountMoveFunctions(models.Model):
             OtrosCargos_array = []
             
             for i in s.invoice_line_ids:
+                if i.display_type in ["line_section", "line_note"]:
+                    _logger.info(f"    ==== Skipping {i.display_type}: {i.name}")
+                    continue
                 LineaCantidad = 0
                 LineaImpuestoTarifa = 0
                 LineaMontoDescuento = 0
@@ -1237,7 +1240,7 @@ class AccountMoveFunctions(models.Model):
                 LineaImpuestoNeto = 0
                 MontoExoneracion = 0
                 percent = 0
-
+                
                 inv_lines.append({'NumeroLinea':NumeroLinea})
 
                 #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
