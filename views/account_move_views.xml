@@ -154,7 +154,7 @@
          </xpath>
 
          <xpath expr="//group[@id='header_left_group']" position="inside">
-             <field name="fe_partner_activity_code_id" />
+             <field name="fe_partner_activity_code_id" invisible="partner_id == False"/>
          </xpath>
           
       </field>
