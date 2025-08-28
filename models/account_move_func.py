@@ -1251,9 +1251,13 @@ class AccountMoveFunctions(models.Model):
 
                 inv_lines[arrayCount]['UnidadMedida'] = i.product_uom_id.uom_mh
 
+                TipoTransaccion = i.fe_tipo_transaccion
+                if TipoTransaccion:
+                    inv_lines[arrayCount]['TipoTransaccion'] = TipoTransaccion
+                
                 if i.product_id.fe_unidad_medida_comercial:
                     inv_lines[arrayCount]['UnidadMedidaComercial'] = i.product_id.fe_unidad_medida_comercial
-
+                
                 if i.name:
                     inv_lines[arrayCount]['Detalle'] = i.name or None
 
