@@ -152,6 +152,10 @@
            <field name="cabys_code" string="Cabys" optional="show"/>
            <field name="partida_arancelaria" string="Partida Arancelaria" optional="hide"/>
          </xpath>
+
+         <xpath expr="//group[@id='header_left_group']" position="inside">
+             <field name="fe_partner_activity_code_id" />
+         </xpath>
           
       </field>
     </record>

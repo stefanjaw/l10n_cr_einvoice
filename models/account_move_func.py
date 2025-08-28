@@ -29,6 +29,11 @@ TYPE2REFUND = {
 
 class AccountMoveFunctions(models.Model):
     _inherit = "account.move"
+
+    @api.onchange('partner_id')
+    def fe_partner_activity_code_id_reset(self):
+        for record in self:
+            record.fe_partner_activity_code_id = None
     
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):

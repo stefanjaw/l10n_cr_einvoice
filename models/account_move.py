@@ -122,12 +122,17 @@ class AccountMove(models.Model):
     
     fe_total_venta = fields.Float(string="Total venta",compute = '_compute_total_venta' )
     fe_total_descuento = fields.Float(string="Total descuento", compute = '_compute_total_descuento' )
-
+    
     fe_activity_code_id = fields.Many2one(
-        string="Actividad económica",
+        string="Actividad económica Sistema",
         comodel_name="activity.code",
         ondelete="set null",
         states={'posted': [('readonly', True)]}
+    )
+    
+    fe_partner_activity_code_id = fields.Many2one(
+        "res.partner.activity.codes",
+        domain="[('partner_id', '=', partner_id)]"
     )
     
     fe_in_invoice_type = fields.Selection(#1569867120
