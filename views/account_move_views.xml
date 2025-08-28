@@ -150,6 +150,7 @@
           <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
            <field name="product_type" optional="show"/>
            <field name="cabys_code" string="Cabys" optional="show"/>
+           <field name="fe_tipo_transaccion" optional="hide"/>
            <field name="partida_arancelaria" string="Partida Arancelaria" optional="hide"/>
          </xpath>
 

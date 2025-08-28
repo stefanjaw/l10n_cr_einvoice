@@ -13,6 +13,25 @@ class AccountMoveLineEinvoice(models.Model):
     cabys_code = fields.Char( )
     partida_arancelaria = fields.Char( )
 
+    fe_tipo_transaccion = fields.Selection(
+        [
+            ('01', 'Venta Normal de Bienes y Servicios (Transacción General)' ),
+            ('02', 'Mercancía de Autoconsumo exento' ),
+            ('03', 'Mercancía de Autoconsumo gravado' ),
+            ('04', 'Servicio de Autoconsumo exento' ),
+            ('05', 'Servicio de Autoconsumo gravado' ),
+            ('06', 'Cuota de afiliación' ),
+            ('07', 'Cuota de afiliación Exenta' ),
+            ('08', 'Bienes de Capital para el emisor' ),
+            ('09', 'Bienes de Capital para el receptor.' ),
+            ('10', 'Bienes de Capital para para el emisor y el receptor.' ),
+            ('11', 'Bienes de capital de autoconsumo exento para el emisor' ),
+            ('12', 'Bienes de capital sin contraprestación a terceros exento para el emisor' ),
+            ('13', 'Sin contraprestación a terceros' )
+        ],
+        string="Tipo Transaccion"
+    )
+
     @api.onchange('product_id')
     def _compute_cabys_code(self):
         try:
