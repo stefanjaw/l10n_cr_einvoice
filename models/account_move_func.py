@@ -1246,7 +1246,7 @@ class AccountMoveFunctions(models.Model):
                 #PartidaArancelaria   #PENDIENTE, Cuando el comprobante es del tipo Exportacion
 
                 #if i.product_id.default_code:
-                inv_lines[arrayCount]['PartidaArancelaria'] = i.product_id.cabys_code_id.partida_arancelaria
+                inv_lines[arrayCount]['PartidaArancelaria'] = i.partida_arancelaria
                 inv_lines[arrayCount]['Codigo'] = i.product_id.cabys_code_id.code
                 
 
