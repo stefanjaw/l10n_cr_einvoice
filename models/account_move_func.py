@@ -1273,6 +1273,9 @@ class AccountMoveFunctions(models.Model):
 
                 if i.fe_numero_vin_o_serie:
                     inv_lines[arrayCount]['NumeroVINoSerie'] = i.fe_numero_vin_o_serie
+                    
+                if i.fe_registro_medicamento:
+                    inv_lines[arrayCount]['RegistroMedicamento'] = i.fe_registro_medicamento
                 
                 LineaPrecioUnitario = round(i.price_unit,5)
                 inv_lines[arrayCount]['PrecioUnitario'] = '{0:.5f}'.format(LineaPrecioUnitario)

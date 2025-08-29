@@ -33,6 +33,8 @@ class AccountMoveLineEinvoice(models.Model):
     )
 
     fe_numero_vin_o_serie = fields.Text("Numero Vin o Serie" )
+    fe_registro_medicamento = fields.Text("Registro de Medicamento")
+    
     
     @api.onchange('product_id')
     def _compute_cabys_code(self):

@@ -153,6 +153,7 @@
            <field name="fe_tipo_transaccion" optional="hide"/>
            <field name="partida_arancelaria" string="Partida Arancelaria" optional="hide"/>
            <field name="fe_numero_vin_o_serie" optional="hide"/>
+           <field name="fe_registro_medicamento" optional="hide"/>
          </xpath>
 
          <xpath expr="//group[@id='header_left_group']" position="inside">
