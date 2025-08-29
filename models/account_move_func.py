@@ -1276,6 +1276,9 @@ class AccountMoveFunctions(models.Model):
                     
                 if i.fe_registro_medicamento:
                     inv_lines[arrayCount]['RegistroMedicamento'] = i.fe_registro_medicamento
+
+                if len(i.fe_forma_farmaceutica) > 0:
+                    inv_lines[arrayCount]['FormaFarmaceutica'] = i.fe_forma_farmaceutica.code
                 
                 LineaPrecioUnitario = round(i.price_unit,5)
                 inv_lines[arrayCount]['PrecioUnitario'] = '{0:.5f}'.format(LineaPrecioUnitario)
