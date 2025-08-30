@@ -1308,13 +1308,14 @@ class AccountMoveFunctions(models.Model):
                 
                 _logger.info(f"DEF1251 inv_lines: \n{inv_lines}")
                 
-                if i.tax_ids:
+                if len(i.tax_ids) > 0:
 
                     ## COMIENZA TAXES y OTROS CARGOS
 
                     for tax_id in i.tax_ids :
                         MontoCargo = 0
                         LineaImpuestoMonto = 0
+                        FactorCalculoIVA = None
 
                         if tax_id.type == 'OTHER': #
 
@@ -1361,12 +1362,26 @@ class AccountMoveFunctions(models.Model):
                                     'Tarifa':'{0:.2f}'.format(LineaImpuestoTarifa)
                                     }
                                 if fe_version == "4.4":
-                                    impuesto_data['CodigoTarifaIVA'] = impuesto_data.get('CodigoTarifa')
-                                    impuesto_data.pop('CodigoTarifa')
+                                    CodigoImpuestoOTRO = tax_id.fe_codigo_impuesto_otro
+                                    if CodigoImpuestoOTRO:
+                                        impuesto_data['CodigoImpuestoOTRO'] = CodigoImpuestoOTRO
+
+                                    CodigoTarifaIVA = impuesto_data.get('CodigoTarifa')
+                                    if CodigoTarifaIVA:
+                                        impuesto_data['CodigoTarifaIVA'] = CodigoTarifaIVA
+                                        impuesto_data.pop('CodigoTarifa')
+
+                                    FactorCalculoIVA = tax_id.fe_factor_calculo_iva
+                                    if FactorCalculoIVA:
+                                        impuesto_data['FactorCalculoIVA'] = FactorCalculoIVA
                                 
                                 inv_lines[arrayCount]['Impuesto'] = impuesto_data
 
-                            LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
+                            if FactorCalculoIVA:
+                                LineaImpuestoMonto = round((LineaSubTotal * FactorCalculoIVA),5)
+                            else:
+                                LineaImpuestoMonto = round((LineaSubTotal * LineaImpuestoTarifa/100),5)
+                            
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
                             if self.fiscal_position_id:
