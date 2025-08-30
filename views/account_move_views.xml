@@ -156,6 +156,7 @@
            <field name="fe_registro_medicamento" optional="hide"/>
            <field name="fe_forma_farmaceutica" optional="hide"/>
            <field name="fe_iva_cobrado_fabrica" optional="hide"/>
+           <field name="fe_monto_exportacion" optional="hide"/>
          </xpath>
          
          <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='discount']" position="after">

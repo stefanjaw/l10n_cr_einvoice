@@ -1384,6 +1384,11 @@ class AccountMoveFunctions(models.Model):
                             
                             inv_lines[arrayCount]['Impuesto'].update(dict({'Monto':'{0:.5f}'.format(LineaImpuestoMonto)}))
 
+                            if fe_version == "4.4":
+                                MontoExportacion = i.fe_monto_exportacion
+                                if MontoExportacion:
+                                    inv_lines[arrayCount]['Impuesto'].update(dict({'MontoExportacion':'{0:.5f}'.format(MontoExportacion)}))
+                            
                             if self.fiscal_position_id:
                                 fiscal = self.fiscal_position_id.tax_ids.search([
                                     ('position_id', '=',self.fiscal_position_id.id ),

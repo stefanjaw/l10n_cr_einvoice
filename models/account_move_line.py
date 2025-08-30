@@ -65,6 +65,8 @@ class AccountMoveLineEinvoice(models.Model):
         ],
         string="IVA Cobrado Fabrica"
     )
+
+    fe_monto_exportacion = fields.Float(string="Monto Exportación", digits=(18, 5) )
     
     @api.onchange('product_id')
     def _compute_cabys_code(self):
