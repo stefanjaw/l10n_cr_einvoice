@@ -1288,11 +1288,13 @@ class AccountMoveFunctions(models.Model):
 
                 if i.discount:
                     LineaMontoDescuento = round((LineaMontoTotal * (i.discount/100)),5)
-                    LineaNaturalezaDescuento = "Se aplica %s porciento de descuento" % (i.discount,)
+                    LineaNaturalezaDescuento = i.fe_naturaleza_descuento or ""
 
-                    inv_lines[arrayCount]['Descuento'] ={
-                    'MontoDescuento':'{0:.5f}'.format(LineaMontoDescuento),
-                    'NaturalezaDescuento':LineaNaturalezaDescuento[:80]
+                    inv_lines[arrayCount]['Descuento'] = {
+                        'MontoDescuento':'{0:.5f}'.format(LineaMontoDescuento),
+                        'CodigoDescuento': i.fe_codigo_descuento,
+                        'CodigoDescuentoOTRO': i.fe_codigo_descuento_otro,
+                        'NaturalezaDescuento':LineaNaturalezaDescuento[:80]
                     }
                     TotalDescuentos = round((TotalDescuentos + LineaMontoDescuento),5)
 
@@ -1301,7 +1303,7 @@ class AccountMoveFunctions(models.Model):
                 inv_lines[arrayCount]['SubTotal'] = '{0:.5f}'.format(LineaSubTotal)
 
                 if fe_version == "4.4":
-                    # Pendiente IVACobradoFabrica =================
+                    inv_lines[arrayCount]['IVACobradoFabrica'] = i.fe_iva_cobrado_fabrica
                     inv_lines[arrayCount]['BaseImponible'] = '{0:.5f}'.format(LineaSubTotal)
                 
                 _logger.info(f"DEF1251 inv_lines: \n{inv_lines}")

@@ -33,9 +33,38 @@ class AccountMoveLineEinvoice(models.Model):
     )
 
     fe_numero_vin_o_serie = fields.Text("Numero Vin o Serie" )
-    fe_registro_medicamento = fields.Text("Registro de Medicamento")
+    fe_registro_medicamento = fields.Char("Registro de Medicamento")
 
     fe_forma_farmaceutica = fields.Many2one("forma.farmaceutica", string="Forma Farmaceutica")
+
+    fe_codigo_descuento = fields.Selection(
+        [
+            ('01', 'Descuento por Regalía' ),
+            ('02', 'Descuento por Regalía o Bonificaciones IVA Cobrado al Cliente' ),
+            ('03', 'Descuento por Bonificación' ),
+            ('04', 'Descuento por volumen' ),
+            ('05', 'Descuento por Temporada (estacional)' ),
+            ('06', 'Descuento promocional' ),
+            ('07', 'Descuento Comercia' ),
+            ('08', 'Descuento por frecuencia' ),
+            ('09', 'Descuento sostenido' ),
+            ('99', 'Otros descuentos' ),
+
+        ],
+        string="Codigo Descuento"
+    )
+    
+    fe_codigo_descuento_otro = fields.Char("Codigo Descuento Otro")
+    
+    fe_naturaleza_descuento = fields.Char("Naturaleza Descuento")
+
+    fe_iva_cobrado_fabrica = fields.Selection(
+        [
+            ('01', 'Venta de bienes con IVA según el sistema especial de determinación de IVA a nivel de fábrica (Se utiliza cuando se está cobrando el IVA a nivel de fábrica' ),
+            ('02', 'Ventas exentas según el sistema especial de determinación de IVA a nivel de fábrica, mayorista y aduanas (se utiliza cuando el producto se encuentra exento ya que el bien soporto el cobro de impuestos a nivel de fábrica).' ),
+        ],
+        string="IVA Cobrado Fabrica"
+    )
     
     @api.onchange('product_id')
     def _compute_cabys_code(self):
