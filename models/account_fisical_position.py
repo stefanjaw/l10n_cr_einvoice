@@ -21,11 +21,11 @@ class AccountFiscalPosition(models.Model):
         ('05', '05-Exenciones Dirección General de Hacienda Transitorio V (servicios de ingeniería, arquitectura, topografía obra civil)'),
         ('06', '06-Servicios turísticos inscritos ante el Instituto Costarricense de Turismo (ICT)'),
         ('07', '07-Transitorio XVII (Recolección, Clasificación, almacenamiento de Reciclaje y reutilizable)'),
-        ('08', 'Exoneración a Zona Franca'),
-        ('09','09-Exoneración de servicios complementarios para la exportación articulo 11 RLIVA'),
-        ('10','10-Órgano de las corporaciones municipales'),
-        ('11','11-3Exenciones Dirección General de Hacienda Autorización de Impuesto Local Concreta'),
-        ('99', 'Otros')
+        ('08', '08-Exoneración a Zona Franca'),
+        ('09', '09-Exoneración de servicios complementarios para la exportación articulo 11 RLIVA'),
+        ('10', '10-Órgano de las corporaciones municipales'),
+        ('11', '11-3Exenciones Dirección General de Hacienda Autorización de Impuesto Local Concreta'),
+        ('99', '99-Otros')
     ], string="Tipo de Documento")
     
     institution_name = fields.Char(string="Nombre de la Institución")
