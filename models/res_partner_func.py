@@ -5,7 +5,7 @@ import json
 import requests
 import logging
 
-log = logging.getLogger(__name__)
+log = _logger = logging.getLogger(__name__)
 
 class ResPartnerFunctions(models.Model):
     _inherit = "res.partner"
@@ -51,4 +51,7 @@ class ResPartnerFunctions(models.Model):
             if json_response.get("code") == 404:
                 return
             if "nombre" in json_response.keys():
-                return self.update({"name": json_response["nombre"],"fe_identification_type":json_response["tipoIdentificacion"]} )
+                return self.update({
+                            "name": json_response["nombre"].title(),
+                            "fe_identification_type":json_response["tipoIdentificacion"]
+                        })
