@@ -24,6 +24,8 @@ class ProductTemplate(models.Model):
 
     cabys_code_id = fields.Many2one('cabys.code', string='Código cabys')
 
+    fe_partida_arancelaria = fields.Char(string='Partida Arancelaria',size=12)
+    
     @api.constrains('name')
     def _constrains_name(self):
         for record in self:
