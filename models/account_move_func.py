@@ -1402,9 +1402,19 @@ class AccountMoveFunctions(models.Model):
                                     exoneration['TipoDocumentoEX1'] = self.fiscal_position_id.fiscal_position_type or ''
                                 
                                 exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
-                                exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
-                                exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
-                                exoneration['PorcentajeExoneracion'] =  int(percent) or '0'
+                                
+                                if fe_version == "4.3":
+                                    exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
+                                    exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
+                                elif fe_version == "4.4":
+                                    exoneration['NombreInstitucion'] = self.fiscal_position_id.fe_codigo_institucion or ''
+                                    exoneration['FechaEmisionEX'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
+
+                                if fe_version == "4.3":
+                                    exoneration['PorcentajeExoneracion'] =  int(percent) or '0'
+                                elif fe_version == "4.4":
+                                    exoneration['TarifaExonerada'] =  percent or '0'
+                                
                                 MontoExoneracion = round(LineaSubTotal * ( percent / 100),5)
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
 
