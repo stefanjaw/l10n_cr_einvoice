@@ -9,11 +9,41 @@
         <field name="inherit_id" ref="account.view_account_position_form"/>
         <field name="arch" type="xml">
             <field name="auto_apply" position="after">
-                <field name="fiscal_position_type" placeholder="Tipo de documento de exoneración o autorización" required="True" />
-                <field name="document_number" placeholder="Número de documento de exoneración o autorización" required="True"/>
-                <field name="institution_name" placeholder="Nombre de institución o dependencia que emitió la exoneración" required="True"/>
-                <field name="issued_date" placeholder="Fecha de emisión del documento de exoneración o autorización" required="True"/>
+                <field name="document_number"
+                    placeholder="Número de documento AL-00000000-00 o 0000-0000" required="True"/>
+                <button name="action_fiscal_position_cr_data_update"
+                            string="Update" type="object"
+                        /><br/>
+                
+                <field name="fe_exoneracion_identificacion"
+                    placeholder="Número de Identificación de la exoneración o autorización"
+                    required="False"/>
+                
+                <field name="fiscal_position_type"
+                    placeholder="Tipo de documento de exoneración o autorización" />
+                <field name="institution_name"
+                    placeholder="Nombre de institución o dependencia que emitió la exoneración"
+                    required="False"/>
+                <field name="issued_date"
+                    placeholder="Fecha de emisión del documento de exoneración o autorización" 
+                    required="False"/>
+                <field name="fe_expiration_date"
+                    placeholder="Fecha de expiración del documento de exoneración o autorización" 
+                    required="False"/>
+                <field name="fe_exoneracion_porcentaje"
+                    placeholder="Porcentaje de la Exoneracion/Reducción"
+                    required="False"/>
+                <field name="fe_exoneracion_type"
+                    placeholder="Tipo de la Exoneracion/Reducción" required="False"/>
             </field>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Información Exoneración">
+                    <group>
+                        <field name="fe_document_txt"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 
