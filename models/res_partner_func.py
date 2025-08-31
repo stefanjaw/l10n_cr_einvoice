@@ -51,69 +51,63 @@ class ResPartnerFunctions(models.Model):
             if response_json.get("code") == 404:
                 return
             elif "nombre" in response_json.keys():
-                _logger.info(f"DEF54 act_codes: {self.fe_activity_code_ids.ids}")
-                
+                _logger.info(f"Updating partner information ======")
                 res_partner_activity_codes = self.action_activity_codes_build( response_json )
-                _logger.info(f"DEF57 res_partner_activity_codes: \n{res_partner_activity_codes}\n")
                 data = {
                             "name": response_json["nombre"].title(),
                             "fe_identification_type":response_json["tipoIdentificacion"],
                         }
                 
-                # if res_partner_activity_codes:
-                #     # STOP64
-                #     data.update({
-                #         "fe_activity_code_ids": res_partner_activity_codes
-                #     })
-                _logger.info(f"DEF67 data: \n{data}")
-                _logger.info(f"DEF68 self.id: {self.id} ===============")
-                _logger.info(f"DEF69 self._origin.id: {self._origin.id} ===============")
+                if len(res_partner_activity_codes) > 0:
+                    data.update({
+                        "fe_activity_code_ids": res_partner_activity_codes
+                    })
                 
                 return self.update( data )
 
     def action_activity_codes_build(self, response_json):
-        
-        _logger.info(f"DEF74 fe_activity_code_ids: {self.fe_activity_code_ids}")
-
-
-        
+        _logger.info(f"    Updating Activity Codes ======")
         activity_json_lst = response_json.get("actividades")
         if len( activity_json_lst ) == 0:
             return None
         
+        partner_id = self
+        partner_has_id = self._origin.id
+        
         res_partner_activity_codes = []
         for activity_json in activity_json_lst:
             code = activity_json['codigo']
-            _logger.info(f"DEF81      code: {code}")
-            partner_id = self.id
-
+            
             data = {
                 "active": True,
                 "status": activity_json.get('estado'),
                 "type": activity_json.get('tipo'),
                 "code": code,
                 "name": activity_json.get('descripcion'),
-                "partner_id": partner_id
+                "partner_id": partner_id.id
             }
-            _logger.info(f"DEF93 data: \n{data}")
+            
             records = self.env["res.partner.activity.codes"].search([
                 ('code', '=', code ),
-                ('partner_id', '=', self.id )
+                ('partner_id', '=', partner_id.id )
             ])
-            _logger.info(f"DEF98      records: {records}")
-            result = "No action done"
+            
+            result = "No Record Created"
             if len( records ) == 0:
-                # res_partner_activity_codes.append( (0,0, data )  )
-                result = self.env["res.partner.activity.codes"].create(data)
-                # _logger.info(f"DEF103 result: {result}")
-                
+                if partner_has_id:
+                    result = self.env["res.partner.activity.codes"].create(data)
+                    _logger.info(f"        Record Partner Activity Code {code} created: {result} ")
+                else:
+                    res_partner_activity_codes.append( (0,0, data )  )
             elif len( records ) == 1:
-                result = records.write(data)
-                # res_partner_activity_codes.append( (1,records.id, data )  )
+                if partner_has_id:
+                    result = records.write(data)
+                    _logger.info(f"        Record Partner Activity Code {code} updated result: {result} ")
+                else:
+                    res_partner_activity_codes.append( (1,records.id, data )  )
             else:
                 msg = f"To many records to update: {records}"
                 raise ValidationError( msg )
-            _logger.info(f"DEF112 result: {result}")
             
         return res_partner_activity_codes
         

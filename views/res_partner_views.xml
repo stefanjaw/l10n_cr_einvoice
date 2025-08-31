@@ -22,7 +22,6 @@
                   <group string="Actividades Comerciales">
                     <field name="fe_activity_code_ids">
                       <tree editable="1">
-                        <field name="active"/>
                         <field name="status"/>
                         <field name="type" />
                         <field name="code" required="1"/>
