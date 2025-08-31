@@ -18,11 +18,16 @@
     
     <xpath expr="//page[@name='internal_notes']" position="after">
         <page string="Actividades Comerciales">
+                <button name="action_partner_data_costa_rica_update" type="object" string="Update"/>
                   <group string="Actividades Comerciales">
                     <field name="fe_activity_code_ids">
                       <tree editable="1">
+                        <field name="active"/>
+                        <field name="status"/>
+                        <field name="type" />
                         <field name="code" required="1"/>
-                        <field name="description" required="1"/>
+                        <field name="name" required="1"/>
+                        <field name="description" />
                       </tree>
                     </field>                              
                   </group>
