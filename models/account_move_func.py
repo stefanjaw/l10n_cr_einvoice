@@ -1396,7 +1396,11 @@ class AccountMoveFunctions(models.Model):
                                 ])
                                 percent = fiscal.tax_src_id.amount - fiscal.tax_dest_id.amount
                                 exoneration = {}
-                                exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
+                                if fe_version == "4.3":
+                                    exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
+                                elif fe_version == "4.4":
+                                    exoneration['TipoDocumentoEX1'] = self.fiscal_position_id.fiscal_position_type or ''
+                                
                                 exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
                                 exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
                                 exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''

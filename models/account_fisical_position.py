@@ -24,11 +24,30 @@ class AccountFiscalPosition(models.Model):
         ('08', '08-Exoneración a Zona Franca'),
         ('09', '09-Exoneración de servicios complementarios para la exportación articulo 11 RLIVA'),
         ('10', '10-Órgano de las corporaciones municipales'),
-        ('11', '11-3Exenciones Dirección General de Hacienda Autorización de Impuesto Local Concreta'),
+        ('11', '11-Exenciones Dirección General de Hacienda Autorización de Impuesto Local Concreta'),
         ('99', '99-Otros')
     ], string="Tipo de Documento")
+
+    fe_tipo_documento_otro = fields.Char(string="Tipo de Documento Otro")
     
     institution_name = fields.Char(string="Nombre de la Institución")
+    
+    fe_codigo_institucion = fields.Selection([
+        ('01', '01-Ministerio de Hacienda'),
+        ('02', '02-Ministerio de Relaciones Exteriores y Culto'),
+        ('03', '03-Ministerio de Agricultura y Ganadería'),
+        ('04', '04-Ministerio de Economía, Industria y Comercio'),
+        ('05', '05-Cruz Roja Costarricense'),
+        ('06', '06-Benemérito Cuerpo de Bomberos de Costa Rica'),
+        ('07', '07-Asociación Obras del Espíritu Santo'),
+        ('08', '08-Federación Cruzada Nacional de protección al Anciano(Fecrunapa)'),
+        ('09', '09-Escuela de Agricultura de la Región Húmeda (EARTH)'),
+        ('10', '10-Instituto Centroamericano de Administración de Empresas(INCAE)'),
+        ('11', '11-Junta de Protección Social (JPS)'),
+        ('12', '12-Autoridad Reguladora de los Servicios Públicos (Aresep)'),
+        ('99', '99-Otros')
+    ], string="Código de la institución")
+    
     issued_date = fields.Date(string="Fecha de la Emisión")
     
     fe_expiration_date = fields.Date(string="Fecha de Expiración")
@@ -117,6 +136,9 @@ class AccountFiscalPosition(models.Model):
                 
                 data_dict = self.data_add_value( 
                     response_json,data_dict,'nombreInstitucion','institution_name' )
+
+                data_dict = self.data_add_value( 
+                    response_json,data_dict,'CodigoInstitucion','fe_codigo_institucion' )
                 
                 data_dict = self.data_add_value(
                     response_json,data_dict,'fechaVencimiento','fe_expiration_date' )

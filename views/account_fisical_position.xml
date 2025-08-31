@@ -20,10 +20,20 @@
                     required="False"/>
                 
                 <field name="fiscal_position_type"
-                    placeholder="Tipo de documento de exoneración o autorización" />
+                    placeholder="Tipo de documento de exoneración o de autorización." />
+
+                <field name="fe_tipo_documento_otro"
+                    placeholder="Tipo de documento de exoneración o de autorización OTRO"
+                    invisible="fiscal_position_type not in [99, '99']" />
+                
                 <field name="institution_name"
                     placeholder="Nombre de institución o dependencia que emitió la exoneración"
                     required="False"/>
+
+                <field name="fe_codigo_institucion"
+                    placeholder="Código de la institución"
+                    required="False"/>
+                
                 <field name="issued_date"
                     placeholder="Fecha de emisión del documento de exoneración o autorización" 
                     required="False"/>
