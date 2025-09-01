@@ -561,36 +561,37 @@ class ElectronicDoc(models.Model):
             })
 
     def transform_to_xslt(self, root_xml_b64, doc_type):
-        _logger.info(f"DEF564 doc_type: {doc_type}\nroot_xml: {root_xml_b64}\n")
+        _logger.info(f"    ==== transform_to_xslt")
         
-        dom = ET.fromstring(base64.b64decode(root_xml_b64))
-        if (doc_type == 'FE'):
-            ruta = path._path[0]+"/fe.xslt"
-            transform = ET.XSLT(
-                ET.parse(
-                    ruta
-                ))
-        elif (doc_type == 'TE'):
-            ruta = path._path[0]+"/te.xslt"
-            transform = ET.XSLT(
-                ET.parse(
-                    ruta
-                ))
-        elif (doc_type == 'NC'):
-            ruta = path._path[0]+"/nc.xslt"
-            transform = ET.XSLT(
-                ET.parse(
-                    ruta
-                ))
-        nuevodom = transform(dom)
-        return ET.tostring(nuevodom, pretty_print=True)
+        header = {'Content-Type':'application/json'}
+        url = f"{self.company_id.fe_url_server}convert-xml-to-other"
+        
+        if type(root_xml_b64) == bytes:
+            root_xml_b64 = root_xml_b64.decode()
+        
+        data_dict = {
+            "xml_b64": root_xml_b64,
+            "type_dest": "html"
+        }
+        data_json = json.dumps( data_dict )
+        response = requests.post(url, headers = header, data = data_json)
 
-    "UC03"
+        response_json = response.json()
 
+        data_html = ""
+        if response_json:
+            result_str = response_json.get('result')
+            data_json = json.loads( result_str )
+            if data_json:
+               data_html = data_json.get('data')
+
+        return data_html
+    
     def get_doc_type(self, dic):
         _logger.info(f"    ==== get_doc_type")
         dict_keys = dic.keys()
-        
+        _logger.info(f"DEF616 dict_keys: {dict_keys}")
+        result = False
         try:
             if 'FacturaElectronica' in dict_keys:
                 result = 'FE'
@@ -773,10 +774,15 @@ class ElectronicDoc(models.Model):
         response = requests.post(url, headers = header, data = data_json)
 
         response_json = response.json()
+        # _logger.info(f"DEF800 response_json: {response_json}\n\n")
         xml_dict = {}
         if response_json:
             result_str = response_json.get('result')
-            xml_dict = json.loads( result_str )
+            _logger.info(f"DEF804 result_str: {result_str}\n\n")
+            response_data_json = json.loads( result_str )
+            xml_dict = response_data_json.get('data')
+        # _logger.info(f"DEF807 xml_dict keys: {xml_dict.keys()}\n")
+        
         return xml_dict
 
     def automatic_bill_creation(self, docs_tuple,company=None):
