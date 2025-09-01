@@ -18,7 +18,7 @@
     'version': '0.0.8',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','contacts','l10n_cr_zones','account_accountant','l10n_cr','sale_management'],
+    'depends': ['base','contacts','l10n_cr_zones','account_accountant','l10n_cr','sale_management','stock'],
 
     # always loaded
     'data': [
