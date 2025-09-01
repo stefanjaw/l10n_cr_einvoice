@@ -199,7 +199,7 @@ class ElectronicDoc(models.Model):
                     receiver_number = self.get_receiver_identification(dic, doc_type)
                     receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
                     if receiver_company.id != self.env.company.id:
-                        message1 = "Error:\n El receptor de este document es: {}\n y fue enviado por: {},\nLa compañía seleccionada es: {}".format( 
+                        message1 = "Error:\n El receptor de este documento es: {}\n y fue enviado por: {},\nLa compañía seleccionada es: {}".format( 
                            self.get_receiver_name(dic, doc_type), self.get_provider(dic, doc_type),
                            self.env.company.name
                         )
@@ -587,25 +587,33 @@ class ElectronicDoc(models.Model):
 
     def get_doc_type(self, dic):
                  
-        tag_FE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
-        tag_TE = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
-        tag_MH = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
-        tag_NC = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
+        tag_FE   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
+        tag_FE44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica'
+        
+        tag_TE   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
+        tag_TE44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/tiqueteElectronico'
+        
+        tag_MH   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
+        tag_MH44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/mensajeHacienda'
+        
+        tag_NC   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
+        tag_NC44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/notaCreditoElectronica'
+
         try:
             if 'TiqueteElectronico' in dic.keys():
-                if dic['TiqueteElectronico']['@xmlns'] == tag_TE:
+                if dic['TiqueteElectronico']['@xmlns'] in [tag_TE, tag_TE44]:
                     return 'TE'
             elif 'FacturaElectronica' in dic.keys():
-                if dic['FacturaElectronica']['@xmlns'] == tag_FE:
+                if dic['FacturaElectronica']['@xmlns'] in [tag_FE, tag_FE44]:
                     return 'FE'
             elif 'MensajeHacienda' in dic.keys():
-                if dic['MensajeHacienda']['@xmlns'] == tag_MH:
+                if dic['MensajeHacienda']['@xmlns'] in [tag_MH, tag_MH44]:
                     return 'MH'
             elif 'NotaCreditoElectronica' in dic.keys():
-                if dic['NotaCreditoElectronica']['@xmlns'] == tag_NC:
+                if dic['NotaCreditoElectronica']['@xmlns'] in [tag_NC, tag_NC44]:
                     return 'NC'
         except Exception as e:
-            log.info('\n "erro al obtener tipo de archivo xml %s"\n', e)
+            log.info(f"\nError al obtener tipo de archivo xml {e}")
             return False
 
     def get_key(self, dic, doc_type):
@@ -757,9 +765,24 @@ class ElectronicDoc(models.Model):
         else:
             return "0"
     
-    def convert_xml_to_dic(self, xml):
-        dic = xmltodict.parse(base64.b64decode(xml))
-        return dic
+    def convert_xml_to_dic(self, xml_b64):
+        _logger.info(f"    Converting xml to dict")
+        header = {'Content-Type':'application/json'}
+        url = f"{self.company_id.fe_url_server}convert-xml-to-dict"
+        
+        if type(xml_b64) == bytes:
+            xml_b64 = xml_b64.decode()
+        
+        data_dict = {"xml_b64": xml_b64}
+        data_json = json.dumps( data_dict )
+        response = requests.post(url, headers = header, data = data_json)
+
+        response_json = response.json()
+        xml_dict = {}
+        if response_json:
+            result_str = response_json.get('result')
+            xml_dict = json.loads( result_str )
+        return xml_dict
 
     def automatic_bill_creation(self, docs_tuple,company=None):
         clave = False
