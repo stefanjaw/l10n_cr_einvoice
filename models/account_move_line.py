@@ -45,7 +45,7 @@ class AccountMoveLineEinvoice(models.Model):
             ('04', '04-Descuento por volumen' ),
             ('05', '05-Descuento por Temporada (estacional)' ),
             ('06', '06-Descuento promocional' ),
-            ('07', '07-Descuento Comercia' ),
+            ('07', '07-Descuento Comercial' ),
             ('08', '08-Descuento por frecuencia' ),
             ('09', '09-Descuento sostenido' ),
             ('99', '99-Otros descuentos' ),
