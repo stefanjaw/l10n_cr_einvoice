@@ -560,8 +560,10 @@ class ElectronicDoc(models.Model):
                 'fe_name_pdf': fname,
             })
 
-    def transform_to_xslt(self, root_xml, doc_type):
-        dom = ET.fromstring(base64.b64decode(root_xml))
+    def transform_to_xslt(self, root_xml_b64, doc_type):
+        _logger.info(f"DEF564 doc_type: {doc_type}\nroot_xml: {root_xml_b64}\n")
+        
+        dom = ET.fromstring(base64.b64decode(root_xml_b64))
         if (doc_type == 'FE'):
             ruta = path._path[0]+"/fe.xslt"
             transform = ET.XSLT(
@@ -758,12 +760,15 @@ class ElectronicDoc(models.Model):
     def convert_xml_to_dic(self, xml_b64):
         _logger.info(f"    Converting xml to dict")
         header = {'Content-Type':'application/json'}
-        url = f"{self.company_id.fe_url_server}convert-xml-to-dict"
+        url = f"{self.company_id.fe_url_server}convert-xml-to-other"
         
         if type(xml_b64) == bytes:
             xml_b64 = xml_b64.decode()
         
-        data_dict = {"xml_b64": xml_b64}
+        data_dict = {
+            "xml_b64": xml_b64,
+            "type_dest": "dict"
+        }
         data_json = json.dumps( data_dict )
         response = requests.post(url, headers = header, data = data_json)
 
