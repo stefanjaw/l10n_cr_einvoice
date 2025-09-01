@@ -9,12 +9,14 @@ class ResCompany(models.Model):
     _inherit = "res.company"
     
     log.info('--> Class Emisor')
+    fe_version = fields.Char(string="Version Factura Electronica")
     fe_certificate = fields.Binary(string="Upload Certificate")
     fe_certificate_name = fields.Char(string="Certificate name")
     fe_password_certificate = fields.Char(string="Contraseña Certificado", )
     fe_user_name = fields.Char(string="Nombre usuario hacienda")
     fe_user_password = fields.Char(string="Contraseña hacienda", )
     fe_hacienda_token = fields.Text(string="Token de Hacienda")
+    fe_proveedor_sistemas = fields.Char(string="Proveedor Sistemas" )
     fe_hacienda_version = fields.Char(string="Version de Hacienda")
     
     vat = fields.Char(size = 12, required=False)
