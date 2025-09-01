@@ -586,36 +586,26 @@ class ElectronicDoc(models.Model):
     "UC03"
 
     def get_doc_type(self, dic):
-                 
-        tag_FE   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'
-        tag_FE44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/facturaElectronica'
+        _logger.info(f"    ==== get_doc_type")
+        dict_keys = dic.keys()
         
-        tag_TE   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/tiqueteElectronico'
-        tag_TE44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/tiqueteElectronico'
-        
-        tag_MH   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/mensajeHacienda'
-        tag_MH44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/mensajeHacienda'
-        
-        tag_NC   = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/notaCreditoElectronica'
-        tag_NC44 = 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.4/notaCreditoElectronica'
-
         try:
-            if 'TiqueteElectronico' in dic.keys():
-                if dic['TiqueteElectronico']['@xmlns'] in [tag_TE, tag_TE44]:
-                    return 'TE'
-            elif 'FacturaElectronica' in dic.keys():
-                if dic['FacturaElectronica']['@xmlns'] in [tag_FE, tag_FE44]:
-                    return 'FE'
-            elif 'MensajeHacienda' in dic.keys():
-                if dic['MensajeHacienda']['@xmlns'] in [tag_MH, tag_MH44]:
-                    return 'MH'
-            elif 'NotaCreditoElectronica' in dic.keys():
-                if dic['NotaCreditoElectronica']['@xmlns'] in [tag_NC, tag_NC44]:
-                    return 'NC'
+            if 'FacturaElectronica' in dict_keys:
+                result = 'FE'
+            elif 'NotaDebitoElectronica' in dict_keys:
+                result = 'ND'
+            elif 'NotaCreditoElectronica' in dict_keys:
+                result = 'NC'
+            elif 'TiqueteElectronico' in dict_keys:
+                result = 'TE'
+            elif 'MensajeHacienda' in dict_keys:
+                result = 'MH'
         except Exception as e:
-            log.info(f"\nError al obtener tipo de archivo xml {e}")
-            return False
-
+            log.info(f"\nError al obtener el tipo del archivo xml {e}")
+            result = False
+        
+        return result
+    
     def get_key(self, dic, doc_type):
         if (doc_type == 'TE'):
             key = 'TiqueteElectronico'
