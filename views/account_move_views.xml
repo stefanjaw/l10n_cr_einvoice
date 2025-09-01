@@ -170,7 +170,10 @@
          </xpath>
 
          <xpath expr="//field[@name='delivery_date']" position="before">
-             <field name="fe_condicion_venta_otros" invisible="fe_current_country_company_code != 'CR' or invoice_payment_term_id == False"/>
+             <field name="fe_condicion_venta"
+                 invisible="fe_current_country_company_code != 'CR' or invoice_payment_term_id == False" />
+             <field name="fe_condicion_venta_otros"
+                 invisible="fe_current_country_company_code != 'CR' or invoice_payment_term_id == False or fe_condicion_venta not in [99, '99']" />
          </xpath>
           
       </field>
