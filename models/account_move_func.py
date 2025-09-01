@@ -388,6 +388,7 @@ class AccountMoveFunctions(models.Model):
         self.source_date = self.invoice_date
 
         if country_code == 'CR':
+            tz = pytz.timezone('America/Costa_Rica')
             
             if self.name[8:10] == "01": 
                 self._validate_company()
@@ -427,7 +428,6 @@ class AccountMoveFunctions(models.Model):
 
                 else:
                    self.fe_doc_type = "MensajeReceptor"
-                   tz = pytz.timezone('America/Costa_Rica')
                    self.fe_fecha_emision_doc = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                    self._cr_post_server_side()
 
@@ -441,9 +441,23 @@ class AccountMoveFunctions(models.Model):
             elif self.name[8:10] == "09":
                 self._validate_company()
                 self.validar_datos_factura()
-                self._validate_invoice_line()                    #FACTURA ELECTRONICA COMPRA
+                self._validate_invoice_line()                    #FACTURA ELECTRONICA EXPORTACION
                 self.fe_doc_type = "FacturaElectronicaExportacion"
                 self._cr_post_server_side()
+            elif self.name[8:10] == "10":
+                self._validate_company()
+                # self.validar_datos_factura()
+                # self._validate_invoice_line()                    #FACTURA ELECTRONICA COMPRA
+                # self.fe_doc_type = "ReciboElectronicoPago"
+                # self.fe_fecha_emision = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+                _logger.info(f"DEF453 self.fe_fecha_emision: {self.fe_fecha_emision}")
+                if self.fe_clave in [False, ""]:
+                    self._generar_clave()
+                    _logger.info(f"DEF456 self.fe_clave: {self.fe_clave}")
+                self._cr_post_server_side()
+            else:
+                msg1 = f"Unkown Document Type: {self.fe_doc_type}"
+                raise ValidationError( msg1 )
 
     def transform_doc(self,root_xml,type):
         _logger.info(f"DEF475 =====")
@@ -766,12 +780,19 @@ class AccountMoveFunctions(models.Model):
             
     
     def _generar_clave(self):
-        _logger.info(f"DEF726 ===== _generar_clave self: {self} name: {self.name}\n")
+        _logger.info(f"    ===== _generar_clave self: {self} name: {self.name}\n")
         
         if len( self.name ) != 20:
             return
+
+        invoice_date = self.invoice_date
+        if invoice_date: 
+            document_date = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
+        else:
+            document_date = datetime.strptime(str(self.date),'%Y-%m-%d')
+        _logger.info(f"DF791 document_date: {document_date}")
         
-        document_date_invoice = datetime.strptime(str(self.invoice_date),'%Y-%m-%d')
+        
         if self.fe_doc_type != "MensajeReceptor":
             country_code = self.company_id.country_id.phone_code
             vat = self.company_id.vat or ''
@@ -779,29 +800,35 @@ class AccountMoveFunctions(models.Model):
             vat = vat.replace(' ','')
             vat_complete = "0" * (12 - len(vat)) + vat
             epoch = str( datetime.utcnow().timestamp() )[2:10]
-            clave = str(country_code) + document_date_invoice.strftime("%d%m%y") \
+            clave = str(country_code) + document_date.strftime("%d%m%y") \
                 + str(vat_complete) + str(self.name) + str(self.fe_receipt_status or '1') \
                 + str(epoch)
+        _logger.info(f"DEF803 clave: {clave} ======")
         self.fe_clave = clave
-    
+
     def action_post(self,validate = True):
-        _logger.info(f"DEF743a ===== action_post self: {self} fe_invoice_type: {self.fe_doc_type} validate: {validate}\n")
-        _logger.info(f"DEF743b ===== move_type: {self.move_type}")
+        _logger.info(f"===== action_post self: {self} validate: {validate}\n")
+        
         for s in self:
-            log.info('--> action_post')
-            _logger.info(f"DEF746 ===== action_post self: {s} fe_invoice_type: {s.fe_doc_type} fe_msg_type: {s.fe_msg_type}\n    Name: {s.name}\n")
-            #_logger.info(f"DEF747 ===== journal_id: {dir(s.journal_id)}\n")
-            _logger.info(f"DEF747 ===== journal_id refund_sequence: {s.journal_id.refund_sequence}\n")
+            _logger.info(f"    ===== action_post self: {s} move_type: {self.move_type} fe_invoice_type: {s.fe_doc_type} fe_msg_type: {s.fe_msg_type}\n    Name: {s.name}\n")
+
+            _logger.info(f"    ===== journal_id refund_sequence: {s.journal_id.refund_sequence}\n")
             
-            _logger.info(f"DEF772 ===== sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
-            
-            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False or s.move_type == 'entry':
-                _logger.info(f"DEF748a Not Electronic Invoice or validate False =============\n sequence_fe: {s.journal_id.sequence_fe}\n")
-                _logger.info(f"DEF748b Not Electronic Invoice or validate False =============\n sequence_nd: {s.journal_id.sequence_nd}\n")
-                _logger.info(f"DEF748c Not Electronic Invoice or validate False =============\n fe_doc_type: {s.fe_doc_type}\n")
-                _logger.info(f"DEF748c {s.move_type} fe_doc_type: {s.fe_doc_type}\n")
+            _logger.info(f"    ===== sequence_number: {s.sequence_number} - sequence_prefix: {s.sequence_prefix}")
+            # STOP795
+            if s.company_id.country_id.code != 'CR' or s.fe_doc_type == False or validate == False:
+                _logger.info(f"    Not Electronic Invoice or validate False sequence_fe {s.journal_id.sequence_fe}")
+                _logger.info(f"    Not Electronic Invoice or validate False sequence_nd {s.journal_id.sequence_nd}")
+                _logger.info(f"    Not Electronic Invoice or validate False sequence_nc {s.journal_id.sequence_nc}")
+                _logger.info(f"    Not Electronic Invoice or validate False sequence_te {s.journal_id.sequence_te}")
+                _logger.info(f"    Not Electronic Invoice or validate False fe_doc_type {s.fe_doc_type}")
+                _logger.info(f"    Not Electronic Invoice or validate False move_type {s.move_type} ")
                 
-                if s.fe_doc_type == False and ( len(s.journal_id.sequence_fe) != 0 or len(s.journal_id.sequence_nd) != 0):
+                if s.fe_doc_type == False \
+                and (      len(s.journal_id.sequence_fe) != 0
+                        or len(s.journal_id.sequence_nd) != 0
+                    ):
+                    
                     msg = f'Error: El diario "{s.journal_id.name}" es solo para Documentos Electrónicos'
                     msg = msg + f"\nSeleccione el tipo de documento correspondiente"
                     msg = msg + f"\nEn caso de ser necesario, vaya a Diarios y configure un nuevo diario"
@@ -850,6 +877,8 @@ class AccountMoveFunctions(models.Model):
                             sequence = s.journal_id.sequence_fee
                         elif s.fe_doc_type == "FacturaElectronicaCompra":
                             sequence = s.journal_id.sequence_fec
+                        elif s.fe_doc_type == "ReciboElectronicoPago":
+                            sequence = s.journal_id.sequence_rep
                         else:
                             sequence = False
                         
@@ -939,7 +968,7 @@ class AccountMoveFunctions(models.Model):
                     if s.fe_clave in [False, None, ""]:
                         _logger.info(f"DEF912 Generating fe_clave")
                         s._generar_clave()
-                    
+                
                 log.info('--->Clave %s',s.fe_clave)
                 
                 s.validar_datos_factura()
@@ -954,7 +983,7 @@ class AccountMoveFunctions(models.Model):
 
         
             _logger.info(f"DEF868 s.name: {s.name}")
-
+    
                 
     def get_invoice(self):
         _logger.info(f"DEF872 =====")
@@ -1082,7 +1111,12 @@ class AccountMoveFunctions(models.Model):
                 invoice_data[s.fe_doc_type].update({'CodigoActividad':s.fe_activity_code_id.code})
             
             invoice_data[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
-            invoice_data[s.fe_doc_type].update({'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'})
+
+            _logger.info(f"DEF1107 fe_fecha_emision: {s.fe_fecha_emision} ===")
+            invoice_data[s.fe_doc_type].update({
+                'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'
+            })
+            
             invoice_data[s.fe_doc_type].update({'Emisor':{
                 'Nombre':s.company_id.company_registry
             }})
@@ -1620,7 +1654,10 @@ class AccountMoveFunctions(models.Model):
             #PDF de FE,FEE,FEC,ND,NC
             #En caso de que el server-side envie el mail
 
-            invoice_data[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
+            if s.fe_doc_type in ["ReciboElectronicoPago"]:
+                pass
+            else:
+                invoice_data[s.fe_doc_type].update({'PDF':s._get_pdf_bill(s.id)})
             return invoice_data#s.invoice
 
     @api.model
@@ -1658,7 +1695,7 @@ class AccountMoveFunctions(models.Model):
                  }
              }
 
-    @api.onchange("currency_id","invoice_date",)
+    @api.onchange("currency_id","invoice_date")
     def _onchange_currency_rate(self):
         _logger.info(f"DEF1416 ===== _onchange_currency_rate self: {self} comentado por upgrade")  # comentado por upgrade
         #buscar error con respecto a dolares
@@ -1671,7 +1708,8 @@ class AccountMoveFunctions(models.Model):
                 else:
                     date = s.invoice_date 
                                         
-                s._rate(date)'''
+                s._rate(date)
+        '''
     
     
     @api.onchange("journal_id",)
@@ -1682,43 +1720,63 @@ class AccountMoveFunctions(models.Model):
         if default_move_type == "out_refund":
             self.fe_doc_type  = "NotaCreditoElectronica"
         
-        '''
-        self.fe_in_invoice_type = 'OTRO'
-        if self.journal_id:
-            if len(self.journal_id.sequence_id.prefix) == 10 :
-                if self.journal_id.sequence_id.prefix[8:10] == '08':
-                    self.fe_in_invoice_type = 'FEC'
-                elif self.journal_id.sequence_id.prefix[8:10] == '09':
-                    self.fe_in_invoice_type = 'FEX'
-                elif self.journal_id.sequence_id.prefix[8:10] == '01':
-                    self.fe_in_invoice_type = 'FE'
-                elif self.journal_id.sequence_id.prefix[8:10] == '02':
-                    self.fe_in_invoice_type = 'ND'
-                else:
-                    self.fe_in_invoice_type = 'OTRO'
-            else:
-                self.fe_in_invoice_type = 'OTRO'
-                log.info('largo del prefijo del diario menor a 10')
-        '''
-    
     @api.model
     def default_fe_in_invoice_type(self):
-        _logger.info(f"DEF1454 Upgrade Comentado este procedimiento default_fe_in_invoice_type\n")
+        msg1 = f"After upgrade\nCommented this method default_fe_in_invoice_type"
+        _logger.info( msg1 )
         
-        '''
-        #journal = super(AccountMoveFunctions, self)._get_default_journal()
-        journal = self.env['account.journal'].search([('company_id', '=', self.env.company.id), ('type', '=', 'general')], limit=1)
-        if len(journal.sequence_id.prefix) == 10 :
-                if journal.sequence_id.prefix[8:10] == '08':
-                   return 'FEC'
-                elif journal.sequence_id.prefix[8:10] == '09':
-                    return 'FEX'
-                elif journal.sequence_id.prefix[8:10] == '01':
-                    return 'FE'
-                elif journal.sequence_id.prefix[8:10] == '02':
-                    return 'ND'
-                else:
-                    return 'OTRO'
-        else:
-            return 'OTRO'
-        '''
+        raise ValidationError( msg1 )
+
+    def fe_sequence_get(self, journal_id, fe_doc_type):
+        _logger.info(f"DEF1708 journal_id: {journal_id}")
+        _logger.info(f"DEF1708 fe_doc_type: {fe_doc_type}")
+        sequence = False
+        ir_sequence = []
+        
+        if len( journal_id ) == 1:
+            if fe_doc_type == "ReciboElectronicoPago":
+                # STOP1706
+                ir_sequence = journal_id.sequence_rep#._next_do()
+            
+            if len(ir_sequence) == 0:
+                msg1 = f"Falta Configurar la secuencia del {fe_doc_type} en el diario: {journal_id.name}"
+                raise ValidationError( msg1 )
+            else:
+                sequence = ir_sequence._next_do()
+        
+        _logger.info(f"DEF1708 sequence: \n{sequence}\n")
+        return sequence
+    
+    def create(self, vals_lst):
+        tz = pytz.timezone('America/Costa_Rica')
+        for vals in vals_lst:
+            _logger.info(f"DEF1700 vals: \n{vals}\n")
+            fe_doc_type = False
+
+            try:
+                journal_ids = self.env['account.journal'].browse( vals.get('journal_id') )
+            except:
+                journal_ids = []
+            
+            _logger.info(f"DEF1736 journal_ids: \n{journal_ids}\n")
+            if len(journal_ids) != 1:
+                continue
+
+            name = vals.get('name')
+            move_type = vals.get('move_type')
+            
+            if move_type == "entry":
+                fe_doc_type = "ReciboElectronicoPago"
+                vals['fe_doc_type'] = fe_doc_type
+                sequence = journal_ids.sequence_rep
+                vals['fe_fecha_emision'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+                # vals['date'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+                # result = self.fe_get_sequence(  )
+
+            if name  in ["", "/", False] and fe_doc_type not in [False]:
+                vals['name'] = self.fe_sequence_get( journal_ids, fe_doc_type)
+
+        _logger.info(f"DEF1752 vals_lst: \n{vals_lst}")
+        records = super().create( vals_lst )
+        
+        return records

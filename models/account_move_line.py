@@ -15,19 +15,19 @@ class AccountMoveLineEinvoice(models.Model):
 
     fe_tipo_transaccion = fields.Selection(
         [
-            ('01', 'Venta Normal de Bienes y Servicios (Transacción General)' ),
-            ('02', 'Mercancía de Autoconsumo exento' ),
-            ('03', 'Mercancía de Autoconsumo gravado' ),
-            ('04', 'Servicio de Autoconsumo exento' ),
-            ('05', 'Servicio de Autoconsumo gravado' ),
-            ('06', 'Cuota de afiliación' ),
-            ('07', 'Cuota de afiliación Exenta' ),
-            ('08', 'Bienes de Capital para el emisor' ),
-            ('09', 'Bienes de Capital para el receptor.' ),
-            ('10', 'Bienes de Capital para para el emisor y el receptor.' ),
-            ('11', 'Bienes de capital de autoconsumo exento para el emisor' ),
-            ('12', 'Bienes de capital sin contraprestación a terceros exento para el emisor' ),
-            ('13', 'Sin contraprestación a terceros' )
+            ('01', '01-Venta Normal de Bienes y Servicios (Transacción General)' ),
+            ('02', '02-Mercancía de Autoconsumo exento' ),
+            ('03', '03-Mercancía de Autoconsumo gravado' ),
+            ('04', '04-Servicio de Autoconsumo exento' ),
+            ('05', '05-Servicio de Autoconsumo gravado' ),
+            ('06', '06-Cuota de afiliación' ),
+            ('07', '07-Cuota de afiliación Exenta' ),
+            ('08', '08-Bienes de Capital para el emisor' ),
+            ('09', '09-Bienes de Capital para el receptor.' ),
+            ('10', '10-Bienes de Capital para para el emisor y el receptor.' ),
+            ('11', '11-Bienes de capital de autoconsumo exento para el emisor' ),
+            ('12', '12-Bienes de capital sin contraprestación a terceros exento para el emisor' ),
+            ('13', '13-Sin contraprestación a terceros' )
         ],
         string="Tipo Transaccion"
     )
@@ -39,16 +39,16 @@ class AccountMoveLineEinvoice(models.Model):
 
     fe_codigo_descuento = fields.Selection(
         [
-            ('01', 'Descuento por Regalía' ),
-            ('02', 'Descuento por Regalía o Bonificaciones IVA Cobrado al Cliente' ),
-            ('03', 'Descuento por Bonificación' ),
-            ('04', 'Descuento por volumen' ),
-            ('05', 'Descuento por Temporada (estacional)' ),
-            ('06', 'Descuento promocional' ),
-            ('07', 'Descuento Comercia' ),
-            ('08', 'Descuento por frecuencia' ),
-            ('09', 'Descuento sostenido' ),
-            ('99', 'Otros descuentos' ),
+            ('01', '01-Descuento por Regalía' ),
+            ('02', '02-Descuento por Regalía o Bonificaciones IVA Cobrado al Cliente' ),
+            ('03', '03-Descuento por Bonificación' ),
+            ('04', '04-Descuento por volumen' ),
+            ('05', '05-Descuento por Temporada (estacional)' ),
+            ('06', '06-Descuento promocional' ),
+            ('07', '07-Descuento Comercia' ),
+            ('08', '08-Descuento por frecuencia' ),
+            ('09', '09-Descuento sostenido' ),
+            ('99', '99-Otros descuentos' ),
 
         ],
         string="Codigo Descuento"
@@ -60,8 +60,8 @@ class AccountMoveLineEinvoice(models.Model):
 
     fe_iva_cobrado_fabrica = fields.Selection(
         [
-            ('01', 'Venta de bienes con IVA según el sistema especial de determinación de IVA a nivel de fábrica (Se utiliza cuando se está cobrando el IVA a nivel de fábrica' ),
-            ('02', 'Ventas exentas según el sistema especial de determinación de IVA a nivel de fábrica, mayorista y aduanas (se utiliza cuando el producto se encuentra exento ya que el bien soporto el cobro de impuestos a nivel de fábrica).' ),
+            ('01', '01-Venta de bienes con IVA según el sistema especial de determinación de IVA a nivel de fábrica (Se utiliza cuando se está cobrando el IVA a nivel de fábrica' ),
+            ('02', '02-Ventas exentas según el sistema especial de determinación de IVA a nivel de fábrica, mayorista y aduanas (se utiliza cuando el producto se encuentra exento ya que el bien soporto el cobro de impuestos a nivel de fábrica).' ),
         ],
         string="IVA Cobrado Fabrica"
     )
