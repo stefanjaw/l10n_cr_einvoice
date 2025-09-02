@@ -1739,7 +1739,7 @@ class AccountMoveFunctions(models.Model):
                 ir_sequence = journal_id.sequence_rep#._next_do()
             
             if len(ir_sequence) == 0:
-                msg1 = f"Falta Configurar la secuencia del {fe_doc_type} en el diario: {journal_id.name}"
+                msg1 = f"Falta Configurar la secuencia del {fe_doc_type} en el diario: {journal_id.name}\nError:1742"
                 raise ValidationError( msg1 )
             else:
                 sequence = ir_sequence._next_do()
@@ -1768,13 +1768,16 @@ class AccountMoveFunctions(models.Model):
             if move_type == "entry":
                 fe_doc_type = "ReciboElectronicoPago"
                 vals['fe_doc_type'] = fe_doc_type
-                sequence = journal_ids.sequence_rep
+                # sequence = journal_ids.sequence_rep 
                 vals['fe_fecha_emision'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                 # vals['date'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
                 # result = self.fe_get_sequence(  )
-
-            if name  in ["", "/", False] and fe_doc_type not in [False]:
-                vals['name'] = self.fe_sequence_get( journal_ids, fe_doc_type)
+            
+            # Comentado por Desarrollo xxxxx
+            msg1 = "Comentado por Desarrollo Sequence del ReciboElectronicoPago xxxxx"
+            _logger.info(f"DEF1778 {msg1} =======")
+            # if name  in ["", "/", False] and fe_doc_type not in [False]:
+            #     vals['name'] = self.fe_sequence_get( journal_ids, fe_doc_type)
 
         _logger.info(f"DEF1752 vals_lst: \n{vals_lst}")
         records = super().create( vals_lst )
