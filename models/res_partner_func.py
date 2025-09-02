@@ -58,7 +58,8 @@ class ResPartnerFunctions(models.Model):
                             "fe_identification_type":response_json["tipoIdentificacion"],
                         }
                 
-                if len(res_partner_activity_codes) > 0:
+                if res_partner_activity_codes  \
+                and len(res_partner_activity_codes) > 0:
                     data.update({
                         "fe_activity_code_ids": res_partner_activity_codes
                     })

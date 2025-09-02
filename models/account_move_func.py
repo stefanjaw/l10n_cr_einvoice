@@ -881,6 +881,7 @@ class AccountMoveFunctions(models.Model):
                         elif s.fe_doc_type == "FacturaElectronicaCompra":
                             sequence = s.journal_id.sequence_fec
                         elif s.fe_doc_type == "ReciboElectronicoPago":
+                            _logger.info(f"DEF884 ReciboElectronicoPago Omitido ====")
                             sequence = s.journal_id.sequence_rep
                         else:
                             sequence = False
@@ -892,7 +893,11 @@ class AccountMoveFunctions(models.Model):
                             raise exceptions.UserError((msg))                         
                         elif sequence.prefix == False:
                             msg = f'Falta configurar el prefijo en la secuencia: {sequence.name} para {s.fe_doc_type}'
-                            raise exceptions.UserError((msg))
+                            if s.fe_doc_type == "ReciboElectronicoPago":
+                                _logger.info(f"DEF897 ReciboElectronicoPago Omitido ====")
+                                pass
+                            else:
+                                raise exceptions.UserError((msg))
                         elif len(sequence.prefix) >= 10:
                             
                             _logger.info(f"DEF811 sequence: {sequence} / sequence_name: {sequence.name}")
@@ -946,15 +951,19 @@ class AccountMoveFunctions(models.Model):
                 
                 _logger.info(f"DEF820: s.fe_activity_code_id: {s.fe_activity_code_id}")
 
-                if s.name in ["", "/", False]:
-                    
+                if s.name in ["", "/", False] and len(sequence) > 0:
+                    _logger.info(f"DEF955 sequence: {sequence}")
                     s.name = sequence._next_do()
                 
                 _logger.info(f"DEF836 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
                 
                 res = super(AccountMoveFunctions, s).action_post()
-                
-                s.write({ 'sequence_prefix': sequence._get_prefix_suffix()[0]  })
+
+                if s.fe_doc_type == "ReciboElectronicoPago":
+                    _logger.info(f"DEF963 ReciboElectronicoPago Omitido por desarrollo ===============")
+                    pass
+                else:
+                    s.write({ 'sequence_prefix': sequence._get_prefix_suffix()[0]  })
                 
                 _logger.info(f"DEF838 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
                 
