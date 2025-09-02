@@ -762,7 +762,18 @@ class ElectronicDoc(models.Model):
     def convert_xml_to_other(self, xml_b64, type_dest="dict"):
         _logger.info(f"    Converting xml to dict")
         header = {'Content-Type':'application/json'}
-        url = f"{self.company_id.fe_url_server}convert-xml-to-other"
+
+        fe_url_server = self.company_id.fe_url_server
+        if fe_url_server:
+            pass
+        else:
+            company_ints = self._context.get('allowed_company_ids')
+            if len( company_ints ) != 1:
+                msg1 = f"Not allowed multiple company IDs: {company_ints}"
+                raise ValidationError( msg1 )
+            else:
+                company_id = self.env['res.company'].browse( company_ints )
+                fe_url_server = company_id.fe_url_server
         
         if type(xml_b64) == bytes:
             xml_b64 = xml_b64.decode()
@@ -772,17 +783,16 @@ class ElectronicDoc(models.Model):
             "type_dest": "dict"
         }
         data_json = json.dumps( data_dict )
-        response = requests.post(url, headers = header, data = data_json)
 
+        server_side_url = f"{fe_url_server}convert-xml-to-other"
+        response = requests.post(server_side_url, headers = header, data = data_json)
+        
         response_json = response.json()
-        # _logger.info(f"DEF800 response_json: {response_json}\n\n")
         xml_dict = {}
         if response_json:
             result_str = response_json.get('result')
-            _logger.info(f"DEF804 result_str: {result_str}\n\n")
             response_data_json = json.loads( result_str )
             xml_dict = response_data_json.get('data')
-        # _logger.info(f"DEF807 xml_dict keys: {xml_dict.keys()}\n")
         
         return xml_dict
 

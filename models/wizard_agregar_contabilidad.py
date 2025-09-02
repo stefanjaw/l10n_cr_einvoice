@@ -26,13 +26,15 @@ class wizardAgregarContabilidad(models.TransientModel):
          default=lambda self: self.env.company.id,
     )
     def agregar(self):
+        _logger.info(f"DEF29 company_id: {self.company_id}")
+        
         doc = self.env['electronic.doc'].search([("id","=",self._context['doc'])])
         
         if doc.company_id != self.company_id:
             raise ValidationError("Este documento pertenece a la compañía {} si desea agregarlo a contabilidad por favor cámbiese a esta".format(doc.company_id.name))
         if self.opciones == '1':
                 xml = self._context['xml']
-                bill_dict = self.env['electronic.doc'].convert_xml_to_dic(xml)
+                bill_dict = self.env['electronic.doc'].convert_xml_to_other(xml)
                 bill_type =  self.env['electronic.doc'].get_doc_type(bill_dict)
                 
                 identificacion =  self.env['electronic.doc'].get_provider_identification(bill_dict, bill_type)
