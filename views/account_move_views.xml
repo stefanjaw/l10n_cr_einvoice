@@ -33,10 +33,13 @@
                   <button name="confirm_bill" string="Enviar a Hacienda" type="object" class="oe_highlight"/>
                 </group>
                 <group>
+                  <button name="xml_docs_get_html" type="object" string="View XMLs"/><br/>
                   <field name="fe_name_xml_sign" invisible="1"/>
                   <field name="fe_name_xml_hacienda" invisible="1"/>
                   <field name="fe_xml_sign" filename="fe_name_xml_sign" options="{'filename': 'fe_name_xml_sign'}"/>
+                  <field name="fe_html_sign" readonly="1" />
                   <field name="fe_xml_hacienda" filename="fe_name_xml_hacienda" options="{'filename': 'fe_name_xml_hacienda'}"/>
+                  <field name="fe_html_hacienda" readonly="1" />
                 </group>
               </form>
             </page>

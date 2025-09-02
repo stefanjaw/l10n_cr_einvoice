@@ -188,7 +188,7 @@ class ElectronicDoc(models.Model):
             self.xml_validate_encoding()
             
             if '.xml' in self.xml_bill_name.lower():
-                dic = self.convert_xml_to_dic(self.xml_bill)
+                dic = self.convert_xml_to_other(self.xml_bill,type_dest="dict")
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
@@ -293,7 +293,7 @@ class ElectronicDoc(models.Model):
          for record in self:
             if record.xml_acceptance:
                 if '.xml' in record.xml_acceptance_name.lower():
-                    dic = record.convert_xml_to_dic(record.xml_acceptance)
+                    dic = record.convert_xml_to_other(record.xml_acceptance, type_dest="dict")
                     doc_type = record.get_doc_type(dic)
                     if doc_type != 'MH':
                         raise ValidationError(
@@ -464,7 +464,7 @@ class ElectronicDoc(models.Model):
         
     def create_electronic_doc(self, xml, xml_name,company=False):
         
-        dic = self.convert_xml_to_dic(xml)
+        dic = self.convert_xml_to_other(xml,type_dest="dict")
         doc_type = self.get_doc_type(dic)
 
         key = self.get_key(dic, doc_type)
@@ -541,7 +541,7 @@ class ElectronicDoc(models.Model):
     def add_acceptance(self, xml_acceptance, xml_acceptance_name):
         "UC05A"
         'Validar que la <Clave> dentro del XML del “Mensaje de Hacienda”, se tenga ya'
-        dic = self.convert_xml_to_dic(xml_acceptance)
+        dic = self.convert_xml_to_other(xml_acceptance, type_dest="dict")
         doc_type = self.get_doc_type(dic)
         key = self.get_key(dic, doc_type)
         document = self.env['electronic.doc'].search([('key', '=', key)])
@@ -559,8 +559,8 @@ class ElectronicDoc(models.Model):
                 'fe_pdf': base64.b64encode(pdf),
                 'fe_name_pdf': fname,
             })
-
-    def transform_to_xslt(self, root_xml_b64, doc_type):
+    
+    def transform_to_xslt(self, root_xml_b64, doc_type=False):
         _logger.info(f"    ==== transform_to_xslt")
         
         header = {'Content-Type':'application/json'}
@@ -580,6 +580,7 @@ class ElectronicDoc(models.Model):
 
         data_html = ""
         if response_json:
+            _logger.info(f"DEF583 response_json: ==============\n{response_json}")
             result_str = response_json.get('result')
             data_json = json.loads( result_str )
             if data_json:
@@ -758,7 +759,7 @@ class ElectronicDoc(models.Model):
         else:
             return "0"
     
-    def convert_xml_to_dic(self, xml_b64):
+    def convert_xml_to_other(self, xml_b64, type_dest="dict"):
         _logger.info(f"    Converting xml to dict")
         header = {'Content-Type':'application/json'}
         url = f"{self.company_id.fe_url_server}convert-xml-to-other"
@@ -797,7 +798,7 @@ class ElectronicDoc(models.Model):
                     
                     xml = base64.b64encode(item_content)
                     xml_name = item.fname
-                    dic = self.convert_xml_to_dic(xml)
+                    dic = self.convert_xml_to_other(xml, type_dest="dict")
                     doc_type = self.get_doc_type(dic)
                     if doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC' or doc_type == 'ND' :
                         clave = self.get_key(dic,doc_type)
@@ -856,7 +857,7 @@ class ElectronicDoc(models.Model):
     def _cr_xml_mensaje_receptor(self):
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
 
-        bill_dic = self.convert_xml_to_dic(self.xml_bill)
+        bill_dic = self.convert_xml_to_other(self.xml_bill, type_dest="dict")
         doc_type = self.get_doc_type(bill_dic)
         key = self.get_inverse_doc_type(bill_dic, doc_type)
         if key in bill_dic.keys():

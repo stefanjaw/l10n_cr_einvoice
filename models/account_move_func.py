@@ -18,6 +18,8 @@ import logging
 import time
 #import os
 
+from .electronic_doc import ElectronicDoc as ED
+
 log = _logger = _logging = logging.getLogger(__name__)
 
 TYPE2REFUND = {
@@ -195,7 +197,8 @@ class AccountMoveFunctions(models.Model):
         return root_xml
 
     def convert_xml_to_dic(self, xml):
-        _logger.info(f"DEF236 =====")
+        _logger.info(f"DEF200 =====")
+        STOP201
         log.info('--> factelec-Invoice-convert_xml_to_dic')
         dic = xmltodict.parse(base64.b64decode(xml))
         return dic
@@ -226,7 +229,7 @@ class AccountMoveFunctions(models.Model):
        #1569524732
        if self.fe_xml_supplier_hacienda:
            root_xml = self._remove_sign(self.fe_xml_supplier_hacienda)
-           dic = self.convert_xml_to_dic(self.fe_xml_supplier_hacienda)
+           dic = self.convert_xml_to_other(self.fe_xml_supplier_hacienda, type_dest="dict")
            if not dic.get("MensajeHacienda"):
                raise exceptions.UserError(("El xml de hacienda no es un archivo valido"))
 
@@ -237,7 +240,7 @@ class AccountMoveFunctions(models.Model):
         log.info('--> factelec/_onchange_field')
         if self.fe_xml_supplier:
             root_xml = self._remove_sign(self.fe_xml_supplier)
-            dic = self.convert_xml_to_dic(self.fe_xml_supplier)
+            dic = self.convert_xml_to_other(self.fe_xml_supplier, type_dest="dict")
             if not dic.get("FacturaElectronica"):
                 raise exceptions.UserError(("La factura xml no es un archivo de factura valido"))
             doc_type = self.get_doc_type(dic)
@@ -279,7 +282,7 @@ class AccountMoveFunctions(models.Model):
         _logger.info(f"DEF317 =====")
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
 
-        bill_dic = self.convert_xml_to_dic(self.fe_xml_supplier)
+        bill_dic = self.convert_xml_to_other(self.fe_xml_supplier, type_dest="dict")
 
         if 'FacturaElectronica' in bill_dic.keys():
 
@@ -903,7 +906,7 @@ class AccountMoveFunctions(models.Model):
                                         msg = 'Falta seleccionar el mensaje: Acepta, Acepta Parcial o Rechaza el documento'
                                         raise exceptions.UserError((msg))
 
-                                    bill_dic = s.convert_xml_to_dic(s.fe_xml_supplier)
+                                    bill_dic = s.convert_xml_to_other(s.fe_xml_supplier, type_dest="dict")
                                     total = bill_dic['FacturaElectronica']['ResumenFactura']['TotalComprobante']
                                     if float(total) != s.amount_total:
                                         return {
@@ -1783,3 +1786,12 @@ class AccountMoveFunctions(models.Model):
         records = super().create( vals_lst )
         
         return records
+
+
+    def xml_docs_get_html(self):
+        for record in self:
+            record.fe_html_sign = ED.transform_to_xslt(self, record.fe_xml_sign )
+            output = ED.transform_to_xslt(self, record.fe_xml_hacienda )
+            _logger.info(f"DEF1795 output: {output}")
+            record.fe_html_hacienda = output
+        return
