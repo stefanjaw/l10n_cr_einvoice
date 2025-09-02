@@ -1761,8 +1761,14 @@ class AccountMoveFunctions(models.Model):
     
     def create(self, vals_lst):
         tz = pytz.timezone('America/Costa_Rica')
+
+        if type(vals_lst) == dict:
+            if vals_lst.get('fe_html_sign'): vals_lst['fe_html_sign'] = None
+            if vals_lst.get('fe_html_hacienda'):  vals_lst['fe_html_hacienda'] = None
+        
         for vals in vals_lst:
-            _logger.info(f"DEF1700 vals: \n{vals}\n")
+            _logger.info(f"DEF1700 vals: {type(vals)}\n{vals}\n")
+            
             fe_doc_type = False
 
             try:
