@@ -883,6 +883,9 @@ class AccountMoveFunctions(models.Model):
                         elif s.fe_doc_type == "ReciboElectronicoPago":
                             _logger.info(f"DEF884 ReciboElectronicoPago Omitido ====")
                             sequence = s.journal_id.sequence_rep
+                            if len(sequence) > 0:
+                                msg1 = "Modulo Recibo Electronico Pago Deshabilitado"
+                                raise ValidationError( msg1 )
                         else:
                             sequence = False
                         
