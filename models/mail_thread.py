@@ -17,7 +17,7 @@ class mailThread(models.AbstractModel):
 
     @api.model
     def message_new(self, msg_dict, custom_values=None):
-        _logger.info(f"DEF20 message_new self: {self}, \nmsg_dict: {msg_dict}\ncustom_values:\n{custom_values}")
+        _logger.info(f"DEF20 message_new self: {self}" )
         "OK UC01"
         "(['to', 'message_type', 'date', 'email_from', 'message_id', 'attachments', 'cc', 'author_id', 'from', 'subject', 'body'])"
         data = {}
