@@ -196,12 +196,12 @@ class AccountMoveFunctions(models.Model):
         root_xml.remove(signature)
         return root_xml
 
-    def convert_xml_to_dic(self, xml):
-        _logger.info(f"DEF200 =====")
-        STOP201
-        log.info('--> factelec-Invoice-convert_xml_to_dic')
-        dic = xmltodict.parse(base64.b64decode(xml))
-        return dic
+    # def convert_xml_to_dic(self, xml):
+    #     _logger.info(f"DEF200 =====")
+    #     STOP201
+    #     log.info('--> factelec-Invoice-convert_xml_to_dic')
+    #     dic = xmltodict.parse(base64.b64decode(xml))
+    #     return dic
 
     def get_doc_type(self, dic):
         _logger.info(f"DEF242 =====")

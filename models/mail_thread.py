@@ -62,7 +62,7 @@ class mailThread(models.AbstractModel):
                     
                 doc = base64.b64encode(item_content)
                 try:
-                    dic = self.env['electronic.doc'].convert_xml_to_dic(doc)
+                    dic = self.env['electronic.doc'].convert_xml_to_other(doc)
                 except:
                     _logger.info(f"  Error: Can't convert XML {item.fname} - Content: \n{item.content}\n")
                     continue

@@ -78,7 +78,7 @@ class email(models.Model):
                         doc = base64.b64encode( item_content )
                         "UC03"
                         if '.xml' in str(item.fname).lower():
-                            dic = self.env['electronic.doc'].convert_xml_to_dic(
+                            dic = self.env['electronic.doc'].convert_xml_to_other(
                                 doc)
                             doc_type = self.env['electronic.doc'].get_doc_type(dic)
                         else:
