@@ -559,12 +559,34 @@ class ElectronicDoc(models.Model):
                 'fe_pdf': base64.b64encode(pdf),
                 'fe_name_pdf': fname,
             })
+
+    def _company_id_get_obj(self):
+        company_id = self.company_id
+        if len(company_id) == 1:
+            pass
+        else:
+            company_ints = self._context.get('allowed_company_ids')
+            if len( company_ints ) != 1:
+                msg1 = f"Not allowed multiple company IDs: {company_ints}"
+                raise ValidationError( msg1 )
+            else:
+                company_id = self.env['res.company'].browse( company_ints )
+        return company_id
+        
     
     def transform_to_xslt(self, root_xml_b64, doc_type=False):
         _logger.info(f"    ==== transform_to_xslt")
         
+        company_id = self._company_id_get_obj()
+        fe_url_server = company_id.fe_url_server
+        if fe_url_server:
+            pass
+        else:
+            msg1 = f"Error 585 - Not defined Server Side URL: {fe_url_server} for company: {company_id}"
+            raise ValidationError( msg1 )
+        
         header = {'Content-Type':'application/json'}
-        url = f"{self.company_id.fe_url_server}convert-xml-to-other"
+        url = f"{fe_url_server}convert-xml-to-other"
         
         if type(root_xml_b64) == bytes:
             root_xml_b64 = root_xml_b64.decode()
@@ -574,13 +596,16 @@ class ElectronicDoc(models.Model):
             "type_dest": "html"
         }
         data_json = json.dumps( data_dict )
-        response = requests.post(url, headers = header, data = data_json)
+        try:
+            response = requests.post(url, headers = header, data = data_json)
+        except:
+            return "Update View"
 
         response_json = response.json()
 
         data_html = ""
         if response_json:
-            _logger.info(f"DEF583 response_json: ==============\n{response_json}")
+            # _logger.info(f"DEF583 response_json: ==============\n{response_json}")
             result_str = response_json.get('result')
             data_json = json.loads( result_str )
             if data_json:
@@ -763,17 +788,13 @@ class ElectronicDoc(models.Model):
         _logger.info(f"    Converting xml to dict")
         header = {'Content-Type':'application/json'}
 
-        fe_url_server = self.company_id.fe_url_server
+        company_id = self._company_id_get_obj()
+        fe_url_server = company_id.fe_url_server
         if fe_url_server:
             pass
         else:
-            company_ints = self._context.get('allowed_company_ids')
-            if len( company_ints ) != 1:
-                msg1 = f"Not allowed multiple company IDs: {company_ints}"
-                raise ValidationError( msg1 )
-            else:
-                company_id = self.env['res.company'].browse( company_ints )
-                fe_url_server = company_id.fe_url_server
+            msg1 = f"Error 796 - Not defined Server Side URL: {fe_url_server} for company: {company_id}"
+            raise ValidationError( msg1 )
         
         if type(xml_b64) == bytes:
             xml_b64 = xml_b64.decode()
