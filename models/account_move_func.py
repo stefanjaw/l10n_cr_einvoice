@@ -1770,8 +1770,6 @@ class AccountMoveFunctions(models.Model):
             if vals_lst.get('fe_html_hacienda'):  vals_lst['fe_html_hacienda'] = None
         
         for vals in vals_lst:
-            _logger.info(f"DEF1700 vals: {type(vals)}\n{vals}\n")
-            
             fe_doc_type = False
 
             try:
@@ -1807,9 +1805,10 @@ class AccountMoveFunctions(models.Model):
 
 
     def xml_docs_get_html(self):
+        STOP1808
         for record in self:
             record.fe_html_sign = ED.transform_to_xslt(self, record.fe_xml_sign )
             output = ED.transform_to_xslt(self, record.fe_xml_hacienda )
-            _logger.info(f"DEF1795 output: {output}")
+            # _logger.info(f"DEF1795 output: {output}")
             record.fe_html_hacienda = output
         return
