@@ -614,9 +614,9 @@ class ElectronicDoc(models.Model):
         return data_html
     
     def get_doc_type(self, dic):
-        _logger.info(f"    ==== get_doc_type")
+        # _logger.info(f"    ==== get_doc_type")
         dict_keys = dic.keys()
-        _logger.info(f"DEF616 dict_keys: {dict_keys}")
+        # _logger.info(f"DEF616 dict_keys: {dict_keys}")
         result = False
         try:
             if 'FacturaElectronica' in dict_keys:
