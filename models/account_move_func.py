@@ -1805,7 +1805,6 @@ class AccountMoveFunctions(models.Model):
 
 
     def xml_docs_get_html(self):
-        STOP1808
         for record in self:
             record.fe_html_sign = ED.transform_to_xslt(self, record.fe_xml_sign )
             output = ED.transform_to_xslt(self, record.fe_xml_hacienda )
