@@ -66,7 +66,7 @@ class email(models.Model):
                         'to': to,
                         'company_id':company.id,
                     })
-
+                    _logger.info(f"DEF69 email: {Mail} ====")
                     attach_model = self.env['email.attach']
                     list_attachments = msg_dict.get('attachments', '')
 
