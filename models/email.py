@@ -8,7 +8,7 @@ import base64
 
 from io import BytesIO
 
-log = logging.getLogger(__name__)
+log = _logger = logging.getLogger(__name__)
 
 class email(models.Model):
     _name = 'email'
