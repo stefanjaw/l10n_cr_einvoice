@@ -207,7 +207,7 @@ class ElectronicDoc(models.Model):
 
                     self.write({
                         'key':self.get_key(dic, doc_type),
-                        'xslt':self.transform_to_xslt(self.xml_bill, doc_type),
+                        'xslt':self.convert_xml_to_other(self.xml_bill, type_dest="html", company_id=self.company_id),
                         'currency_id':currency_id,
                         'currency_exchange': currency_exchange,
                         'electronic_doc_bill_number':self.get_bill_number(dic, doc_type),
@@ -497,7 +497,7 @@ class ElectronicDoc(models.Model):
             currency_exchange = self.get_currency(dic, doc_type).get('TipoCambio')
 
             "UC05C"
-            xslt = self.transform_to_xslt(xml, doc_type)
+            xslt = self.convert_xml_to_other(xml, type_dest="html", company_id=new_company )
             if (not receiver_number):
                 receiver_number = ''
                 log.info(
@@ -559,24 +559,10 @@ class ElectronicDoc(models.Model):
                 'fe_pdf': base64.b64encode(pdf),
                 'fe_name_pdf': fname,
             })
-
-    def _company_id_get_obj(self):
-        company_id = self.company_id
-        if len(company_id) == 1:
-            pass
-        else:
-            company_ints = self._context.get('allowed_company_ids')
-            if len( company_ints ) != 1:
-                msg1 = f"Not allowed multiple company IDs: {company_ints}"
-                raise ValidationError( msg1 )
-            else:
-                company_id = self.env['res.company'].browse( company_ints )
-        return company_id
-        
     
     def transform_to_xslt(self, root_xml_b64, doc_type=False):
         _logger.info(f"    ==== transform_to_xslt")
-        
+        STOP565
         company_id = self._company_id_get_obj()
         fe_url_server = company_id.fe_url_server
         if fe_url_server:
@@ -784,11 +770,16 @@ class ElectronicDoc(models.Model):
         else:
             return "0"
     
-    def convert_xml_to_other(self, xml_b64, type_dest="dict"):
-        _logger.info(f"    Converting xml to dict")
+    def convert_xml_to_other(self, xml_b64, type_dest="dict", company_id = False):
+        _logger.info(f"    Converting xml to dict: {self}")
         header = {'Content-Type':'application/json'}
 
-        company_id = self._company_id_get_obj()
+        if company_id == False:
+            msg1 = f"793: No company Selected"
+            raise ValidationError( msg1 )
+        else:
+            pass
+        
         fe_url_server = company_id.fe_url_server
         if fe_url_server:
             pass
@@ -801,7 +792,7 @@ class ElectronicDoc(models.Model):
         
         data_dict = {
             "xml_b64": xml_b64,
-            "type_dest": "dict"
+            "type_dest": type_dest
         }
         data_json = json.dumps( data_dict )
 

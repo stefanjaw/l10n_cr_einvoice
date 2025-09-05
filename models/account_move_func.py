@@ -1805,9 +1805,12 @@ class AccountMoveFunctions(models.Model):
 
 
     def xml_docs_get_html(self):
+        _logger.info(f"    ==== xml_docs_get_html: {self} {self.company_id}")
         for record in self:
-            record.fe_html_sign = ED.transform_to_xslt(self, record.fe_xml_sign )
-            output = ED.transform_to_xslt(self, record.fe_xml_hacienda )
+            output = ED.convert_xml_to_other(self, record.fe_xml_sign, type_dest="html", company_id=self.company_id )
+            # _logger.info(f"DEF1810 output: {output}")
+            record.fe_html_sign = output
+            output = ED.convert_xml_to_other(self, record.fe_xml_hacienda, type_dest="html", company_id=self.company_id  )
             # _logger.info(f"DEF1795 output: {output}")
             record.fe_html_hacienda = output
         return
