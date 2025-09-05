@@ -95,7 +95,6 @@ class AccountMoveSendInherit(models.TransientModel): # 1707799931
                 "mimetype": mimetype,
                 "datas": datas
             }
-            _logger.info(f"DEF98 data_json: \n{data_json}")
             attachment_id = attachment_id.sudo().create(data_json)
         
         return attachment_id

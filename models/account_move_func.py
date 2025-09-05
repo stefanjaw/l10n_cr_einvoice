@@ -311,7 +311,7 @@ class AccountMoveFunctions(models.Model):
             raise exceptions.UserError((msg))
 
     def _cr_post_server_side(self):
-        _logger.info(f"DEF349 =====")
+        _logger.info(f"    ===== _cr_post_server_side self: {self}")
         if not self.company_id.fe_certificate:
             raise exceptions.UserError(('No se encuentra el certificado en compañia'))
             
@@ -342,8 +342,6 @@ class AccountMoveFunctions(models.Model):
             else:
                  raise ValidationError(ex) 
         try:
-           log.info('===335==== Response : \n  %s',response.text )
-           '''Response : {"id": null, "jsonrpc": "2.0", "result": {"status": "200"}}'''
            json_response = json.loads(response.text)
            
            result = ""
@@ -520,7 +518,7 @@ class AccountMoveFunctions(models.Model):
             raise exceptions.UserError((msg))
 
     def _validate_invoice_line(self):
-        _logger.info(f"DEF532 =====")
+        _logger.info(f"    ===== _validate_invoice_line: {self}")
         if len( self.name ) != 20:
             return
         units = ['Al', 'Alc', 'Cm', 'I', 'Os', 'Sp', 'Spe', 'St', 'd', 'm', 'kg', 's', 'A', 'K', 'mol', 'cd', 'm²', 'm³', 'm/s', 'm/s²', '1/m', 'kg/m³', 'A/m²', 'A/m', 'mol/m³', 'cd/m²', '1', 'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'Ω', 'S', 'Wb', 'T', 'H', '°C', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'Pa·s', 'N·m', 'N/m', 'rad/s', 'rad/s²', 'W/m²', 'J/K', 'J/(kg·K)', 'J/kg', 'W/(m·K)', 'J/m³', 'V/m', 'C/m³', 'C/m²', 'F/m', 'H/m', 'J/mol', 'J/(mol·K)', 'C/kg', 'Gy/s', 'W/sr', 'W/(m²·sr)', 'kat/m³', 'min', 'h', 'd', 'º', '´', '´´', 'L', 't', 'Np', 'B', 'eV', 'u', 'ua', 'Unid', 'Gal', 'g', 'Km', 'Kw', 'ln', 'cm', 'mL', 'mm', 'Oz', 'Otros']
@@ -570,7 +568,7 @@ class AccountMoveFunctions(models.Model):
 
            
     def validar_datos_factura(self):
-            _logger.info(f"DEF541 ===== validar_datos_factura: {self} {self.name}")
+            _logger.info(f"    ===== validar_datos_factura: {self} {self.name}")
             fe_version = self.company_id.fe_version
             
             if len( self.name ) != 20:
@@ -606,9 +604,6 @@ class AccountMoveFunctions(models.Model):
                 raise ValidationError( msg )
             
             data['fe_proveedor_sistemas'] = self.company_id.fe_proveedor_sistemas
-            
-            
-            _logger.info(f"DEF561 ===== \n{data}")
             
             url = f'{self.company_id.fe_url_server}'.replace('/api/v1/billing/','')
             url += '/api/v1/validate'
@@ -747,8 +742,6 @@ class AccountMoveFunctions(models.Model):
             
             if not self.company_id.email:
                  msg += 'En compañia, el correo electronico es requerido \n'
-            
-            _logger.info(f"DEF710 name: {self.name}\n")
             
             if  self.name[8:10] not in ['03', '04', '09']:
             
@@ -944,21 +937,14 @@ class AccountMoveFunctions(models.Model):
                 #    raise ValidationError(f'  Error: Fecha de Información de Referencia está pendiente')
                     
                 date_temp = s.invoice_date 
-                log.info('--> 1575061615')
-                _logger.info(f"DEF829 before action post=== res.name: {s.name}\n\n")
                 
                 activity_codes = self.env['activity.code'].search([('company_id', '=', s.company_id.id)])
-                _logger.info(f"DEF820: company_id: self.company_id: {s.company_id} - activties codes: {activity_codes}")
+                
                 if len(activity_codes) == 1:
                     s.fe_activity_code_id = activity_codes.id
                 
-                _logger.info(f"DEF820: s.fe_activity_code_id: {s.fe_activity_code_id}")
-
                 if s.name in ["", "/", False] and len(sequence) > 0:
-                    _logger.info(f"DEF955 sequence: {sequence}")
                     s.name = sequence._next_do()
-                
-                _logger.info(f"DEF836 after action post=== res.name: {s.name} prefix: {s.sequence_prefix}")
                 
                 res = super(AccountMoveFunctions, s).action_post()
 
@@ -981,7 +967,6 @@ class AccountMoveFunctions(models.Model):
                 s._validate_company()
                 if s.name[8:10] != '05':
                     if s.fe_clave in [False, None, ""]:
-                        _logger.info(f"DEF912 Generating fe_clave")
                         s._generar_clave()
                 
                 log.info('--->Clave %s',s.fe_clave)
@@ -993,23 +978,15 @@ class AccountMoveFunctions(models.Model):
             else:
                 log.info('--> 1575061637')
                 res = super(AccountMoveFunctions, s).action_post()
-
-            _logger.info(f"DEF865 s.name: {s.name} {s.sequence_prefix}")
-
-        
-            _logger.info(f"DEF868 s.name: {s.name}")
     
-                
     def get_invoice(self):
-        _logger.info(f"DEF872 =====")
+        _logger.info(f"    ==== get_invoice: {self}")
         for s in self:
             if not s.fe_server_state:
                 raise exceptions.UserError('Porfavor envie el documento antes de consultarlo')
             if s.state == 'draft':
               raise exceptions.UserError('VALIDE primero este documento')
-            #peticion al servidor a partir de la clave
-            log.info('--> 1569447129')
-            log.info(f'--> get_invoice: {s.name}')
+
             if not 'http://' in s.company_id.fe_url_server and  not 'https://' in s.company_id.fe_url_server:
                raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
 
@@ -1104,8 +1081,8 @@ class AccountMoveFunctions(models.Model):
 
 
     def _cr_xml_factura_electronica(self):
-        _logger.info(f"DEF974 ===== self: {self}")
-        log.info('--> factelec-Invoice-_cr_xml_factura_electronica')
+        _logger.info(f"===== _cr_xml_factura_electronica self: {self}")
+        
         for s in self:
             #changed s.invoice to invoice_data
             fe_version = s.company_id.fe_version
@@ -1743,14 +1720,13 @@ class AccountMoveFunctions(models.Model):
         raise ValidationError( msg1 )
 
     def fe_sequence_get(self, journal_id, fe_doc_type):
-        _logger.info(f"DEF1708 journal_id: {journal_id}")
-        _logger.info(f"DEF1708 fe_doc_type: {fe_doc_type}")
+        _logger.info(f"DEF1746 journal_id: {journal_id} fe_doc_type: {fe_doc_type}")
+        
         sequence = False
         ir_sequence = []
         
         if len( journal_id ) == 1:
             if fe_doc_type == "ReciboElectronicoPago":
-                # STOP1706
                 ir_sequence = journal_id.sequence_rep#._next_do()
             
             if len(ir_sequence) == 0:
@@ -1777,7 +1753,7 @@ class AccountMoveFunctions(models.Model):
             except:
                 journal_ids = []
             
-            _logger.info(f"DEF1736 journal_ids: \n{journal_ids}\n")
+            # _logger.info(f"DEF1736 journal_ids: \n{journal_ids}\n")
             if len(journal_ids) != 1:
                 continue
 
@@ -1798,7 +1774,7 @@ class AccountMoveFunctions(models.Model):
             # if name  in ["", "/", False] and fe_doc_type not in [False]:
             #     vals['name'] = self.fe_sequence_get( journal_ids, fe_doc_type)
 
-        _logger.info(f"DEF1752 vals_lst: \n{vals_lst}")
+        # _logger.info(f"DEF1752 vals_lst: \n{vals_lst}")
         records = super().create( vals_lst )
         
         return records
