@@ -184,11 +184,12 @@ class ElectronicDoc(models.Model):
 
     @api.onchange("xml_bill")
     def _onchange_load_xml(self):
+        _logger.info(f"DEF187 _onchange_load_xml self: {self}")
         if self.xml_bill:
             self.xml_validate_encoding()
             
             if '.xml' in self.xml_bill_name.lower():
-                dic = self.convert_xml_to_other(self.xml_bill,type_dest="dict")
+                dic = self.convert_xml_to_other(self.xml_bill, type_dest="dict", company_id=self.company_id)
                 doc_type = self.get_doc_type(dic)
                 if doc_type == 'TE' or doc_type == 'FE' or doc_type == 'NC':
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
@@ -290,10 +291,11 @@ class ElectronicDoc(models.Model):
             }
 
     def validar_xml_aceptacion(self):
+         _logger.info(f"DEF294 validar_xml_aceptacion self: {self}")
          for record in self:
             if record.xml_acceptance:
                 if '.xml' in record.xml_acceptance_name.lower():
-                    dic = record.convert_xml_to_other(record.xml_acceptance, type_dest="dict")
+                    dic = record.convert_xml_to_other(record.xml_acceptance, type_dest="dict", company_id=self.company_id)
                     doc_type = record.get_doc_type(dic)
                     if doc_type != 'MH':
                         raise ValidationError(
@@ -463,8 +465,14 @@ class ElectronicDoc(models.Model):
             return invoice_lines
         
     def create_electronic_doc(self, xml, xml_name,company=False):
+        _logger.info(f"    ==== create_electronic_doc self: {self}")
+        if company:
+            pass
+        else:
+            msg1 = f"    No company defined: {company} for self: {self}"
+            raise ValidationError( msg1 )
         
-        dic = self.convert_xml_to_other(xml,type_dest="dict")
+        dic = self.convert_xml_to_other(xml,type_dest="dict", company_id=company)
         doc_type = self.get_doc_type(dic)
 
         key = self.get_key(dic, doc_type)
@@ -484,7 +492,7 @@ class ElectronicDoc(models.Model):
             else:
                 _logger.info("ERROR:   Vendor Bill with Receiver Tax ID: %s Not Found", receiver_number)
                 return False
-
+            
             receiver_name = self.get_receiver_name(dic, doc_type) or company.name or False
             bill_number = self.get_bill_number(dic, doc_type) 
             xml_bill = xml
@@ -538,10 +546,17 @@ class ElectronicDoc(models.Model):
                 '\n "el documento XML Clave: %s tipo %s ya se encuentra en la base de datos. Refresque la Pantalla\n',
                 key, doc_type)
 
-    def add_acceptance(self, xml_acceptance, xml_acceptance_name):
+    def add_acceptance(self, xml_acceptance, xml_acceptance_name, company_id=None):
+        _logger.info(f"DEF550 add_acceptance self: {self}")
+        if company_id:
+            pass
+        else:
+            msg1 = f"554 No company_id defined: {company_id}"
+            raise ValidationError( msg1 )
+        
         "UC05A"
         'Validar que la <Clave> dentro del XML del “Mensaje de Hacienda”, se tenga ya'
-        dic = self.convert_xml_to_other(xml_acceptance, type_dest="dict")
+        dic = self.convert_xml_to_other(xml_acceptance, type_dest="dict", company_id=company_id)
         doc_type = self.get_doc_type(dic)
         key = self.get_key(dic, doc_type)
         document = self.env['electronic.doc'].search([('key', '=', key)])
@@ -771,11 +786,11 @@ class ElectronicDoc(models.Model):
             return "0"
     
     def convert_xml_to_other(self, xml_b64, type_dest="dict", company_id = False):
-        _logger.info(f"    Converting xml to dict: {self}")
+        _logger.info(f"    Converting xml to {type_dest} self: {self} company: {company_id}")
         header = {'Content-Type':'application/json'}
 
         if company_id == False:
-            msg1 = f"793: No company Selected"
+            msg1 = f"793: No company Selected\n"
             raise ValidationError( msg1 )
         else:
             pass
@@ -808,7 +823,13 @@ class ElectronicDoc(models.Model):
         
         return xml_dict
 
-    def automatic_bill_creation(self, docs_tuple,company=None):
+    def automatic_bill_creation(self, docs_tuple,company_id=None):
+        _logger.info(f"    ==== automatic_bill_creation self: {self}")
+        if company_id:
+            pass
+        else:
+            msg1 = f"815 No company_id Defined: {company_id}"
+        
         clave = False
         for doc_list in docs_tuple:
             for item in doc_list:
@@ -820,16 +841,18 @@ class ElectronicDoc(models.Model):
                     
                     xml = base64.b64encode(item_content)
                     xml_name = item.fname
-                    dic = self.convert_xml_to_other(xml, type_dest="dict")
+                    dic = self.convert_xml_to_other(xml, type_dest="dict", company_id=company_id)
                     doc_type = self.get_doc_type(dic)
                     if doc_type == 'FE' or doc_type == 'TE' or doc_type == 'NC' or doc_type == 'ND' :
+                        _logger.info(f"DEF832    ====  create_electronic_doc xml_name: {xml_name}")
                         clave = self.get_key(dic,doc_type)
-                        is_created = self.create_electronic_doc(xml, xml_name,company)
+                        is_created = self.create_electronic_doc(xml, xml_name,company_id)
                         if is_created == False:
                             return
 
                     elif doc_type == 'MH':
-                        self.add_acceptance(xml, xml_name)
+                        _logger.info(f"DEF854    ==== MH add_acceptance xml_name: {xml_name} for: company_id: {company_id}")
+                        self.add_acceptance(xml, xml_name, company_id=company_id)
 
                 log.info("pdf ======={}====clave=={}".format(str(item.fname).lower(),clave))
                 if '.pdf' in str(item.fname).lower() and clave:
@@ -839,11 +862,7 @@ class ElectronicDoc(models.Model):
                     log.info("pdf ======creando====")
                     pdf = item.content
                     self.add_pdf( clave, pdf, str(item.fname).lower() )
-
-             
-
-                    
-                    
+    
     def send_bill(self):
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
