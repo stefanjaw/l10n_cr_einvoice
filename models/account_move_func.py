@@ -537,13 +537,14 @@ class AccountMoveFunctions(models.Model):
             if line.product_id:
                 if line.product_id.type == 'service':
                     if line.product_uom_id.uom_mh not in service_units:
-                        raise exceptions.UserError(("La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
+                        raise exceptions.UserError(("1 La unidad de medida {0} no corresponde a una unidad valida para un servicio ! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))
                 else: 
-                    if line.product_uom_id.uom_mh not in units:
-                        raise exceptions.UserError(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
+                    pass
+                    # if line.product_uom_id.uom_mh not in units:
+                    #     raise exceptions.UserError(("2 La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
             else:
                 if line.product_uom_id.uom_mh not in units:
-                        raise exceptions.UserError(("La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
+                        raise exceptions.UserError(("3 La unidad de medida {0} no corresponde a una unidad valida en el ministerio de hacienda! configure el campo Unidad Medida MH en la Unidad {1}".format(line.product_uom_id.uom_mh,line.product_uom_id.name)))   
 
             if not line.product_id.cabys_code_id:
                 raise exceptions.UserError(("El producto {0} no contiene código CABYS".format(line.product_id.name)))
