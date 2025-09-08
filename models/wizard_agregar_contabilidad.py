@@ -34,7 +34,7 @@ class wizardAgregarContabilidad(models.TransientModel):
             raise ValidationError("Este documento pertenece a la compañía {} si desea agregarlo a contabilidad por favor cámbiese a esta".format(doc.company_id.name))
         if self.opciones == '1':
                 xml = self._context['xml']
-                bill_dict = self.env['electronic.doc'].convert_xml_to_other(xml)
+                bill_dict = self.env['electronic.doc'].convert_xml_to_other(xml, type_dest="dict", company_id = doc.company_id)
                 bill_type =  self.env['electronic.doc'].get_doc_type(bill_dict)
                 
                 identificacion =  self.env['electronic.doc'].get_provider_identification(bill_dict, bill_type)
