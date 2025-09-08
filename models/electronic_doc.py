@@ -897,9 +897,11 @@ class ElectronicDoc(models.Model):
         
     def _cr_xml_mensaje_receptor(self):
         log.info('--> factelec-Invoice-_cr_xml_mensaje_receptor')
-
-        bill_dic = self.convert_xml_to_other(self.xml_bill, type_dest="dict")
+        
+        company_id = self.company_id
+        bill_dic = self.convert_xml_to_other(self.xml_bill, type_dest="dict", company_id=company_id)
         doc_type = self.get_doc_type(bill_dic)
+        
         key = self.get_inverse_doc_type(bill_dic, doc_type)
         if key in bill_dic.keys():
             tz = pytz.timezone('America/Costa_Rica')
