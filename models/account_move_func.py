@@ -336,7 +336,7 @@ class AccountMoveFunctions(models.Model):
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
-        STOP333
+        # STOP333
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
@@ -1490,40 +1490,36 @@ class AccountMoveFunctions(models.Model):
             
                 MontoTotalLinea = round((LineaSubTotal + LineaImpuestoNeto),5)
                 inv_lines[arrayCount]['MontoTotalLinea'] = '{0:.5f}'.format(MontoTotalLinea)
-
+                
                 if i.product_id.type == 'service':
-                    #asking for tax for know if the product is Tax Free
-                    _logger.info(f"DEF1493 i.tax_ids: {i.tax_ids}")
                     if len( i.tax_ids ) > 1:
-                        msg1 = f"1494 - line taxes error: {i.tax_ids}"
+                        msg1 = f"1490 - line taxes error: {i.tax_ids}"
                         raise ValidationError( msg1 )
                     elif i.tax_ids:
                         if self.fiscal_position_id:
                             TotalServGravados = TotalServGravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                        elif i.tax_ids.tarifa_impuesto in ["10"]:
+                            TotalServExentos = TotalServExentos + LineaMontoTotal
                         else:
                             TotalServGravados = TotalServGravados + LineaMontoTotal
                     else:
-                        TotalServExentos = TotalServExentos + LineaMontoTotal
                         msg1 = f"1500 Pend. Define Taxes for line: {i.name}"
                         raise ValidationError( msg1 )
-                    #  XXXX PENDIENTE LOS ServExonerados
                 else:
                     if i.tax_ids:
                          if self.fiscal_position_id:
                             TotalMercanciasGravadas = TotalMercanciasGravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
+                         elif i.tax_ids.tarifa_impuesto in ["10"]:
+                             TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal
                          else:
                             TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
                     else:
-                        TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
-                    #   XXXX PENDIENTE LOS MercanciasExoneradas
-
-                
+                        msg1 = f"1550 Pend. Define Taxes for line: {i.name}"
+                        raise ValidationError( msg1 )
+               
                 NumeroLinea = NumeroLinea + 1
                 arrayCount = arrayCount + 1
-
-
-            _logger.info(f"DEF1516 ===========")
-            STOP1517
+            
             invoice_data[s.fe_doc_type]['DetalleServicio'] = {'LineaDetalle':inv_lines}
             
             invoice_data[s.fe_doc_type].update({
