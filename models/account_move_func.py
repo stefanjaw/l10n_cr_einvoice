@@ -329,11 +329,14 @@ class AccountMoveFunctions(models.Model):
                       'token_user_name':self.company_id.fe_user_name,
                       }
         json_to_send = json.dumps(json_string)
-        _logger.info(f"========== json to send : \n {json_to_send[:2000]} \n")
+        _logger.info(f"    ==== json to send : \n {json_to_send[:2500]} \n")
+        
+        test_json = json.dumps(json_string, indent=4)
+        _logger.info(f"    ==== json to send test_json : \n {test_json[:4000]} \n")
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
-        # STOP333
+        STOP333
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
@@ -369,8 +372,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def confirm_bill(self):
-        _logger.info(f"DEF406 ===== confirm_bill self: {self}")
-        log.info('--> factelec-Invoice-confirm_bill')
+        log.info(f"--> factelec-Invoice-confirm_bill self: {self}")
 
         if not 'http://' in self.company_id.fe_url_server and  not 'https://' in self.company_id.fe_url_server:
             raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
@@ -500,8 +502,7 @@ class AccountMoveFunctions(models.Model):
         return new_date
 
     def _validate_company(self):
-        _logger.info(f"DEF514 ===== _validate_company self: {self.name}")
-        log.info('--> _validate_company')
+        _logger.info(f"    ===== _validate_company self: {self.name}")
         error = False
         msg = 'En Compania:\n'
         if not self.company_id.country_id:
@@ -518,12 +519,13 @@ class AccountMoveFunctions(models.Model):
             raise exceptions.UserError((msg))
 
     def _validate_invoice_line(self):
-        _logger.info(f"    ===== _validate_invoice_line: {self}")
         if len( self.name ) != 20:
             return
+        _logger.info(f"    ===== _validate_invoice_line: {self}")
+        
         units = ['Al', 'Alc', 'Cm', 'I', 'Os', 'Sp', 'Spe', 'St', 'd', 'm', 'kg', 's', 'A', 'K', 'mol', 'cd', 'm²', 'm³', 'm/s', 'm/s²', '1/m', 'kg/m³', 'A/m²', 'A/m', 'mol/m³', 'cd/m²', '1', 'rad', 'sr', 'Hz', 'N', 'Pa', 'J', 'W', 'C', 'V', 'F', 'Ω', 'S', 'Wb', 'T', 'H', '°C', 'lm', 'lx', 'Bq', 'Gy', 'Sv', 'kat', 'Pa·s', 'N·m', 'N/m', 'rad/s', 'rad/s²', 'W/m²', 'J/K', 'J/(kg·K)', 'J/kg', 'W/(m·K)', 'J/m³', 'V/m', 'C/m³', 'C/m²', 'F/m', 'H/m', 'J/mol', 'J/(mol·K)', 'C/kg', 'Gy/s', 'W/sr', 'W/(m²·sr)', 'kat/m³', 'min', 'h', 'd', 'º', '´', '´´', 'L', 't', 'Np', 'B', 'eV', 'u', 'ua', 'Unid', 'Gal', 'g', 'Km', 'Kw', 'ln', 'cm', 'mL', 'mm', 'Oz', 'Otros']
         service_units = ['Os','Sp','Spe','St','h']
-        log.info('--> _validate_invoice_line')
+
         for line in self.invoice_line_ids:
             if line.display_type in ["line_section", "line_note"]:
                 _logger.info(f"    ==== Skipping {line.display_type}: {line.name}")
@@ -1040,11 +1042,10 @@ class AccountMoveFunctions(models.Model):
                 
                 
     def _get_pdf_bill(self,id):
-        _logger.info(f"DEF877 ===== _get_pdf_bill self: {self} id: {id}")
-        log.info('--> _get_pdf_bill')
+        _logger.info(f"    ===== _get_pdf_bill self: {self} id: {id}")
         ctx = self.env.context.copy()
         ctx.pop('default_move_type', False)
-        _logger.info(f"DEF938 ctx: {ctx}")
+        _logger.info(f"        ==== ctx: \n{ctx}")
         #pdf = self.env.ref('account.account_invoices_without_payment').with_context(ctx).render(id)
         #pdf = self.env.ref('account.account_invoices').with_context(ctx).render(id) # Version 13
         pdf = self.env.ref('account.account_invoices').with_context(ctx)._render( 'account.account_invoices', [id] )
@@ -1082,7 +1083,7 @@ class AccountMoveFunctions(models.Model):
 
 
     def _cr_xml_factura_electronica(self):
-        _logger.info(f"===== _cr_xml_factura_electronica self: {self}")
+        _logger.info(f"    ===== _cr_xml_factura_electronica self: {self}")
         
         for s in self:
             #changed s.invoice to invoice_data
@@ -1107,8 +1108,8 @@ class AccountMoveFunctions(models.Model):
                     CodigoActividadReceptor = s.fe_partner_activity_code_id.code # contact
 
 
-                _logger.info(f"DEF CodigoActividadEmisor: {CodigoActividadEmisor}")
-                _logger.info(f"DEF CodigoActividadReceptor: {CodigoActividadReceptor}")
+                _logger.info(f"    ==== CodigoActividadEmisor: {CodigoActividadEmisor}")
+                _logger.info(f"    ==== CodigoActividadReceptor: {CodigoActividadReceptor}")
                 invoice_data[s.fe_doc_type].update({'CodigoActividadEmisor': CodigoActividadEmisor}) # company system
                 invoice_data[s.fe_doc_type].update({'CodigoActividadReceptor': CodigoActividadReceptor}) # contact
             elif fe_version == "4.3":
@@ -1116,7 +1117,7 @@ class AccountMoveFunctions(models.Model):
             
             invoice_data[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
 
-            _logger.info(f"DEF1107 fe_fecha_emision: {s.fe_fecha_emision} ===")
+            _logger.info(f"    ==== fe_fecha_emision: {s.fe_fecha_emision} ===")
             invoice_data[s.fe_doc_type].update({
                 'FechaEmision':s.fe_fecha_emision.split(' ')[0]+'T'+s.fe_fecha_emision.split(' ')[1]+'-06:00'
             })
@@ -1251,7 +1252,6 @@ class AccountMoveFunctions(models.Model):
                     invoice_data[s.fe_doc_type].update({'DetalleMensaje':s.fe_detail_msg})
 
             inv_lines = []
-            OtrosCargos_array = []
             NumeroLinea = 1
             arrayCount = 0
             totalSale = 0
@@ -1344,7 +1344,11 @@ class AccountMoveFunctions(models.Model):
                     inv_lines[arrayCount]['IVACobradoFabrica'] = i.fe_iva_cobrado_fabrica
                     inv_lines[arrayCount]['BaseImponible'] = '{0:.5f}'.format(LineaSubTotal)
                 
-                _logger.info(f"DEF1251 inv_lines: \n{inv_lines}")
+                _logger.info(f"    ==== inv_lines[arrayCount]: \n{inv_lines[arrayCount]}")
+                
+                if len(i.tax_ids) == 0 and fe_version == "4.4":
+                    msg1 = f"1350 Pend. Define Taxes for: {i.name}"
+                    raise ValidationError( msg1 )
                 
                 if len(i.tax_ids) > 0:
 
@@ -1459,7 +1463,7 @@ class AccountMoveFunctions(models.Model):
                                 tax_origen =  fiscal.tax_src_id.amount/100
                                 tax_nuevo = fiscal.tax_dest_id.amount/100
                                 tax_exonerado = tax_origen - tax_nuevo
-
+                                
                                 producto_monto_a_gravar = round( (LineaSubTotal * tax_nuevo) / tax_origen, 5)
                                 producto_monto_a_exonerar = round( LineaSubTotal - producto_monto_a_gravar, 5)
                                 
@@ -1483,19 +1487,25 @@ class AccountMoveFunctions(models.Model):
                     #XXXXXX FALTA TOTAL IVA DEVUELTO
 
                             TotalImpuesto = round((TotalImpuesto + LineaImpuestoNeto),5)
-
+            
                 MontoTotalLinea = round((LineaSubTotal + LineaImpuestoNeto),5)
                 inv_lines[arrayCount]['MontoTotalLinea'] = '{0:.5f}'.format(MontoTotalLinea)
 
                 if i.product_id.type == 'service':
                     #asking for tax for know if the product is Tax Free
-                    if i.tax_ids:
+                    _logger.info(f"DEF1493 i.tax_ids: {i.tax_ids}")
+                    if len( i.tax_ids ) > 1:
+                        msg1 = f"1494 - line taxes error: {i.tax_ids}"
+                        raise ValidationError( msg1 )
+                    elif i.tax_ids:
                         if self.fiscal_position_id:
                             TotalServGravados = TotalServGravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
                         else:
                             TotalServGravados = TotalServGravados + LineaMontoTotal
                     else:
                         TotalServExentos = TotalServExentos + LineaMontoTotal
+                        msg1 = f"1500 Pend. Define Taxes for line: {i.name}"
+                        raise ValidationError( msg1 )
                     #  XXXX PENDIENTE LOS ServExonerados
                 else:
                     if i.tax_ids:
@@ -1507,18 +1517,19 @@ class AccountMoveFunctions(models.Model):
                         TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal #LineaSubTotal
                     #   XXXX PENDIENTE LOS MercanciasExoneradas
 
-
+                
                 NumeroLinea = NumeroLinea + 1
                 arrayCount = arrayCount + 1
 
+
+            _logger.info(f"DEF1516 ===========")
+            STOP1517
             invoice_data[s.fe_doc_type]['DetalleServicio'] = {'LineaDetalle':inv_lines}
-
-
-
+            
             invoice_data[s.fe_doc_type].update({
             'OtrosCargos':OtrosCargos_array
             })
-
+            
             invoice_data[s.fe_doc_type].update(
                 {'ResumenFactura':{
                     'CodigoTipoMoneda':{
@@ -1526,7 +1537,7 @@ class AccountMoveFunctions(models.Model):
                         'TipoCambio':s.fe_currency_rate, #'{0:.2f}'.format((s.fe_currency_rate) or None),
                     }
                 }})
-
+            
             TotalGravado = TotalServGravados + TotalMercanciasGravadas
             TotalExento = TotalServExentos + TotalMercanciasExentas
             TotalExonerado = TotalServExonerado + TotalMercExonerada
