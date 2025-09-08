@@ -1098,9 +1098,20 @@ class AccountMoveFunctions(models.Model):
             
             if fe_version == "4.4":
                 invoice_data[s.fe_doc_type].update({'ProveedorSistemas':s.company_id.fe_proveedor_sistemas})
-                invoice_data[s.fe_doc_type].update({'CodigoActividadEmisor':s.fe_activity_code_id.code})
-                invoice_data[s.fe_doc_type].update({'CodigoActividadReceptor':s.fe_partner_activity_code_id.code})
-            if fe_version == "4.3":
+
+                if s.fe_doc_type in ["FacturaElectronicaCompra"]:
+                    CodigoActividadEmisor = s.fe_partner_activity_code_id.code  # contact
+                    CodigoActividadReceptor = s.fe_activity_code_id.code        # company system
+                else:
+                    CodigoActividadEmisor = s.fe_activity_code_id.code  # company system
+                    CodigoActividadReceptor = s.fe_partner_activity_code_id.code # contact
+
+
+                _logger.info(f"DEF CodigoActividadEmisor: {CodigoActividadEmisor}")
+                _logger.info(f"DEF CodigoActividadReceptor: {CodigoActividadReceptor}")
+                invoice_data[s.fe_doc_type].update({'CodigoActividadEmisor': CodigoActividadEmisor}) # company system
+                invoice_data[s.fe_doc_type].update({'CodigoActividadReceptor': CodigoActividadReceptor}) # contact
+            elif fe_version == "4.3":
                 invoice_data[s.fe_doc_type].update({'CodigoActividad':s.fe_activity_code_id.code})
             
             invoice_data[s.fe_doc_type].update({'NumeroConsecutivo':s.name})
