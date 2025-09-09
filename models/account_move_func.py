@@ -1089,9 +1089,15 @@ class AccountMoveFunctions(models.Model):
         for s in self:
             #changed s.invoice to invoice_data
             fe_version = s.company_id.fe_version
-            if fe_version not in ["4.3", "4.4"]:
+
+            if fe_version in ["4.3"]:
+                msg1 = f"Version de Hacienda {fe_version} ya no está activa"
+                raise ValidationError( msg1 )
+            elif fe_version not in ["4.3", "4.4"]:
                 msg = f"Unknown fe_version: {fe_version}"
                 raise ValidationError( msg )
+            else:
+                pass
             
             invoice_data = {}
             invoice_data.update({'fe_version':s.company_id.fe_version})
@@ -1257,13 +1263,18 @@ class AccountMoveFunctions(models.Model):
             arrayCount = 0
             totalSale = 0
             TotalDescuentos = 0
+            
             TotalServGravados = 0
             TotalServExentos = 0
             TotalServExonerado = 0
-            TotalGravado = 0
+            TotalServNoSujeto = 0
+            
             TotalMercanciasGravadas = 0
             TotalMercanciasExentas = 0
             TotalMercExonerada = 0
+            TotalMercNoSujeta = 0
+            
+            TotalGravado = 0
             TotalImpuesto = 0
             TotalOtrosCargos = 0
             OtrosCargos_array = []
@@ -1501,6 +1512,8 @@ class AccountMoveFunctions(models.Model):
                             TotalServGravados = TotalServGravados + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
                         elif i.tax_ids.tarifa_impuesto in ["10"]:
                             TotalServExentos = TotalServExentos + LineaMontoTotal
+                        elif i.tax_ids.tarifa_impuesto in ["01","11"]:
+                            TotalServNoSujeto = TotalServNoSujeto + LineaMontoTotal
                         else:
                             TotalServGravados = TotalServGravados + LineaMontoTotal
                     else:
@@ -1512,6 +1525,8 @@ class AccountMoveFunctions(models.Model):
                             TotalMercanciasGravadas = TotalMercanciasGravadas + (1-percent/LineaImpuestoTarifa) * LineaMontoTotal
                          elif i.tax_ids.tarifa_impuesto in ["10"]:
                              TotalMercanciasExentas = TotalMercanciasExentas + LineaMontoTotal
+                         elif i.tax_ids.tarifa_impuesto in ["01","11"]:
+                            TotalMercNoSujeta = TotalMercNoSujeta + LineaMontoTotal
                          else:
                             TotalMercanciasGravadas = TotalMercanciasGravadas + LineaMontoTotal #LineaSubTotal
                     else:
@@ -1538,51 +1553,62 @@ class AccountMoveFunctions(models.Model):
             TotalGravado = TotalServGravados + TotalMercanciasGravadas
             TotalExento = TotalServExentos + TotalMercanciasExentas
             TotalExonerado = TotalServExonerado + TotalMercExonerada
-            TotalVenta = TotalGravado + TotalExento + TotalExonerado   #REVISAR EL EXONERADO SI SE SUMA O RESTA
+            TotalNoSujeto = TotalServNoSujeto + TotalMercNoSujeta
+            
+            TotalVenta = TotalGravado + TotalExento + TotalExonerado + TotalNoSujeto  #REVISAR EL EXONERADO SI SE SUMA O RESTA
             TotalVentaNeta = TotalVenta - TotalDescuentos
-
+            
             if TotalServGravados:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServGravados':'{0:.5f}'.format(TotalServGravados)})
-
+            
             if TotalServExentos:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServExentos':'{0:.5f}'.format(TotalServExentos)})
-
+            
             if TotalServExonerado:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServExonerado':'{0:.5f}'.format(TotalServExonerado)})
-
+            
+            if TotalServNoSujeto:
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalServNoSujeto':'{0:.5f}'.format(TotalServNoSujeto)})
+            
             if TotalMercanciasGravadas:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasGravadas':'{0:.5f}'.format(TotalMercanciasGravadas)})
-
+            
             if TotalMercanciasExentas:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercanciasExentas':'{0:.5f}'.format(TotalMercanciasExentas)})
-
+            
             if TotalMercExonerada:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercExonerada':'{0:.5f}'.format(TotalMercExonerada)})
-
+            
+            if TotalMercNoSujeta:
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalMercNoSujeta':'{0:.5f}'.format(TotalMercNoSujeta)})
+            
             if TotalGravado:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'{0:.5f}'.format(TotalServGravados + TotalMercanciasGravadas)})
             else:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalGravado':'0'})
-
+            
             if TotalExento:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalExento':'{0:.5f}'.format(TotalServExentos + TotalMercanciasExentas)})
-
+            
             if TotalExonerado:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalExonerado':'{0:.5f}'.format(TotalServExonerado + TotalMercExonerada)})
-
+            
+            if TotalNoSujeto:
+                invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalNoSujeto':'{0:.5f}'.format(TotalServNoSujeto + TotalMercNoSujeta)})
+            
             if TotalVenta:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'{0:.5f}'.format(TotalVenta)})
             else:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVenta':'0'})
-
+            
             if TotalDescuentos:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalDescuentos':'{0:.5f}'.format(TotalDescuentos)})
-
+            
             if TotalVentaNeta:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'{0:.5f}'.format(TotalVentaNeta)})
             else:
                 invoice_data[s.fe_doc_type]['ResumenFactura'].update({'TotalVentaNeta':'0'})
-
+            
             if TotalImpuesto:
                 invoice_data[s.fe_doc_type]['ResumenFactura']['TotalImpuesto'] = '{0:.5f}'.format(TotalImpuesto)
             else:
@@ -1615,42 +1641,34 @@ class AccountMoveFunctions(models.Model):
                     if len(s.fe_doc_ref) > 1:
                         # origin_doc = s.search([('name', '=', s.fe_doc_ref)])
                         # if origin_doc:
+                        if s.fe_informacion_referencia_fecha:
+                            pass
+                        else:
+                            msg1 = f"Se requiere la Fecha de Información Referencia"
+                            raise ValidationError( msg1 )
                         origin_doc_fe_fecha_emision = s.fe_informacion_referencia_fecha.astimezone( pytz.timezone('America/Costa_Rica') ).isoformat('T')
                         invoice_data[s.fe_doc_type].update({
                             'InformacionReferencia':{
-                            'TipoDoc':s.fe_tipo_documento_referencia,
+                            'TipoDocIR':s.fe_tipo_documento_referencia,
                             # 'Numero':origin_doc.name,
                             'Numero':s.fe_doc_ref,
-                            'FechaEmision': origin_doc_fe_fecha_emision,
+                            'FechaEmisionIR': origin_doc_fe_fecha_emision,
                             'Codigo':s.fe_informacion_referencia_codigo or None,
                             'Razon':s.ref,
                             }
                         })
-                        # else:
-                        #     error = True
-                        #     msg = 'El documento de referencia {} no existe! \n'.format(s.fe_doc_ref)
                     else:
                         msg = f'El # de referencia debe tener 20 o 50 digitos\nTexto:\n{s.fe_doc_ref}'
                         raise ValidationError( msg )
-                        # if s.fe_doc_ref:
-                        #     _logger.info(f"DEF1430 =================== ")
-                        #     invoice_data[s.fe_doc_type].update({
-                        #             'InformacionReferencia':{
-                        #             'TipoDoc':s.fe_tipo_documento_referencia,
-                        #             'Numero':s.fe_doc_ref,
-                        #             'FechaEmision':s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
-                        #             'Codigo':s.fe_informacion_referencia_codigo or None,
-                        #             'Razon':s.ref,
-                        #             }
-                        #         })
+
             else:
                 if s.fe_doc_ref:
                     _logger.info(f"DEF1442 ===================\n")
                     invoice_data[s.fe_doc_type].update({
                         'InformacionReferencia':{
-                            'TipoDoc':s.fe_tipo_documento_referencia,
+                            'TipoDocIR':s.fe_tipo_documento_referencia,
                             'Numero':s.fe_doc_ref,
-                            'FechaEmision': s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
+                            'FechaEmisionIR': s.fe_informacion_referencia_fecha.astimezone(tz=pytz.timezone('America/Costa_Rica')).isoformat('T'),
                             'Codigo':s.fe_informacion_referencia_codigo or None,
                             'Razon':s.ref,
                         }
