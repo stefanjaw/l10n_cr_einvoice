@@ -364,8 +364,7 @@ class AccountMoveFunctions(models.Model):
                         _logging.info(f"DEF353 {self.name} Error: {result}\n")
                         body = "Error "+result
                         self.write_chatter(body)
-                        
-
+                        raise ValidationError( body )
         except Exception as e:
             body = "Error "+str(e)
             self.write_chatter(body)
@@ -1018,7 +1017,9 @@ class AccountMoveFunctions(models.Model):
             if data.get('result'):
 
                 if data.get('result').get('error'):
+                    
                    s.write_chatter(data['result']['error'])
+                   raise ValidationError( data['result']['error'] )
                 else:
                    params = {}
                    
