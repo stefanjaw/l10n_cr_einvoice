@@ -96,8 +96,7 @@ class ResPartnerFunctions(models.Model):
             result = "No Record Created"
             if len( records ) == 0:
                 if partner_has_id:
-                    result = self.env["res.partner.activity.codes"].create(data)
-                    _logger.info(f"        Record Partner Activity Code {code} created: {result} ")
+                    res_partner_activity_codes.append( (0,0, data )  )
                 else:
                     res_partner_activity_codes.append( (0,0, data )  )
             elif len( records ) == 1:
