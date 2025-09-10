@@ -56,7 +56,7 @@ class AccountMoveReversal(models.TransientModel):
         
         data['invoice_payment_term_id'] = move_id.invoice_payment_term_id.id
         
-        data['fe_doc_ref'] = move_id.name
+        data['fe_doc_ref'] = move_id.fe_clave
         data['fe_payment_type'] = move_id.fe_payment_type
         data['fe_receipt_status'] = move_id.fe_receipt_status
         data['fe_activity_code_id'] = move_id.fe_activity_code_id.id
