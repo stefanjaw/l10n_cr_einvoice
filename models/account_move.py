@@ -2,21 +2,14 @@ from odoo import models, fields, api, exceptions
 from datetime import datetime,timezone
 import pytz
 
+import logging
+_logging = _logger = logging.getLogger(__name__)
+
 class AccountMove(models.Model):
     _inherit = "account.move"
-
+    
     clave_proveedor = fields.Char("Clave Proveedor")
     numero_consecutivo_aceptacion = fields.Char("Numero Consecutivo Aceptacion")
-    ''' 
-    # 1725475294
-    date = fields.Date(string='Date', required=True, index=True, readonly=True,
-        states={'draft': [('readonly', False)]},
-         default=datetime.now(tz=pytz.timezone('America/Costa_Rica')).strftime("%Y-%m-%d %H:%M:%S"))
-    
-    invoice_date = fields.Date(string='Invoice/Bill Date', readonly=True, index=True, copy=False,
-        states={'draft': [('readonly', False)]},
-        default=datetime.now(tz=pytz.timezone('America/Costa_Rica')).strftime("%Y-%m-%d %H:%M:%S"))
-    '''
     
     fe_clave = fields.Char(string="Clave", size=50, copy=False)
     source_date = fields.Datetime(string="Fecha Emision_S")
@@ -32,13 +25,14 @@ class AccountMove(models.Model):
         ('99', ' Otros'),
     ], string="Tipo de pago", track_visibility='onchange',required=False,
     states={'posted': [('readonly', True)]})  #Cambio de True a False, se debe colocar True pero en la vista Invoice
-
+    
     fe_receipt_status = fields.Selection([
            ('1', 'Normal'),
            ('2', 'Contingencia'),
            ('3', 'Sin Internet'),
     ], string="Situación del comprobante", track_visibility='onchange',required=False, 
     states={'posted': [('readonly', True)]}) #Cambio de True a False, se debe colocar True pero en la vista Invoice
+    
     fe_doc_type = fields.Selection([
             ('FacturaElectronica', 'Factura Electronica'),
             ('NotaDebitoElectronica', 'Nota de Debito Electronica'),
@@ -49,11 +43,11 @@ class AccountMove(models.Model):
             ('FacturaElectronicaExportacion', 'Factura Electronica de Exportacion'),
             ('ReciboElectronicoPago', 'Recibo Electronico de pago')
         ],
-        default=lambda self: self.fields_get().get('fe_doc_type').get('selection')[0][0],
         string="Tipo Documento"
     )
+    
     fe_doc_type_id = fields.Char()
-
+    
     fe_informacion_referencia_codigo = fields.Selection([
         ('01', '01-Anula Documento de Referencia'),
         ('02', '02-Corrige monto'),
@@ -69,9 +63,9 @@ class AccountMove(models.Model):
         ('99', '99-Otros'),
     ], string="Codigo de Referencia", track_visibility='onchange',
     states={'posted': [('readonly', True)]})
-
+    
     fe_informacion_referencia_fecha = fields.Datetime(string="Fecha Informacion Referencia")
-
+    
     tax_condition = fields.Selection(
         string="Condicion del IVA",
         selection= [
@@ -82,7 +76,7 @@ class AccountMove(models.Model):
                 ('05', '05-Proporcionalidad'),
             ],
     )
-
+    
     fe_name_xml_sign = fields.Char(string="nombre xml firmado",copy=False )
     fe_xml_sign = fields.Binary(string="XML firmado",copy=False )
     fe_html_sign = fields.Html(string="HTML firmado")
@@ -90,7 +84,7 @@ class AccountMove(models.Model):
     fe_xml_hacienda = fields.Binary(string="XML Hacienda",copy=False )# 1570034790
     fe_html_hacienda = fields.Html(string="HTML Hacienda" )
     fe_server_state = fields.Char(string="Estado Hacienda",copy=False )
-
+    
     #FIELDS FOR SUPPLIER INVOICE
     fe_xml_supplier = fields.Binary(string="Factura XML", states={'posted': [('readonly', True)]}) # 1569524296
     fe_xml_supplier_name = fields.Char(string="Nombre XML", )

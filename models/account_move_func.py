@@ -1745,10 +1745,11 @@ class AccountMoveFunctions(models.Model):
     @api.onchange("journal_id",)
     def _onchange_journal_id(self):
         _logger.info(f"DEF1432 _onchange_journal_id self: {self} Comentado por Upgrade\nContext: {self._context}\n")
-        default_move_type = self._context.get('default_move_type')
-        _logger.info(f"DEF1434 default_move_type: {default_move_type}\n")
-        if default_move_type == "out_refund":
-            self.fe_doc_type  = "NotaCreditoElectronica"
+        return
+        # default_move_type = self._context.get('default_move_type')
+        # _logger.info(f"DEF1434 default_move_type: {default_move_type}\n")
+        # if default_move_type == "out_refund":
+        #     self.fe_doc_type  = "NotaCreditoElectronica"
         
     @api.model
     def default_fe_in_invoice_type(self):
