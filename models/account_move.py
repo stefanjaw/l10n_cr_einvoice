@@ -133,7 +133,7 @@ class AccountMove(models.Model):
     )
     
     fe_in_invoice_type = fields.Selection(#1569867120
-        string="Tipo Documento",
+        string="Tipo Documento in",
         selection=[
                 ('ME', 'Mensaje Aceptación'),
                 ('FE', 'Factura Electronica'),
