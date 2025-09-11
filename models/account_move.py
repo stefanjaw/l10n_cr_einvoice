@@ -15,21 +15,21 @@ class AccountMove(models.Model):
     source_date = fields.Datetime(string="Fecha Emision_S")
     fe_fecha_emision = fields.Char(string="Fecha Emision")
     fe_payment_type = fields.Selection([
-        ('01', 'Efectivo'),
-        ('02', 'Tarjeta'),
-        ('03', 'Cheque'),
-        ('04', 'Transferencia - depósito bancario'),
-        ('05', 'Recaudado por terceros'),
-        ('06', 'SINPE MOVIL'),
-        ('07', 'Plataforma digital'),
-        ('99', ' Otros'),
+        ('01', '01-Efectivo'),
+        ('02', '02-Tarjeta'),
+        ('03', '03-Cheque'),
+        ('04', '04-Transferencia - depósito bancario'),
+        ('05', '05-Recaudado por terceros'),
+        ('06', '06-SINPE MOVIL'),
+        ('07', '07-Plataforma digital'),
+        ('99', '99-Otros'),
     ], string="Tipo de pago", track_visibility='onchange',required=False,
     states={'posted': [('readonly', True)]})  #Cambio de True a False, se debe colocar True pero en la vista Invoice
     
     fe_receipt_status = fields.Selection([
-           ('1', 'Normal'),
-           ('2', 'Contingencia'),
-           ('3', 'Sin Internet'),
+           ('1', '1-Normal'),
+           ('2', '2-Contingencia'),
+           ('3', '3-Sin Internet'),
     ], string="Situación del comprobante", track_visibility='onchange',required=False, 
     states={'posted': [('readonly', True)]}) #Cambio de True a False, se debe colocar True pero en la vista Invoice
     
@@ -94,9 +94,9 @@ class AccountMove(models.Model):
     fe_xml_supplier_hacienda_name = fields.Char(string="Nombre XML", )
 
     fe_msg_type = fields.Selection([ # 1570035130
-            ('1', 'Accept'),
-            ('2', 'Partially Accept'),
-            ('3', 'Reject'),
+            ('1', '1-Accept'),
+            ('2', '2-Partially Accept'),
+            ('3', '3-Reject'),
         ], string="Mensaje", track_visibility="onchange",
     states={'posted': [('readonly', True)]})
 
