@@ -394,7 +394,7 @@ class AccountMoveFunctions(models.Model):
             
             if self.name[8:10] == "01": 
                 self._validate_company()
-                self.validar_datos_factura()
+                # self.validar_datos_factura()
                 self._validate_invoice_line()                   #FACTURA ELECTRONICA
                 self.fe_doc_type = "FacturaElectronica"
                 self._cr_post_server_side()
@@ -402,21 +402,21 @@ class AccountMoveFunctions(models.Model):
 
             elif self.name[8:10] == "02":
                 self._validate_company()
-                self.validar_datos_factura()
+                # self.validar_datos_factura()
                 self._validate_invoice_line()                  #NOTA DEBITO ELECTRONICA
                 self.fe_doc_type = "NotaDebitoElectronica"
                 self._cr_post_server_side()
 
             elif self.name[8:10] == "03": 
                 self._validate_company()
-                self.validar_datos_factura()
+                # self.validar_datos_factura()
                 self._validate_invoice_line()                 #NOTA CREDITO ELECTRONICA
                 self.fe_doc_type = "NotaCreditoElectronica"
                 self._cr_post_server_side()
             
             elif self.name[8:10] == "04": 
                 self._validate_company()
-                self.validar_datos_factura()
+                # self.validar_datos_factura()
                 self._validate_invoice_line()                 #NOTA TIQUETE ELECTRONICO
                 self.fe_doc_type = "TiqueteElectronico"
                 self._cr_post_server_side()
@@ -435,19 +435,19 @@ class AccountMoveFunctions(models.Model):
 
             elif self.name[8:10] == "08":  
                 self._validate_company()
-                self.validar_datos_factura()
+                # self.validar_datos_factura()
                 self._validate_invoice_line()                  #FACTURA ELECTRONICA COMPRA
                 self.fe_doc_type = "FacturaElectronicaCompra"
                 self._cr_post_server_side()
 
             elif self.name[8:10] == "09":
                 self._validate_company()
-                self.validar_datos_factura()
+                # self.validar_datos_factura()
                 self._validate_invoice_line()                    #FACTURA ELECTRONICA EXPORTACION
                 self.fe_doc_type = "FacturaElectronicaExportacion"
                 self._cr_post_server_side()
             elif self.name[8:10] == "10":
-                self._validate_company()
+                # self._validate_company()
                 # self.validar_datos_factura()
                 # self._validate_invoice_line()                    #FACTURA ELECTRONICA COMPRA
                 # self.fe_doc_type = "ReciboElectronicoPago"
@@ -1625,6 +1625,15 @@ class AccountMoveFunctions(models.Model):
 
             TotalComprobante = TotalVentaNeta + TotalImpuesto #+ TotalOtrosCargos - TotalIVADevuelto
             if TotalComprobante:
+                
+                TotalComprobante_diff_amount_total = abs( TotalComprobante -  s.amount_total )
+                _logger.info(f"DEF1630 TotalComprobante_diff_amount_total: {TotalComprobante_diff_amount_total}")
+                if abs( TotalComprobante -  s.amount_total ) > 1.00:
+                    msg1 = f'Total de la Venta es diferente al monto de Odoo:\n'
+                    msg1 += f'{TotalComprobante_diff_amount_total} = {TotalComprobante} - {s.amount_total}\n'
+                    msg1 += f'Revise los montos Totales en Odoo'
+                    raise ValidationError( msg1 )
+                
                 invoice_data[s.fe_doc_type]['ResumenFactura']['TotalComprobante'] = '{0:.5f}'.format(TotalComprobante) #'PENDIENTE_TOTAL_Comprobante'
             #SUMA DE: "total venta neta" + "monto total del impuesto" + "total otros cargos" - total IVA devuelto
             else:
