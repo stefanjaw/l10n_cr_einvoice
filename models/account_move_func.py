@@ -1807,18 +1807,19 @@ class AccountMoveFunctions(models.Model):
 
             name = vals.get('name')
             move_type = vals.get('move_type')
-            
-            if move_type == "entry":
-                fe_doc_type = "ReciboElectronicoPago"
-                vals['fe_doc_type'] = fe_doc_type
-                # sequence = journal_ids.sequence_rep 
-                vals['fe_fecha_emision'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
-                # vals['date'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
-                # result = self.fe_get_sequence(  )
-            
-            # Comentado por Desarrollo xxxxx
+
             msg1 = "Comentado por Desarrollo Sequence del ReciboElectronicoPago xxxxx"
             _logger.info(f"DEF1778 {msg1} =======")
+            # if move_type == "entry":
+            #     fe_doc_type = "ReciboElectronicoPago"
+            #     vals['fe_doc_type'] = fe_doc_type
+            #     # sequence = journal_ids.sequence_rep 
+            #     vals['fe_fecha_emision'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+            #     # vals['date'] = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+            #     # result = self.fe_get_sequence(  )
+            
+            
+            
             # if name  in ["", "/", False] and fe_doc_type not in [False]:
             #     vals['name'] = self.fe_sequence_get( journal_ids, fe_doc_type)
 
