@@ -81,3 +81,5 @@ class AccountMoveReversal(models.TransientModel):
         'Company',
          default=lambda self: self.env.company.id 
     )
+
+    fe_currency_rate_reference = fields.Char(string="Tipo de cambio de Referencia")

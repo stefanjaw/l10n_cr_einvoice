@@ -1839,3 +1839,36 @@ class AccountMoveFunctions(models.Model):
             # _logger.info(f"DEF1795 output: {output}")
             record.fe_html_hacienda = output
         return
+
+
+    def action_reverse(self):
+        _logger.info(f"    ==== action_reverse self: {self}")
+
+        output = super().action_reverse()
+        
+        try:
+            context_data = {
+                "default_fe_payment_type": self.fe_payment_type,
+                "default_payment_term_id": self.invoice_payment_term_id.id,
+                "default_fe_receipt_status": self.fe_receipt_status,
+            }
+        except:
+            context_data = {}
+
+        fe_tipo_documento_referencia = False
+        if self.fe_doc_type == "FacturaElectronica":
+            fe_tipo_documento_referencia = "01"
+        elif self.fe_doc_type == "NotaDebitoElectronica":
+            fe_tipo_documento_referencia = "02"
+        elif self.fe_doc_type == "NotaCreditoElectronica":
+            fe_tipo_documento_referencia = "03"
+        
+        if fe_tipo_documento_referencia not in [False]:
+            context_data['default_fe_tipo_documento_referencia'] = fe_tipo_documento_referencia
+
+        if float(self.fe_currency_rate) not in [0.00, 1.00]:
+            context_data['default_fe_currency_rate_reference'] = self.fe_currency_rate
+
+        output['context'] = context_data
+        return output
+        

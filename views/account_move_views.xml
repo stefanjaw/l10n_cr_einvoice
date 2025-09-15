@@ -120,6 +120,10 @@
                     <field name="fe_informacion_referencia_fecha"
                         invisible="fe_current_country_company_code != 'CR' or fe_doc_type == False or fe_doc_ref == False"
                         readonly="state != 'draft'" />
+
+                    <field name="fe_currency_rate_reference"
+                        invisible="fe_current_country_company_code != 'CR' or fe_doc_type == False or fe_doc_ref == False"
+                        readonly="state != 'draft'" />
                     
                     <field name="ref" string="Razon"
                         invisible="fe_current_country_company_code != 'CR' or fe_doc_type == False or fe_doc_ref == False" />

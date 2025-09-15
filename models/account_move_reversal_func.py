@@ -61,6 +61,7 @@ class AccountMoveReversal(models.TransientModel):
         data['fe_receipt_status'] = move_id.fe_receipt_status
         data['fe_activity_code_id'] = move_id.fe_activity_code_id.id
 
+        data['fe_currency_rate_reference'] = move_id.fe_currency_rate
         data['name'] = "/"
         
         return data

@@ -185,6 +185,7 @@ class AccountMove(models.Model):
     )
     
     fe_currency_rate = fields.Char(compute="_compute_currency_rate", string="Tipo de cambio")
+    fe_currency_rate_reference = fields.Char(string="Referencia de Tipo de cambio moneda")
     
     fe_doc_ref = fields.Char(string="Documento Electrónico de Referencia",states={'posted': [('readonly', True)]})
     
