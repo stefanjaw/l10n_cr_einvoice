@@ -51,8 +51,9 @@ class ResPartner(models.Model):
     def _constrains_vat(self):
         for record in self:
             if record.vat:
-                if not re.search('^\d+$',record.vat):
-                    log.info("Skipped letter and numbers TBD development =====")
+                if not re.search('xxxxxxx',record.vat):
+                    _logged.info("Moving this to the server-side instead =====")
+                    _logged.info("Skipped letter and numbers TBD development =====")
                     # raise ValidationError('La identificación solo debe de contener números1')
                 else:
                     if record.fe_identification_type == '01':
