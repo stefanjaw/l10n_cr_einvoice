@@ -329,7 +329,7 @@ class AccountMoveFunctions(models.Model):
                       'token_user_name':self.company_id.fe_user_name,
                       }
         json_to_send = json.dumps(json_string)
-        _logger.info(f"    ==== json to send : \n {json_to_send[:2500]} \n")
+        # _logger.info(f"    ==== json to send : \n {json_to_send[:2500]} \n")
         
         test_json = json.dumps(json_string, indent=4)
         _logger.info(f"    ==== json to send test_json : \n {test_json[:4000]} \n")
@@ -1541,12 +1541,17 @@ class AccountMoveFunctions(models.Model):
             invoice_data[s.fe_doc_type].update({
             'OtrosCargos':OtrosCargos_array
             })
+
+            if s.fe_doc_type in ["FacturaElectronica", "FacturaElectronicaExportacion","FacturaElectronicaCompra"]:
+                TipoCambio = s.fe_currency_rate
+            elif s.fe_doc_type in ["NotaDebitoElectronica", "NotaCreditoElectronica" ]:
+                TipoCambio = s.fe_currency_rate_reference
             
             invoice_data[s.fe_doc_type].update(
                 {'ResumenFactura':{
                     'CodigoTipoMoneda':{
                         'CodigoMoneda':s.currency_id.name,
-                        'TipoCambio':s.fe_currency_rate, #'{0:.2f}'.format((s.fe_currency_rate) or None),
+                        'TipoCambio':TipoCambio, #'{0:.2f}'.format((s.fe_currency_rate) or None),
                     }
                 }})
             
@@ -1701,8 +1706,8 @@ class AccountMoveFunctions(models.Model):
 
     @api.model
     def cron_send_json(self):
-        _logger.info(f"DEF1336 =====")
-        log.info('--> factelec-Invoice-build_json')
+        _logger.info(f"    ===== cron_send_json")
+        
         invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted'),('fe_server_state','!=','Importada Manual'),('type','!=','entry')])
         #log.info('-->invoice_list %s',invoice_list)
         for invoice in invoice_list:
@@ -1715,8 +1720,7 @@ class AccountMoveFunctions(models.Model):
                     invoice.update({
                         'fe_server_state':'error'
                     })
-
-        
+    
     def mostrar_wizard_nota_debito(self):
         _logger.info(f"DEF1353 =====")
         return {
