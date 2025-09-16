@@ -29,8 +29,12 @@ class AccountFiscalPosition(models.Model):
     ], string="Tipo de Documento")
 
     fe_tipo_documento_otro = fields.Char(string="Tipo de Documento Otro")
+
+    fe_exoneracion_articulo = fields.Char(string="Articulo")
+
+    fe_exoneracion_inciso = fields.Char(string="Inciso")
     
-    institution_name = fields.Char(string="Nombre de la Institución")
+    institution_name = fields.Char(string="Nombre de la Institución Otro")
     
     fe_codigo_institucion = fields.Selection([
         ('01', '01-Ministerio de Hacienda'),

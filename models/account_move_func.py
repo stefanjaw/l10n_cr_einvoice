@@ -1458,12 +1458,28 @@ class AccountMoveFunctions(models.Model):
                                 exoneration['NumeroDocumento'] = self.fiscal_position_id.document_number or ''
                                 
                                 if fe_version == "4.3":
-                                    exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or ''
-                                    exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
+                                    exoneration['NombreInstitucion'] = self.fiscal_position_id.institution_name or False
+                                    try:
+                                        exoneration['FechaEmision'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
+                                    except:
+                                        pass
+                                        
                                 elif fe_version == "4.4":
-                                    exoneration['NombreInstitucion'] = self.fiscal_position_id.fe_codigo_institucion or ''
-                                    exoneration['FechaEmisionEX'] = self.fiscal_position_id.issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00") or ''
+                                    exoneracion_articulo = self.fiscal_position_id.fe_exoneracion_articulo
+                                    if exoneracion_articulo: 
+                                        exoneration['Articulo'] = exoneracion_articulo
+                                    exoneracion_inciso = self.fiscal_position_id.fe_exoneracion_inciso
+                                    if exoneracion_inciso:
+                                        exoneration['Inciso'] = exoneracion_inciso
 
+                                    exoneracion_codigo_institucion = self.fiscal_position_id.fe_codigo_institucion
+                                    if exoneracion_codigo_institucion:
+                                        exoneration['NombreInstitucion'] = exoneracion_codigo_institucion
+
+                                    exoneracion_issued_date = self.fiscal_position_id.issued_date
+                                    if exoneracion_issued_date:
+                                        exoneration['FechaEmisionEX'] = exoneracion_issued_date.strftime("%Y-%m-%dT%H:%M:%S-06:00")
+                                
                                 if fe_version == "4.3":
                                     exoneration['PorcentajeExoneracion'] =  int(percent) or '0'
                                 elif fe_version == "4.4":

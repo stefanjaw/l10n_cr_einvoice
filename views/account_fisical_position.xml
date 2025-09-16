@@ -25,9 +25,13 @@
                 <field name="fe_tipo_documento_otro"
                     placeholder="Tipo de documento de exoneración o de autorización OTRO"
                     invisible="fiscal_position_type not in [99, '99']" />
+
+                <field name="fe_exoneracion_articulo"
+                    placeholder="Número de artículo que establece la exoneración o autorización"
+                    required="False"/>                
                 
-                <field name="institution_name"
-                    placeholder="Nombre de institución o dependencia que emitió la exoneración"
+                <field name="fe_exoneracion_inciso"
+                    placeholder="Número de inciso que establece la exoneración o autorización"
                     required="False"/>
 
                 <field name="fe_codigo_institucion"
