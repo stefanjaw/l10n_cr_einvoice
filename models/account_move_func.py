@@ -1491,7 +1491,10 @@ class AccountMoveFunctions(models.Model):
                                 tax_origen =  fiscal.tax_src_id.amount/100
                                 tax_nuevo = fiscal.tax_dest_id.amount/100
                                 tax_exonerado = tax_origen - tax_nuevo
-                                
+
+                                if tax_origen == 0:
+                                    msg1 = f"Revisar la exoneración, el porcentaje del impuesto original es: {tax_origen}"
+                                    raise ValidationError( msg1 )
                                 producto_monto_a_gravar = round( (LineaSubTotal * tax_nuevo) / tax_origen, 5)
                                 producto_monto_a_exonerar = round( LineaSubTotal - producto_monto_a_gravar, 5)
                                 
