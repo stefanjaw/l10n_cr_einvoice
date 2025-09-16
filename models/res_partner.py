@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 import logging
 import re
 
-log = logging.getLogger(__name__)
+log = _logged = logging.getLogger(__name__)
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
