@@ -198,3 +198,5 @@ class AccountMove(models.Model):
     fe_condicion_venta = fields.Selection(related="invoice_payment_term_id.fe_condition_sale")
     
     fe_condicion_venta_otros = fields.Text(string='Condicion Venta Otros')
+
+    fe_otros_ids = fields.One2many('account.move.otros.line','move_id')

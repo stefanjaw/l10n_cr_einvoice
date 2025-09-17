@@ -2,6 +2,7 @@
 from . import account_move_compute
 from . import account_move_func
 from . import account_move_line
+from . import account_move_otros_line
 from . import account_move
 from . import confirm_alert_func
 from . import confirm_message_func

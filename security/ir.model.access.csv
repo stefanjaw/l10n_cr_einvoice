@@ -11,3 +11,4 @@ access_wizard_account_move_debit,wizard_account_move_debit,model_account_move_de
 access_res_partner_activity_codes,res_partner_activity_codes,model_res_partner_activity_codes,base.group_user,1,1,1,1
 access_forma_farmaceutica,forma_farmaceutica,model_forma_farmaceutica,base.group_user,1,1,1,1
 access_mail_thread,mail_thread,model_mail_thread,base.group_user,1,1,1,1
+access_account_move_otros_line,account_move_otros_line,model_account_move_otros_line,base.group_user,1,1,1,1
