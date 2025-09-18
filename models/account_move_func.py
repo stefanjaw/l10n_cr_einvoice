@@ -1709,29 +1709,15 @@ class AccountMoveFunctions(models.Model):
             
             Otros = []
             if s.narration:
+                _logger.info(f"    ==== Adding Otros narration")
                 Otros.append( f"<OtroTexto>{s.narration}</OtroTexto>" )
-                # Otros.append( {'OtroTexto':s.narration} )
-
+            
             if len(s.fe_otros_ids) > 0:
-                _logger.info(f"DEF1720 fe_otros_id: {s.fe_otros_ids}")
-                # for fe_otros_id in s.fe_otros_ids:
-
+                _logger.info(f"    ==== Adding Otros Texto")
                 for fe_otros_id in s.fe_otros_ids:
                     Otros.append( fe_otros_id.otro_xml_str )
-                # get_keys = ['id','otro_xml_str', 'move_id']
-                # record_data_lst = self.env['account.move.otros.line'].search_read(
-                #     [ ( 'move_id', 'in',  [ s.id ]  )  ],
-                #     get_keys,
-                # )
-                # _logger.info(f"DEF1724 record_data_lst: \n{record_data_lst}")
-                # if len( Otros ) > 0:
-                #     for record_data in record_data_lst:
-                #         Otros.extend([{
-                #             'OtroTexto': record_data
-                #         }])
             
             if len(Otros) > 0:
-                _logger.info(f"DEF1733 Otros: {Otros}\n")
                 invoice_data[s.fe_doc_type].update({
                     'Otros': Otros
                 })
