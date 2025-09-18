@@ -34,6 +34,7 @@
                         attrs=" {  'invisible': [  ( 'field_type', 'not in', ['OtroTexto'] )  ]  }  "
                         string="Atributos y sus valores" />
                       <field name="field_data" placeholder="Datos del Campo" string="Texto de Otros"/>
+                      <field name="otro_xml_str" string="XML de Otro" readonly="1"/>
                   </tree>                                  
               </field>
               

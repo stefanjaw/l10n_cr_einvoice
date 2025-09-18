@@ -332,11 +332,11 @@ class AccountMoveFunctions(models.Model):
         # _logger.info(f"    ==== json to send : \n {json_to_send[:2500]} \n")
         
         test_json = json.dumps(json_string, indent=4)
-        _logger.info(f"    ==== json to send test_json : \n {test_json[:4000]} \n")
+        _logger.info(f"    ==== json to send test_json : \n {test_json[:6000]} \n")
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
-        # STOP333
+        STOP333
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
@@ -1706,17 +1706,36 @@ class AccountMoveFunctions(models.Model):
                             'Razon':s.ref,
                         }
                     })
-                            
+            
+            Otros = []
             if s.narration:
-                invoice_data[s.fe_doc_type].update({
-                    'Otros':{
-                        'OtroTexto':s.narration,
-                        #'OtroContenido':'ELEMENTO OPCIONAL'
-                    }
-                })
-            #PDF de FE,FEE,FEC,ND,NC
-            #En caso de que el server-side envie el mail
+                Otros.append( f"<OtroTexto>{s.narration}</OtroTexto>" )
+                # Otros.append( {'OtroTexto':s.narration} )
 
+            if len(s.fe_otros_ids) > 0:
+                _logger.info(f"DEF1720 fe_otros_id: {s.fe_otros_ids}")
+                # for fe_otros_id in s.fe_otros_ids:
+
+                for fe_otros_id in s.fe_otros_ids:
+                    Otros.append( fe_otros_id.otro_xml_str )
+                # get_keys = ['id','otro_xml_str', 'move_id']
+                # record_data_lst = self.env['account.move.otros.line'].search_read(
+                #     [ ( 'move_id', 'in',  [ s.id ]  )  ],
+                #     get_keys,
+                # )
+                # _logger.info(f"DEF1724 record_data_lst: \n{record_data_lst}")
+                # if len( Otros ) > 0:
+                #     for record_data in record_data_lst:
+                #         Otros.extend([{
+                #             'OtroTexto': record_data
+                #         }])
+            
+            if len(Otros) > 0:
+                _logger.info(f"DEF1733 Otros: {Otros}\n")
+                invoice_data[s.fe_doc_type].update({
+                    'Otros': Otros
+                })
+            
             if s.fe_doc_type in ["ReciboElectronicoPago"]:
                 pass
             else:
