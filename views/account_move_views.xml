@@ -27,14 +27,14 @@
             <page string="Otro Texto"
                 invisible="fe_current_country_company_code != 'CR' or fe_doc_type == False">
               
-              <field name="fe_otros_ids" string="Otros"> 
+              <field name="fe_otros_ids" string="Otros" readonly="state != 'draft'"> 
                  <tree editable="bottom">
                       <field name="field_type" placeholder="Selecione Tipo"/>
-                      <field name="attributes_data" placeholder="atributo1=&quot;valor1&quot; atributo2=&quot;valor2&quot;"
+                      <field name="attributes_data" placeholder="codigo=&quot;valor1&quot;"
                         attrs=" {  'invisible': [  ( 'field_type', 'not in', ['OtroTexto'] )  ]  }  "
                         string="Atributos y sus valores" />
                       <field name="field_data" placeholder="Datos del Campo" string="Texto de Otros"/>
-                      <field name="otro_xml_str" string="XML de Otro" readonly="1"/>
+                      <field name="otro_xml_str" string="XML de Otro" readonly="0"/>
                   </tree>                                  
               </field>
               

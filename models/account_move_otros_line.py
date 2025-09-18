@@ -18,14 +18,10 @@ class AccountMoveOtrosLine(models.Model):
     move_id = fields.Many2one('account.move')
 
     @api.onchange('field_type', 'attributes_data', 'field_data')
-    def testing(self):
+    def otro_xml_str_update(self):
         for record in self:
-            xml_str = f"<{record.field_type} {record.attributes_data or None}>{record.field_data}</{record.field_type}>"
-            record.otro_xml_str = xml_str
+            if record.field_type:
+                xml_str = f"<{record.field_type} {record.attributes_data or ''}>{record.field_data or ''}</{record.field_type}>"
+                _logger.info(f"DEF24 --- xml_str: { xml_str }")
+                record.otro_xml_str = xml_str
         return
-    
-    # def write(self, vals):
-    #     _logger.info(f"DEF21 self: {self}\nwrite vals:\n{vals}")
-    #     for record in self
-    #         STOP23
-    #     STOP25

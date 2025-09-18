@@ -336,7 +336,7 @@ class AccountMoveFunctions(models.Model):
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
-        STOP333
+        # STOP333
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
