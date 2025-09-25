@@ -990,7 +990,7 @@ class AccountMoveFunctions(models.Model):
               raise exceptions.UserError('VALIDE primero este documento')
 
             if not 'http://' in s.company_id.fe_url_server and  not 'https://' in s.company_id.fe_url_server:
-               raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http://")
+               raise ValidationError("El campo Server URL en comapañia no tiene el formato correcto, asegurese que contenga http:// o https://")
 
             if s.name[8:10] == "05":
                if not s.fe_clave:
@@ -1034,12 +1034,20 @@ class AccountMoveFunctions(models.Model):
                       params['fe_name_xml_hacienda'] = data['result']['nombre_xml_hacienda']
                       params['fe_xml_hacienda'] = data['result']['xml_hacienda']
                    
+                   if s.fe_server_state:
+                       params['fe_server_state'] = data['result']['ind-estado']
+                   
                    if len(params) == 0:
                       msg = f"  Nothing FE value to Update in Record: {s.name}"
                       _logger.info( msg )
                       raise ValidationError( msg )
                    else:
                       s.update(params)
+
+                   if s.fe_server_state == "rechazado":
+                       s.button_draft()
+                       s.button_cancel()
+                   _logger.info(f"DEF1047 self: {s.state} -  {s}")
                 
                 
     def _get_pdf_bill(self,id):
