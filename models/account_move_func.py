@@ -1064,12 +1064,12 @@ class AccountMoveFunctions(models.Model):
 
     @api.model
     def cron_get_server_bills(self):
-        _logger.info(f"DEF889 ===== cron_get_server_bills self: {self}")
-        log.info('--> cron_get_server_bills')
-        list = self.env['account.move'].search(['|',('fe_xml_sign','=',False),('fe_xml_hacienda','=',False),'&',('state','=','posted'),
-        ('fe_server_state','!=','pendiente enviar'),('fe_server_state','!=','error'),('fe_server_state','!=','Importada Manual'),('fe_server_state','!=',False),
-        ('type','!=','entry')])
-
+        _logger.info(f"    ===== cron_get_server_bills self: {self}")
+        
+        list = self.env['account.move'].search([
+            ('fe_server_state','in',['enviado a procesar', 'enviado Hacienda'])
+        ])
+        
         for item in list:
             if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO' and item.journal_id.type == 'sale':
                 if item.fe_clave:
@@ -1077,9 +1077,7 @@ class AccountMoveFunctions(models.Model):
                     item.get_invoice()
                 else:
                     log.info(' item name no tiene clave %s',item.name)
-
-               
-
+    
     def write_chatter(self,body):
         _logger.info(f"DEF906 =====")
         log.info('--> write_chatter')
@@ -1089,8 +1087,7 @@ class AccountMoveFunctions(models.Model):
                         'model':'account.move',
                         'body': body,
                        })
-
-
+    
     def _cr_xml_factura_electronica(self):
         _logger.info(f"    ===== _cr_xml_factura_electronica self: {self}")
         
