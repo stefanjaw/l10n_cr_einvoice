@@ -1067,16 +1067,16 @@ class AccountMoveFunctions(models.Model):
         _logger.info(f"    ===== cron_get_server_bills self: {self}")
         
         list = self.env['account.move'].search([
-            ('fe_server_state','in',['enviado a procesar', 'enviado Hacienda'])
+            ('fe_server_state','in',['enviado a procesar', 'enviado Hacienda']),
+            ('fe_doc_type', 'not in', [None, False, ""])
         ])
-        
+        _logger.info(f"    ===== list: {list}")
         for item in list:
-            if item.company_id.country_id.code == 'CR' and item.fe_in_invoice_type != 'OTRO' and item.journal_id.type == 'sale':
-                if item.fe_clave:
-                    log.info(' item name %s',item.name)
-                    item.get_invoice()
-                else:
-                    log.info(' item name no tiene clave %s',item.name)
+            if item.fe_clave:
+                log.info(' item name %s',item.name)
+                item.get_invoice()
+            else:
+                log.info(' item name no tiene clave %s',item.name)
     
     def write_chatter(self,body):
         _logger.info(f"DEF906 =====")
