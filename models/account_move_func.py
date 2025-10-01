@@ -1566,7 +1566,7 @@ class AccountMoveFunctions(models.Model):
             'OtrosCargos':OtrosCargos_array
             })
 
-            if s.fe_doc_type in ["FacturaElectronica", "FacturaElectronicaExportacion","FacturaElectronicaCompra"]:
+            if s.fe_doc_type in ["FacturaElectronica", "FacturaElectronicaExportacion","FacturaElectronicaCompra", "TiqueteElectronico"]:
                 TipoCambio = s.fe_currency_rate
             elif s.fe_doc_type in ["NotaDebitoElectronica", "NotaCreditoElectronica" ]:
                 TipoCambio = s.fe_currency_rate_reference
