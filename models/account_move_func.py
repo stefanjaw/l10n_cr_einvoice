@@ -40,10 +40,11 @@ class AccountMoveFunctions(models.Model):
     @api.constrains('fe_doc_ref')
     def _constrains_fe_doc_ref(self):
         _logger.info(f"===== _constrains_fe_doc_ref para nota credito o nota debito")
-        if self.name[8:10] == '03' or self.name[8:10] == '02':
-            doc = self.search([('name', '=', self.fe_doc_ref)])
-            if not doc:
-                msg = f"El documento de referencia no existe: {self.fe_doc_ref}"
+        if self.name:
+            if self.name[8:10] == '03' or self.name[8:10] == '02':
+                doc = self.search([('name', '=', self.fe_doc_ref)])
+                if not doc:
+                    msg = f"El documento de referencia no existe: {self.fe_doc_ref}"
                 # raise ValidationError( msg )
                 
     def _rate(self,date):
