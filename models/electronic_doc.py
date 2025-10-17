@@ -199,7 +199,10 @@ class ElectronicDoc(models.Model):
 
                     receiver_number = self.get_receiver_identification(dic, doc_type)
                     receiver_company =  self.env['res.company'].search([ ('vat','=', receiver_number) ])
-                    if receiver_company.id != self.env.company.id:
+                    if receiver_number in [False, None]:
+                        msg1 = f"Documento Electrónico no cuenta con número de identificación en el receptor"
+                        raise ValidationError( msg1 )
+                    elif receiver_company.id != self.env.company.id:
                         message1 = "Error:\n El receptor de este documento es: {}\n y fue enviado por: {},\nLa compañía seleccionada es: {}".format( 
                            self.get_receiver_name(dic, doc_type), self.get_provider(dic, doc_type),
                            self.env.company.name
