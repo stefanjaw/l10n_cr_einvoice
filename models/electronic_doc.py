@@ -909,6 +909,11 @@ class ElectronicDoc(models.Model):
         if key in bill_dic.keys():
             tz = pytz.timezone('America/Costa_Rica')
             fecha = datetime.now(tz=tz).strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                TipoCedulaReceptor = bill_dic[key]['Receptor']['Identificacion']['Tipo']
+            except:
+                TipoCedulaReceptor = None
+            
             json = {'MensajeReceptor':{
                 'Clave':bill_dic[key]['Clave'],
                 'NumeroCedulaEmisor':bill_dic[key]['Emisor']['Identificacion']['Numero'],
@@ -923,7 +928,7 @@ class ElectronicDoc(models.Model):
                 'MontoTotalGastoAplicable':'{0:.5f}'.format(self.fe_monto_total_gasto_aplicable),
                 'TotalFactura':'{0:.5f}'.format(float(self.format_to_valid_float(bill_dic[key]['ResumenFactura']['TotalComprobante']))),
                 'NumeroCedulaReceptor':self.company_id.vat.replace('-','').replace(' ','') or None,#bill_dic['FacturaElectronica']
-                'TipoCedulaReceptor':bill_dic[key]['Receptor']['Identificacion']['Tipo'],
+                'TipoCedulaReceptor': TipoCedulaReceptor,
                 'NumeroConsecutivoReceptor':self.consecutivo,
                 }}
             return json
