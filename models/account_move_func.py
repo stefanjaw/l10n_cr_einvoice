@@ -981,6 +981,12 @@ class AccountMoveFunctions(models.Model):
             else:
                 log.info('--> 1575061637')
                 res = super(AccountMoveFunctions, s).action_post()
+
+            invoice_date_str = s.invoice_date.strftime('%d%m%y')
+            fe_clave_date = s.fe_clave[3:9]
+            if invoice_date_str != fe_clave_date:
+                _logger.info(f"    ===== Re-Generating fe_clave because:\n    invoice_date: {invoice_date_str} is different from fe_clave_date: {fe_clave_date}")
+                s._generar_clave()
     
     def get_invoice(self):
         _logger.info(f"    ==== get_invoice: {self}")
