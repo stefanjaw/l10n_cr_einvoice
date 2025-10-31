@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError
 from datetime import datetime,timezone
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
 # from openerp.osv import osv
-from odoo.osv import osv
+# from odoo.osv import osv
 #from openerp.tools.translate import _
 from odoo.tools.translate import _
 from .xslt import __path__ as path
