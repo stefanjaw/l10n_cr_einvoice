@@ -1072,14 +1072,15 @@ class AccountMoveFunctions(models.Model):
     def cron_get_server_bills(self):
         _logger.info(f"    ===== cron_get_server_bills self: {self}")
         
-        list = self.env['account.move'].search([
-            ('fe_server_state','in',['enviado a procesar', 'enviado Hacienda']),
-            ('fe_doc_type', 'not in', [None, False, ""])
-        ])
-        _logger.info(f"    ===== list: {list}")
+        list = self.env['account.move'].search(
+            [   ('fe_server_state','in',['enviado a procesar', 'enviado Hacienda']),
+                ('fe_doc_type', 'not in', [None, False, ""])
+            ],
+            order='id')
+        
         for item in list:
             if item.fe_clave:
-                log.info(' item name %s',item.name)
+                log.info(f" Get server record {item.name}")
                 item.get_invoice()
             else:
                 log.info(' item name no tiene clave %s',item.name)
@@ -1751,10 +1752,8 @@ class AccountMoveFunctions(models.Model):
               ('state','=','posted'),
               ('move_type','in',allowed_docs),
               ('invoice_date', '>=', offset_time),
-              # ('fe_xml_sign','in', [False,None]),
-              # ('fe_xml_hacienda','in', [False,None]),
             ],
-            limit=15,
+            limit=30,
             order='id')
         
         _logger.info('-->invoice_list %s',invoice_list)
