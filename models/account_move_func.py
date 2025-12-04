@@ -987,7 +987,7 @@ class AccountMoveFunctions(models.Model):
                 _logger.info(f"    ===== Re-Generating fe_clave because:\n    invoice_date: {invoice_date_str} is different from fe_clave_date: {fe_clave_date}")
                 s._generar_clave()
     
-    def get_invoice(self):
+    def get_invoice(self, vals={}):
         _logger.info(f"    ==== get_invoice: {self}")
         for s in self:
             if not s.fe_server_state:
@@ -1050,12 +1050,30 @@ class AccountMoveFunctions(models.Model):
                    else:
                       s.update(params)
 
+                      mail_template_name = vals.get('mail_template')
+                      mail_template_id = self.env['mail.template'].search([
+                              ('name', '=', mail_template_name )
+                          ])
+                       
+                      if len(mail_template_id) == 1:
+                          _logger.info(f"    ==== Sending emails for: {s} {s.name}")
+
+                          data_to_send = {
+                                  'move_ids': [(4, s.id)],
+                                  'mail_template_id': mail_template_id.id
+                              }
+                       
+                          send_id = self.env['account.move.send'].create( data_to_send )
+                          send_id.action_send_and_print()
+                          send_id.unlink()
+                      else:
+                          _logger.info(f"    ==== NOT Sending emails for: {s} {s.name}")
+                          pass
+                   
                    if s.fe_server_state == "rechazado":
                        s.button_draft()
                        s.button_cancel()
-                   _logger.info(f"DEF1047 self: {s.state} -  {s}")
-                
-                
+    
     def _get_pdf_bill(self,id):
         _logger.info(f"    ===== _get_pdf_bill self: {self} id: {id}")
         ctx = self.env.context.copy()
@@ -1069,7 +1087,7 @@ class AccountMoveFunctions(models.Model):
 
 
     @api.model
-    def cron_get_server_bills(self):
+    def cron_get_server_bills(self, vals={}):
         _logger.info(f"    ===== cron_get_server_bills self: {self}")
         
         list = self.env['account.move'].search(
@@ -1078,10 +1096,13 @@ class AccountMoveFunctions(models.Model):
             ],
             order='id')
         
+        _logger.info(f"    ==== Records list: \n{list}")
+        
         for item in list:
             if item.fe_clave:
                 log.info(f" Get server record {item.name}")
-                item.get_invoice()
+                item.get_invoice(vals)
+                
             else:
                 log.info(' item name no tiene clave %s',item.name)
     
