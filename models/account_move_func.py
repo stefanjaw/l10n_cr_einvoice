@@ -1079,8 +1079,7 @@ class AccountMoveFunctions(models.Model):
         ctx = self.env.context.copy()
         ctx.pop('default_move_type', False)
         _logger.info(f"        ==== ctx: \n{ctx}")
-        #pdf = self.env.ref('account.account_invoices_without_payment').with_context(ctx).render(id)
-        #pdf = self.env.ref('account.account_invoices').with_context(ctx).render(id) # Version 13
+        
         pdf = self.env.ref('account.account_invoices').with_context(ctx)._render( 'account.account_invoices', [id] )
         pdf64 = base64.b64encode(pdf[0]).decode('utf-8')
         return pdf64
@@ -1089,6 +1088,12 @@ class AccountMoveFunctions(models.Model):
     @api.model
     def cron_get_server_bills(self, vals={}):
         _logger.info(f"    ===== cron_get_server_bills self: {self}")
+        '''
+        # Format of the cronjob to send automatically the emails
+        model.cron_get_server_bills({
+            "mail_template": "Invoice: Sending"
+        })
+        '''
         
         list = self.env['account.move'].search(
             [   ('fe_server_state','in',['enviado a procesar', 'enviado Hacienda']),
