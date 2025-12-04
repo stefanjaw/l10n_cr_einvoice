@@ -1,10 +1,9 @@
 from odoo import models, fields, api, exceptions
 from odoo.exceptions import ValidationError
-from datetime import datetime,timezone
+from datetime import datetime,timezone, timedelta
+
 from lxml.etree import Element, fromstring, parse, tostring, XMLParser
-# from openerp.osv import osv
-# from odoo.osv import osv
-#from openerp.tools.translate import _
+
 from odoo.tools.translate import _
 from .xslt import __path__ as path
 import lxml.etree as ET
@@ -16,7 +15,7 @@ import base64
 import xmltodict
 import logging
 import time
-#import os
+
 
 from .electronic_doc import ElectronicDoc as ED
 
@@ -337,7 +336,7 @@ class AccountMoveFunctions(models.Model):
         
         header = {'Content-Type':'application/json'}
         url = self.company_id.fe_url_server
-        # STOP333
+        # raise ValidationError("STOP333")
         try:
             response = requests.post(url, headers = header, data = json_to_send)
         except Exception as ex:
@@ -1741,11 +1740,33 @@ class AccountMoveFunctions(models.Model):
     @api.model
     def cron_send_json(self):
         _logger.info(f"    ===== cron_send_json")
+        offset_time = datetime.now() - timedelta(days=60)
+        # _logger.info(f"DEF1748 {offset_time}")
         
-        invoice_list = self.env['account.move'].search(['&',('fe_server_state','=',False),('state','=','posted'),('fe_server_state','!=','Importada Manual'),('type','!=','entry')])
-        #log.info('-->invoice_list %s',invoice_list)
+        allowed_docs = ['out_invoice', 'out_refund', 'in_invoice']
+        fe_server_state = [False, None, 'error']
+        invoice_list = self.env['account.move'].search(
+            [ ('fe_server_state','in',fe_server_state),
+              ('fe_doc_type','!=',False),
+              ('state','=','posted'),
+              ('move_type','in',allowed_docs),
+              ('invoice_date', '>=', offset_time),
+              # ('fe_xml_sign','in', [False,None]),
+              # ('fe_xml_hacienda','in', [False,None]),
+            ],
+            limit=15,
+            order='id')
+        
+        _logger.info('-->invoice_list %s',invoice_list)
+        
         for invoice in invoice_list:
-            if invoice.company_id.country_id.code == 'CR' and invoice.fe_in_invoice_type != 'OTRO' and invoice.journal_id.type == 'sale':
+            if invoice.company_id.country_id.code == 'CR' \
+            and invoice.journal_id.type in ['sale','purchase']:
+                if invoice.fe_xml_hacienda in [False, None, ""]:
+                    pass
+                else:
+                    continue
+                _logger.info( f"=> Processing: {invoice.id} {invoice.name} " )
                 try:
                     log.info('-->consecutivo %s',invoice.name)
                     invoice.confirm_bill()
