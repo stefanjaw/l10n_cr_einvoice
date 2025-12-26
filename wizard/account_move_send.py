@@ -5,18 +5,18 @@ import logging
 
 _logger = _logging = logging.getLogger(__name__)
 
-class AccountMoveSendInherit(models.TransientModel): # 1707799931
-    _inherit = 'account.move.send'
+class AccountMoveSendWizardInherit(models.TransientModel): # 1707799931
+    _inherit = 'account.move.send.wizard'
     
     def _compute_mail_attachments_widget(self):
         original = super()._compute_mail_attachments_widget()
-        _logger.info(f"l10n_cr_einvoice_attachments")
+        _logger.info(f"    ==== _compute_mail_attachments_widget")
 
-        if len(self.move_ids) > 1:
-            msg = f"Many Records Detected: {self.move_ids}"
+        if len(self.move_id) > 1:
+            msg = f"Many Records Detected: {self.move_id}"
             raise ValidationError(msg)
         else:
-            move_id = self.move_ids._origin
+            move_id = self.move_id._origin
 
         if move_id.fe_xml_sign in [None, False, ""]     \
         and move_id.fe_xml_hacienda in [None, False, ""]:
