@@ -22,9 +22,9 @@
       <field name="name">forma.farmaceutica.view.tree</field>
       <field name="model">forma.farmaceutica</field>
       <field name="arch" type="xml">
-        <tree string="">
+        <list string="">
           <field name="display_name" string="name"/>
-        </tree>
+        </list>
       </field>
     </record>
     
@@ -42,7 +42,7 @@
     <record model="ir.actions.act_window" id="forma_farmaceutica_action">
       <field name="name">Forma Farmaceutica</field>
       <field name="res_model">forma.farmaceutica</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="forma_farmaceutica_menu"
