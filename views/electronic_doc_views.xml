@@ -213,11 +213,12 @@
     </record>
 
     <record id="doc_action_form" model="ir.actions.act_window">
-    <field name="name">Documentos</field>
-    <field name="res_model">electronic.doc</field>
-    <field name="view_mode">list,form</field>
-    <field name="domain">[]</field>
-    <field name="context">{}</field>
+        <field name="name">Documentos</field>
+        <field name="res_model">electronic.doc</field>
+        <field name="view_mode">list,form</field>
+        <field name="path">electronic-docs</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
     </record>
 
 

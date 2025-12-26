@@ -34,11 +34,11 @@
       <field name="name">cabys.view.tree</field>
       <field name="model">cabys.code</field>
       <field name="arch" type="xml">
-        <tree string="">
+        <list string="">
           <field name="display_name"/>
           <field name="tax" />
             <field name="partida_arancelaria" />
-        </tree>
+        </list>
       </field>
     </record>
     
