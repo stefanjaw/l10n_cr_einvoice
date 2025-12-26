@@ -23,7 +23,7 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        # 'views/account_move_views.xml',
+        'views/account_move_views.xml',
         'views/confirm_alert_views.xml',
         'views/confirm_message_views.xml',
         'views/res_company_views.xml',

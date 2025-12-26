@@ -11,10 +11,7 @@
           
           <xpath expr="//header/button[@name='action_reverse']" position="after">
             <button name="mostrar_wizard_nota_debito" type="object" string="Add Debit Note"
-                invisible="move_type not in ['out_invoice','in_invoice'] or state != 'posted'"
-                />
-                <!-- attrs="{'invisible': ['|', ('move_type', 'not in', ['out_invoice','in_invoice']), ('state','!=','posted')]}" -->
-                
+                invisible="move_type not in ['out_invoice','in_invoice'] or state != 'posted'" />
           </xpath>
           
           <xpath expr="//field[@name='product_uom_id']" position="attributes">
@@ -28,14 +25,14 @@
                 invisible="fe_current_country_company_code != 'CR' or fe_doc_type == False">
               
               <field name="fe_otros_ids" string="Otros" readonly="state != 'draft'"> 
-                 <tree editable="bottom">
+                 <list editable="bottom">
                       <field name="field_type" placeholder="Selecione Tipo"/>
                       <field name="attributes_data" placeholder="codigo=&quot;valor1&quot;"
                         attrs=" {  'invisible': [  ( 'field_type', 'not in', ['OtroTexto'] )  ]  }  "
                         string="Atributos y sus valores" />
                       <field name="field_data" placeholder="Datos del Campo" string="Texto de Otros"/>
                       <field name="otro_xml_str" string="XML de Otro" readonly="0"/>
-                  </tree>                                  
+                  </list>                                  
               </field>
               
             </page>
@@ -157,7 +154,7 @@
              <field name="fe_xml_supplier_xslt" invisible="1"/>
           </field>
             
-          <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='name']" position="after">
+          <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='name']" position="after">
            <field name="product_type" optional="show"/>
            <field name="cabys_code" string="Cabys" optional="show"/>
            <field name="fe_tipo_transaccion" optional="hide"/>
@@ -169,7 +166,7 @@
            <field name="fe_monto_exportacion" optional="hide"/>
          </xpath>
          
-         <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='discount']" position="after">
+         <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='discount']" position="after">
               <field name="fe_codigo_descuento" optional="hide"/>
               <field name="fe_codigo_descuento_otro" optional="hide"/>
               <field name="fe_naturaleza_descuento" optional="hide"/>
