@@ -104,10 +104,10 @@
                           
                   <group string="Actividades Comerciales">
                     <field name="fe_activity_code_ids">
-                      <tree editable="1">
+                      <!-- <tree editable="1">
                         <field name="code" required="1"/>
                         <field name="description" required="1"/>
-                      </tree>
+                      </tree> -->
                     </field>                              
                   </group>
                           
