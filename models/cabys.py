@@ -2,6 +2,9 @@
 
 from odoo import _, api, fields, models
 
+import logging
+_logging = _logger = logging.getLogger(__name__)
+
 class cabys(models.Model):
     _name = 'cabys.code'
     _description = "Cabys.code"
@@ -22,15 +25,7 @@ class cabys(models.Model):
     cabys_category_9 = fields.Char(string='Categoría 9')
     display_name = fields.Char(compute='_compute_display_name',store=True)
     partida_arancelaria = fields.Char(string='Partida Arancelaria')
-
-    @api.model
-    def name_search(self, name, args=None, operator='ilike', limit=100):
-        args = args or []
-        recs = self.browse()
-        if not recs:
-               recs = self.search([('display_name', operator, name)] + args, limit=limit)
-        return recs.name_get()
-
+    
     @api.depends('code','name')
     def _compute_display_name(self):
         for record in self:
