@@ -64,7 +64,8 @@
     <record model="ir.actions.act_window" id="cabys_action">
       <field name="name">Codigo Cabys</field>
       <field name="res_model">cabys.code</field>
-      <field name="view_mode">tree,form</field>
+      <field name="path">cabys-code</field>
+      <field name="view_mode">list,form</field>
     </record>
 
     <menuitem name="Código Cabys" id="cabys_menu" parent="account.menu_finance_configuration" action="cabys_action"
