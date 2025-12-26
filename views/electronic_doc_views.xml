@@ -114,7 +114,7 @@
             </page>
             <page string="Lineas">
                   <field name="line_ids">
-                        <tree editable="bottom" create="false" delete="false">
+                        <list editable="bottom" create="false" delete="false">
                             <field name="name" readonly="True" />
                             <field name="name" invisible="True" />
                             <field name="quantity" readonly="True" />
@@ -138,7 +138,7 @@
                                 readonly="state in ['posted','accounting']" />
                                 <!-- attrs="{'readonly': [('state','in',['posted','accounting'])]}"/> -->
                             <field name="is_selected"  invisible="True"/>
-                        </tree>
+                        </list>
                   </field>
             </page>
             <page string="Facturacion electrónica">
@@ -174,7 +174,7 @@
     <field name="name">doc.tree</field>
     <field name="model">electronic.doc</field>
     <field name="arch" type="xml">
-      <tree string="" default_order="date desc">
+      <list string="" default_order="date desc">
         <field name="state" string="Estado Contable"/>
         <field name="consecutivo"/>
         <field name="key" string="Clave Proveedor"/>
@@ -188,25 +188,26 @@
         <field string="XML Aceptación" name="has_acceptance" optional="show"/>
         <field string="Estado Hacienda" name="fe_server_state" optional="show"/>
         <field name="company_id" string="Compañia" optional="show"/>
-      </tree>
+      </list>
     </field>
     </record>
 
     <record id="electronic_doc_view_search" model="ir.ui.view">
     <field name="name">doc.search</field>
     <field name="model">electronic.doc</field>
+    <field eval="16" name="priority"/>
     <field name="arch" type="xml">
       <search string="Search">
         <field name="provider" string="Proveedor"/>
         <field name="key" string="Clave"/>
         <field name="consecutivo" string="Consecutivo"/>
         <field name="fe_msg_type" string="Mensaje al Documento Proveedor"/>
-          <group expand="0" string="Group By">
+        <group>
             <filter string="Proveedor" name="provider" domain="[]" context="{'group_by': 'provider'}"/>
             <filter string="Tipo de Documento" name="doc_type" domain="[]" context="{'group_by': 'doc_type'}"/>
             <filter string="Mensaje al Documento Proveedor" name="fe_msg_type" domain="[]" context="{'group_by': 'fe_msg_type'}"/>
             <filter string="Fecha" name="date" domain="[]" context="{'group_by': 'date'}"/>
-          </group>
+        </group>
       </search>
     </field>
     </record>
@@ -214,7 +215,7 @@
     <record id="doc_action_form" model="ir.actions.act_window">
     <field name="name">Documentos</field>
     <field name="res_model">electronic.doc</field>
-    <field name="view_mode">tree,form</field>
+    <field name="view_mode">list,form</field>
     <field name="domain">[]</field>
     <field name="context">{}</field>
     </record>
