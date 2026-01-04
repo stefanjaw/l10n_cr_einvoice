@@ -53,11 +53,17 @@ class AccountMoveFunctions(models.Model):
                 line_total_impuestos = line_id.price_total - line_id.price_subtotal
                 
                 monto_gravado = monto_exento = monto_exonerado = 0
-                
-                fiscal_position_tax_id = fiscal_position_id.tax_ids.search([
-                    ('position_id','=', fiscal_position_id.id),
-                    ('tax_dest_id', '=', line_id.tax_ids.id)
-                ])
+
+                if fiscal_position_id.id in line_id.tax_ids.fiscal_position_ids.ids:
+                    fiscal_position_tax_id = line_id.tax_ids
+                else:
+                    fiscal_position_tax_id = []
+                _logger.info(f"DEF61 fiscal_position_tax_id: {fiscal_position_tax_id} =====")
+
+                # fiscal_position_tax_id = fiscal_position_id.tax_ids.search([
+                #     ('position_id','=', fiscal_position_id.id),
+                #     ('tax_dest_id', '=', line_id.tax_ids.id)
+                # ])
                 
                 if len(fiscal_position_tax_id) > 0:
                     monto_exonerado = line_total_venta

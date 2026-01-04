@@ -1409,11 +1409,18 @@ class AccountMoveFunctions(models.Model):
                         LineaImpuestoMonto = 0
                         FactorCalculoIVA = None
 
-                        fiscal_position_line_ids = self.fiscal_position_id.tax_ids.search([
-                            ('position_id', '=',self.fiscal_position_id.id ),
-                            ('tax_dest_id','=',tax_id.id)
-                        ])
+                        fiscal_position_id = self.fiscal_position_id
+                        _logger.info(f"DEF1411 fiscal_position_id: {fiscal_position_id} tax_id: {tax_id} =====")
+                        if self.fiscal_position_id.id in tax_id.fiscal_position_ids.ids:
+                            fiscal_position_line_ids = tax_id
+                        else:
+                            fiscal_position_line_ids = []
                         
+                        # fiscal_position_line_ids = self.fiscal_position_id.tax_ids.search([
+                        #     ('position_id', '=',self.fiscal_position_id.id ),
+                        #     ('tax_dest_id','=',tax_id.id)
+                        # ])
+                        _logger.info(f"DEF1423 fiscal_position_line_ids: {fiscal_position_line_ids} =====")
                         if tax_id.type == 'OTHER': #
 
                             OtrosCargos_json = { 'TipoDocumento':tax_id.tipo_documento }
@@ -1433,7 +1440,12 @@ class AccountMoveFunctions(models.Model):
                         else:
                             
                             if len( fiscal_position_line_ids ) > 0:
-                                old_tax = fiscal_position_line_ids.tax_src_id
+                                # old_tax = fiscal_position_line_ids.tax_src_id
+                                old_tax = fiscal_position_line_ids.original_tax_ids
+                                _logger.info(f"DEF1445 old_tax: {old_tax}")
+                                if len(old_tax) > 1:
+                                    raise ValidationError(f"Many original taxes, escalate with Factura Electronica Service Provider")
+                                
                                 LineaImpuestoTarifa = round(old_tax.amount,2)
                                 impuesto_data = {
                                     'Codigo':old_tax.codigo_impuesto,
@@ -1484,7 +1496,9 @@ class AccountMoveFunctions(models.Model):
                                     inv_lines[arrayCount]['Impuesto'].update(dict({'MontoExportacion':'{0:.5f}'.format(MontoExportacion)}))
                             
                             if len( fiscal_position_line_ids ) > 0:
-                                percent = fiscal_position_line_ids.tax_src_id.amount - fiscal_position_line_ids.tax_dest_id.amount
+                                percent = fiscal_position_line_ids.original_tax_ids.amount - fiscal_position_line_ids.amount
+                                _logger.info(f"DEF1500 percent: {percent}")
+                                
                                 exoneration = {}
                                 if fe_version == "4.3":
                                     exoneration['TipoDocumento'] = self.fiscal_position_id.fiscal_position_type or ''
@@ -1524,10 +1538,11 @@ class AccountMoveFunctions(models.Model):
                                 MontoExoneracion = round(LineaSubTotal * ( percent / 100),5)
                                 exoneration['MontoExoneracion'] =  MontoExoneracion
 
-                                tax_origen =  fiscal_position_line_ids.tax_src_id.amount/100
-                                tax_nuevo = fiscal_position_line_ids.tax_dest_id.amount/100
+                                tax_origen =  fiscal_position_line_ids.original_tax_ids.amount/100
+                                tax_nuevo = fiscal_position_line_ids.amount/100
                                 tax_exonerado = tax_origen - tax_nuevo
-
+                                _logger.info(f"DEF1544 tax_exonerado: {tax_exonerado}")
+                                
                                 if tax_origen == 0:
                                     msg1 = f"Revisar la exoneración, el porcentaje del impuesto original es: {tax_origen}"
                                     raise ValidationError( msg1 )
@@ -1817,7 +1832,7 @@ class AccountMoveFunctions(models.Model):
                     'journal_id': self.journal_id.id
                  }
              }
-
+    
     @api.onchange("currency_id","invoice_date")
     def _onchange_currency_rate(self):
         _logger.info(f"DEF1416 ===== _onchange_currency_rate self: {self} comentado por upgrade")  # comentado por upgrade

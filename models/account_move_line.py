@@ -70,12 +70,13 @@ class AccountMoveLineEinvoice(models.Model):
     
     @api.onchange('product_id')
     def _compute_cabys_code(self):
+        
         try:
-            if self.product_id.detailed_type == "service":
+            if self.product_id.type == "service":
                 product_type = "service"
-            elif self.product_id.detailed_type == "consu":
+            elif self.product_id.type == "consu":
                 product_type = "product"
-            elif self.product_id.detailed_type == "product":
+            elif self.product_id.type == "product":
                 product_type = "product"
             else:
                 product_type = "other"
