@@ -40,6 +40,9 @@ class AccountMoveFunctions(models.Model):
 
             fiscal_position_id = record.fiscal_position_id
             for line_id in record.invoice_line_ids:
+                if line_id.product_type == "other":
+                    continue
+                
                 if len(line_id.tax_ids) > 1:
                     raise ValidationError("Alert Einvoice CR: Configured 2 taxes in the line")
                 
@@ -76,8 +79,12 @@ class AccountMoveFunctions(models.Model):
                     merc_gravado = monto_gravado
                     merc_exento = monto_exento
                     merc_exonerado = monto_exonerado
+                elif line_id.product_type == "consu":
+                    merc_gravado = monto_gravado
+                    merc_exento = monto_exento
+                    merc_exonerado = monto_exonerado
                 else:
-                    raise ValidationError("Error Einvoice Unknown Invoice Product Type")
+                    raise ValidationError(f"Error Einvoice Unknown Invoice Product Type: |{line_id.product_type}| in Line: |{line_id.name}|")
                 
                 line_total_gravado = serv_gravado + merc_gravado
                 line_total_exento = serv_exento + merc_exento
