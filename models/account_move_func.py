@@ -1051,22 +1051,22 @@ class AccountMoveFunctions(models.Model):
                       s.update(params)
 
                       mail_template_name = vals.get('mail_template')
-                      if mail_template_name in ["", None, False]:
-                          msg = f"  Mail Template Not Configured\n\tDocument: {s}:{s.name}\n\tTemplate: {mail_template_name}"
-                          _logger.info( msg )
-                          raise ValidationError( msg )
-                      mail_template_id = self.env['mail.template'].search([
-                              ('name', '=', mail_template_name )
-                          ])
-                       
+                      if mail_template_name in [None, False, ""]:
+                          default_mail_template_ref = 'account.email_template_edi_invoice'
+                          _logger.info(f"    Using Default mail template name: {default_mail_template_ref}")
+                          mail_template_id = self.env.ref( default_mail_template_ref, raise_if_not_found=False )
+                      else:
+                          mail_template_id = self.env['mail.template'].search([
+                                  ('name', '=', mail_template_name )
+                              ])
+                      
                       if len(mail_template_id) == 1:
-                          _logger.info(f"    ==== Sending emails for: {s} {s.name}")
+                          _logger.info(f"    ==== Sending emails for: {s} {s.name} with template: {mail_template_id}")
 
                           data_to_send = {
                                   'move_ids': [(4, s.id)],
                                   'mail_template_id': mail_template_id.id
                               }
-                       
                           send_id = self.env['account.move.send'].create( data_to_send )
                           send_id.action_send_and_print()
                           send_id.unlink()
