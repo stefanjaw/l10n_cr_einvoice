@@ -1051,6 +1051,10 @@ class AccountMoveFunctions(models.Model):
                       s.update(params)
 
                       mail_template_name = vals.get('mail_template')
+                      if mail_template_name in ["", None, False]:
+                          msg = f"  Mail Template Not Configured\n\tDocument: {s}:{s.name}\n\tTemplate: {mail_template_name}"
+                          _logger.info( msg )
+                          raise ValidationError( msg )
                       mail_template_id = self.env['mail.template'].search([
                               ('name', '=', mail_template_name )
                           ])
