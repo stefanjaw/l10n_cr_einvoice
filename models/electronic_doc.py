@@ -111,10 +111,10 @@ class ElectronicDoc(models.Model):
         string='Name',
         compute='_compute_display_name',
     )
-    _sql_constraints = [
-        ('unique_key', 'UNIQUE(key)',
-         'El documento ya existe en la base de datos!!'),
-    ]
+    # _sql_constraints = [
+    #     ('unique_key', 'UNIQUE(key)',
+    #      'El documento ya existe en la base de datos!!'),
+    # ]
     
     @api.depends("line_ids" )
     def _compute_gasto_aplicable(self):
