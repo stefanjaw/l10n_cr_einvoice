@@ -2,6 +2,7 @@
 <record id="l10n_cr_einvoice.res_partner_form_inherit" model="ir.ui.view">
   <field name="name">l10n_cr_einvoice.res.partner.form.inherit</field>
   <field name="model">res.partner</field>
+  <field name="active">True</field>
   <field name="inherit_id" ref="base.view_partner_form"/>
   <field name="arch" type="xml">
 
@@ -21,13 +22,13 @@
                 <button name="action_partner_data_costa_rica_update" type="object" string="Update"/>
                   <group string="Actividades Comerciales">
                     <field name="fe_activity_code_ids">
-                      <tree editable="1">
+                      <list edit="1">
                         <field name="status"/>
                         <field name="type" />
                         <field name="code" required="1"/>
                         <field name="name" required="1"/>
                         <field name="description" />
-                      </tree>
+                      </list>
                     </field>                              
                   </group>
         </page>
