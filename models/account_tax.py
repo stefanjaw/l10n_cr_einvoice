@@ -49,14 +49,14 @@ class AccountTax(models.Model):
     tipo_documento = fields.Selection(
         string="Tipo de documento",
         selection=[
-                ('01', 'Contribución parafiscal'),
-                ('02','Timbre de la Cruz Roja'),
-                ('03', 'Timbre de Benemérito Cuerpo de Bomberos de Costa Rica.'),
-                ('04' , 'Cobro de un tercero'),
-                ('05' , 'Costos de Exportación'),
-                ('06' , 'Impuesto de servicio 10%'),
-                ('07' , 'Timbre de Colegios Profesionales'),
-                ('99' , 'Otros Cargos')
+                ('01' , '01-Contribución parafiscal'),
+                ('02' , '02-Timbre de la Cruz Roja'),
+                ('03' , '03-Timbre de Benemérito Cuerpo de Bomberos de Costa Rica.'),
+                ('04' , '04-Cobro de un tercero'),
+                ('05' , '05-Costos de Exportación'),
+                ('06' , '06-Impuesto de servicio 10%'),
+                ('07' , '07-Timbre de Colegios Profesionales'),
+                ('99' , '99-Otros Cargos')
         ],
     )
 
