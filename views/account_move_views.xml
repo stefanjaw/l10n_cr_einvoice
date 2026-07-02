@@ -208,7 +208,7 @@
     <record id="action_for_debit_notes" model="ir.actions.act_window">
       <field name="name">Debit Notes</field>
       <field name="res_model">account.move</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">list,form</field>
       <field name="view_id" ref="account.view_invoice_tree"/>
       <field name="domain">[('debit_note', '=', True)]</field>
       <field name="context">{'default_type':'out_invoice','default_debit_note': True}</field>
