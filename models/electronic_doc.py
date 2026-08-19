@@ -173,19 +173,14 @@ class ElectronicDoc(models.Model):
 
         chardet_obj = chardet.detect(xml_raw_bytes)
         encoding = chardet_obj['encoding']
-        
-        try:
-           encoding.lower()
-        except Exception as ex:
-            msg1 = f"Error Document Type:\t\n{ex}"
-            raise ValidationError( msg1 )
-        
-        if encoding.lower() not in ["utf-8", "ascii"]:
+        if encoding.lower() not in ["utf-8", "ascii","windows-1252"]:
             _logger.info(f"==== Changing Encode from: {encoding} to UTF-8")
-            xml_str = xml_raw_bytes.decode(encoding)
+            try:
+                xml_str = xml_raw_bytes.decode(encoding)
+            except Exception as e:
+                raise ValidationError(f"Can't identify the encoding, error:\n{e}")
             xml_utf_8 = xml_str.encode('utf-8')
             self.xml_bill = base64.b64encode(xml_utf_8)
-        
         return
     
 
