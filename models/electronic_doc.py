@@ -51,7 +51,8 @@ class ElectronicDoc(models.Model):
                                     ('TE', 'Tiquete Electronico'),
                                     ('FE', 'Factura Electronica'),
                                     ('FEE', 'Factura Electronica Exportación'),
-                                    ('NC', 'Nota Crédito Electronica'),
+                                    ('NC', 'Nota Crédito Electrónica'),
+                                    ('ND', 'Nota Dédito Electrónica'),
                                     ('MH', 'Aceptacion Ministerio Hacienda'),
                                     ('OT', 'Otro'),
                                 ])
@@ -195,7 +196,7 @@ class ElectronicDoc(models.Model):
                 dic = self.convert_xml_to_other(self.xml_bill, type_dest="dict", company_id=self.company_id)
                 doc_type = self.get_doc_type(dic)
                 
-                if doc_type in ['FE', 'FEE', 'TE', 'NC']: # == 'TE' or doc_type == 'FE' or doc_type == 'NC' :
+                if doc_type in ['FE', 'FEE', 'TE', 'NC', 'ND']: # == 'TE' or doc_type == 'FE' or doc_type == 'NC' :
                     list_lineas = self.crear_lineas_xml(self.xml_bill)
                     xml_currency = self.get_currency(dic, doc_type).get('CodigoMoneda')
                     currency_id = self.env['res.currency'].search([('name','=',xml_currency)])
@@ -228,8 +229,7 @@ class ElectronicDoc(models.Model):
                         'total_amount':self.format_to_valid_float(self.get_total_amount(dic, doc_type)),
                         'fe_monto_total_impuesto':self.format_to_valid_float(self.get_total_tax(dic, doc_type)),
                         'line_ids':list_lineas,
-                    }
-                    
+                    }                    
                     self.write( data )
                                         
                 else:
@@ -658,6 +658,8 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'
         return dic[key]['Clave']
 
 
@@ -672,6 +674,8 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'
         return key
 
     def get_bill_number(self, dic, doc_type):
@@ -684,6 +688,8 @@ class ElectronicDoc(models.Model):
                 key = 'FacturaElectronicaExportacion'
             elif (doc_type == 'NC'):
                 key = 'NotaCreditoElectronica'
+            elif (doc_type == 'ND'):
+                key = 'NotaDebitoElectronica'
             return dic[key]['NumeroConsecutivo']
         except Exception as e:
             return False
@@ -699,6 +705,8 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'
         return dic[key]['Emisor']['Nombre']
 
 
@@ -713,7 +721,8 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
-        
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'        
         if dic[key]['ResumenFactura'].get('CodigoTipoMoneda') == None:
             return { 'CodigoMoneda': 'CRC', 'TipoCambio': 1,}
         elif dic[key]['ResumenFactura'].get('CodigoTipoMoneda').get('CodigoMoneda') == None:
@@ -736,6 +745,8 @@ class ElectronicDoc(models.Model):
                 key = 'FacturaElectronicaExportacion'
             elif (doc_type == 'NC'):
                 key = 'NotaCreditoElectronica'
+            elif (doc_type == 'ND'):
+                key = 'NotaDebitoElectronica'
             return dic[key]['Emisor']['Identificacion']['Numero']
 
         except:
@@ -752,6 +763,8 @@ class ElectronicDoc(models.Model):
                 key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'
         return dic[key]['FechaEmision']
 
     def get_receiver_identification(self, dic, doc_type):
@@ -767,6 +780,8 @@ class ElectronicDoc(models.Model):
                 key = 'FacturaElectronicaExportacion'
             elif (doc_type == 'NC'):
                 key = 'NotaCreditoElectronica'
+            elif (doc_type == 'ND'):
+                key = 'NotaDebitoElectronica'
             return dic[key]['Receptor']['Identificacion']['Numero']
 
         except:
@@ -782,6 +797,8 @@ class ElectronicDoc(models.Model):
                 key = 'FacturaElectronica'
             elif (doc_type == 'NC'):
                 key = 'NotaCreditoElectronica'
+            elif (doc_type == 'ND'):
+                key = 'NotaDebitoElectronica'
             return dic[key]['Receptor']['Nombre']
 
         except:
@@ -799,6 +816,8 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'
         return dic[key]['ResumenFactura']['TotalComprobante']
     
     def get_total_tax(self, dic, doc_type):
@@ -810,7 +829,8 @@ class ElectronicDoc(models.Model):
             key = 'FacturaElectronicaExportacion'
         elif (doc_type == 'NC'):
             key = 'NotaCreditoElectronica'
-
+        elif (doc_type == 'ND'):
+            key = 'NotaDebitoElectronica'
         if dic[key]['ResumenFactura'].get('TotalImpuesto'):
             return dic[key]['ResumenFactura']['TotalImpuesto']
         else:
