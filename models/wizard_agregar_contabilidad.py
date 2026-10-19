@@ -88,7 +88,7 @@ class wizardAgregarContabilidad(models.TransientModel):
                         msg += f"\n\nExample Account:\n    0.511301 0-Product cost"
                         raise ValidationError( msg )
                 
-                if doc.doc_type == 'FE' or doc.doc_type == 'TE':
+                if doc.doc_type == 'FE' or doc.doc_type == 'TE' or doc.doc_type == 'ND':
                      doc_type = 'in_invoice'
                 elif doc.doc_type == 'NC':
                      doc_type = 'in_refund'
@@ -107,12 +107,13 @@ class wizardAgregarContabilidad(models.TransientModel):
                     'company_id':doc.company_id.id,
                     'fe_doc_type': "MensajeReceptor"
                 }
-                _logger.info(f"DEF101 record data: \n{record_data}\n")
-                
+
+                if doc.doc_type == 'ND':
+                    record_data['fe_doc_type'] = ""
+            
                 record = self.env['account.move'].create(record_data)
-                _logger.info(f"DEF104 record.invoice_line_ids: {record}\n{record.invoice_line_ids}")
-                _logger.info(f"DEF105 record.line_ids: {record}\n{record.line_ids}")
-                # STOP105
+                _logger.info(f"\trecord.invoice_line_ids: {record}\n{record.invoice_line_ids}")
+                _logger.info(f"\trecord.line_ids: {record}\n{record.line_ids}")
                 
                 doc.update({'invoice_id':record.id})
                 
