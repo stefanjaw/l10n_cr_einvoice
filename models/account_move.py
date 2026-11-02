@@ -172,7 +172,9 @@ class AccountMove(models.Model):
                 ('15','15-Sustituye una Factura electrónica de Compra'),
                 ('16','16-Comprobante de Proveedor No Domiciliado'),
                 ('17','17-Nota de Crédito a Factura Electrónica de Compra'), 
-                ('18','18-Nota de Débito a Factura Electrónica de Compra'), 
+                ('18','18-Nota de Débito a Factura Electrónica de Compra'),
+                ('19','19-Factura Electrónica de Exportación'),
+                ('20','20-Recibo Electrónico de Pago'),
                 ('99','99-Otros'),
         ],
         states={'posted': [('readonly', True)]}
