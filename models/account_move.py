@@ -59,7 +59,12 @@ class AccountMove(models.Model):
         ('09', '09-Nota de crédito financiera'),
         ('10', '10-Nota de débito financiera'),
         ('11', '11-Proveedor No Domiciliado'),
-        ('12', '12-Crédito por exoneración posterior a la facturación'),
+        ('12', '12-Nota de crédito financiera por exoneración posterior a la facturación'),
+        ('13', '13-Anula documento de referencia por error material'),
+        ('14', '14-Corrige monto por error material'),
+        ('15', '15-Sustituye comprobante electrónico por error material'),
+        ('16', '16-Sustituye comprobante electrónico rechazado'),
+        ('17', '17-Pago a comprobante electrónico'),
         ('99', '99-Otros'),
     ], string="Codigo de Referencia", track_visibility='onchange',
     states={'posted': [('readonly', True)]})
